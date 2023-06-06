@@ -18,6 +18,7 @@
         android:textSize="@dimen/title_text_size" />
 
     <Button
+        android:id="@+id/search_button"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="40dp"
@@ -33,6 +34,7 @@
         app:iconTint="@color/yp_black" />
 
     <Button
+        android:id="@+id/media_library_button"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
@@ -48,6 +50,7 @@
         app:iconTint="@color/yp_black" />
 
     <Button
+        android:id="@+id/settings_button"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
