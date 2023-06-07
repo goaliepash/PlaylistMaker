@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initButtonSearch() {
-        val buttonSearch = findViewById<Button>(R.id.buttonSearch)
+        val buttonSearch = findViewById<Button>(R.id.button_search)
         val buttonSearchClickListener = View.OnClickListener {
             val intent = Intent(this, SearchActivity::class.java)
             startActivity(intent)
@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initButtonMediaLibrary() {
-        val buttonMediaLibrary = findViewById<Button>(R.id.buttonMediaLibrary)
+        val buttonMediaLibrary = findViewById<Button>(R.id.button_media_library)
         buttonMediaLibrary.setOnClickListener {
             val intent = Intent(this, MediaLibraryActivity::class.java)
             startActivity(intent)
@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initButtonSettings() {
-        val buttonSettings = findViewById<Button>(R.id.buttonSettings)
+        val buttonSettings = findViewById<Button>(R.id.button_settings)
         buttonSettings.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
             startActivity(intent)

@@ -17,7 +17,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun initImageViewBack() {
-        val imageViewBack = findViewById<ImageView>(R.id.imageViewBack)
+        val imageViewBack = findViewById<ImageView>(R.id.image_view_back)
         imageViewBack.setOnClickListener { finish() }
     }
 }
