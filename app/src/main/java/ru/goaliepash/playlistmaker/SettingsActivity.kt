@@ -1,6 +1,5 @@
 package ru.goaliepash.playlistmaker
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
@@ -14,14 +13,11 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun initUI() {
-        initBackImageView()
+        initImageViewBack()
     }
 
-    private fun initBackImageView() {
-        val backImageView = findViewById<ImageView>(R.id.back_image_view)
-        backImageView.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-        }
+    private fun initImageViewBack() {
+        val imageViewBack = findViewById<ImageView>(R.id.imageViewBack)
+        imageViewBack.setOnClickListener { finish() }
     }
 }

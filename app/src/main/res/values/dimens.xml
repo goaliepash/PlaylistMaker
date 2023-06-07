@@ -6,4 +6,6 @@
     <dimen name="title_text_size">22sp</dimen>
     <dimen name="button_text_size">22sp</dimen>
     <dimen name="settings_item_text_size">16sp</dimen>
+    <dimen name="main_margin_top">16dp</dimen>
+    <dimen name="settings_margin_top">42dp</dimen>
 </resources>

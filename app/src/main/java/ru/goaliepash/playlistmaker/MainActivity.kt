@@ -15,31 +15,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initUI() {
-        initSearchButton()
-        initMediaLibraryButton()
-        initSettingsButton()
+        initButtonSearch()
+        initButtonMediaLibrary()
+        initButtonSettings()
     }
 
-    private fun initSearchButton() {
-        val searchButton = findViewById<Button>(R.id.search_button)
-        val searchButtonClickListener = View.OnClickListener {
+    private fun initButtonSearch() {
+        val buttonSearch = findViewById<Button>(R.id.buttonSearch)
+        val buttonSearchClickListener = View.OnClickListener {
             val intent = Intent(this, SearchActivity::class.java)
             startActivity(intent)
         }
-        searchButton.setOnClickListener(searchButtonClickListener)
+        buttonSearch.setOnClickListener(buttonSearchClickListener)
     }
 
-    private fun initMediaLibraryButton() {
-        val mediaLibraryButton = findViewById<Button>(R.id.media_library_button)
-        mediaLibraryButton.setOnClickListener {
+    private fun initButtonMediaLibrary() {
+        val buttonMediaLibrary = findViewById<Button>(R.id.buttonMediaLibrary)
+        buttonMediaLibrary.setOnClickListener {
             val intent = Intent(this, MediaLibraryActivity::class.java)
             startActivity(intent)
         }
     }
 
-    private fun initSettingsButton() {
-        val settingsButton = findViewById<Button>(R.id.settings_button)
-        settingsButton.setOnClickListener {
+    private fun initButtonSettings() {
+        val buttonSettings = findViewById<Button>(R.id.buttonSettings)
+        buttonSettings.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
             startActivity(intent)
         }
