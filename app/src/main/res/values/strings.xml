@@ -12,4 +12,9 @@
     <string name="search_button_click">Клик на кнопку \"Поиск\".</string>
     <string name="media_library_button_click">Клик на кнопку \"Медиатека\".</string>
     <string name="settings_button_click">Клик на кнопку \"Настройки\".</string>
+    <string name="yp_android_course_url">https://practicum.yandex.ru/profile/android-developer/</string>
+    <string name="share_link">Поделиться ссылкой</string>
+    <string name="student_email">goaltenders@yandex.ru</string>
+    <string name="message_to_developers">Спасибо разработчикам и разработчицам за крутое приложение!</string>
+    <string name="yandex_offer_url">https://yandex.ru/legal/practicum_offer/</string>
 </resources>

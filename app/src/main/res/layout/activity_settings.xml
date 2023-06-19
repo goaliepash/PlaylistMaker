@@ -60,6 +60,7 @@
             android:text="@string/share_app" />
 
         <ImageView
+            android:id="@+id/image_view_share_app"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -80,6 +81,7 @@
             android:text="@string/write_to_support" />
 
         <ImageView
+            android:id="@+id/image_view_support"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -100,6 +102,7 @@
             android:text="@string/terms_of_use" />
 
         <ImageView
+            android:id="@+id/image_view_terms_of_use"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
