@@ -13,9 +13,9 @@
 
         <ImageView
             android:id="@+id/image_view_back"
+            style="@style/BackImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:src="@drawable/ic_arrow_back" />
 
         <TextView
@@ -61,9 +61,9 @@
 
         <ImageView
             android:id="@+id/image_view_share_app"
+            style="@style/SettingsItemImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:src="@drawable/ic_share" />
 
     </LinearLayout>
@@ -82,9 +82,9 @@
 
         <ImageView
             android:id="@+id/image_view_support"
+            style="@style/SettingsItemImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:src="@drawable/ic_support" />
 
     </LinearLayout>
@@ -103,9 +103,9 @@
 
         <ImageView
             android:id="@+id/image_view_terms_of_use"
+            style="@style/SettingsItemImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:src="@drawable/ic_arrow_forward" />
 
     </LinearLayout>
