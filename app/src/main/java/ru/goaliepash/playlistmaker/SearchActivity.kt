@@ -14,10 +14,23 @@ import androidx.appcompat.app.AppCompatActivity
 
 class SearchActivity : AppCompatActivity() {
 
+    private lateinit var imageViewBack: ImageView
+    private lateinit var editTextSearch: EditText
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
         initUI()
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        restoreEditTextSearch(savedInstanceState)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString(SEARCH_STRING, editTextSearch.text.toString())
+        super.onSaveInstanceState(outState)
     }
 
     private fun initUI() {
@@ -26,32 +39,32 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun initImageViewBack() {
-        val imageViewBack = findViewById<ImageView>(R.id.image_view_back)
+        imageViewBack = findViewById(R.id.image_view_back)
         imageViewBack.setOnClickListener { finish() }
     }
 
     private fun initEditTextSearch() {
-        val searchEditText = findViewById<EditText>(R.id.edit_text_search)
+        editTextSearch = findViewById(R.id.edit_text_search)
         val searchTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 if (p0.isNullOrEmpty()) {
-                    setDrawableEndVisibility(false, searchEditText)
+                    setDrawableEndVisibility(false, editTextSearch)
                 } else {
-                    setDrawableEndVisibility(true, searchEditText)
+                    setDrawableEndVisibility(true, editTextSearch)
                 }
             }
 
             override fun afterTextChanged(p0: Editable?) {}
         }
-        searchEditText.addTextChangedListener(searchTextWatcher)
-        searchEditText.onDrawableEndClick {
-            searchEditText.setText("")
-            setDrawableEndVisibility(false, searchEditText)
-            hideKeyboard(searchEditText)
+        editTextSearch.addTextChangedListener(searchTextWatcher)
+        editTextSearch.onDrawableEndClick {
+            editTextSearch.setText("")
+            setDrawableEndVisibility(false, editTextSearch)
+            hideKeyboard(editTextSearch)
         }
-        setDrawableEndVisibility(false, searchEditText)
+        setDrawableEndVisibility(false, editTextSearch)
     }
 
     private fun setDrawableEndVisibility(isVisible: Boolean, editText: EditText) {
@@ -73,8 +86,13 @@ class SearchActivity : AppCompatActivity() {
         inputMethodManager?.hideSoftInputFromWindow(editText.windowToken, 0)
     }
 
+    private fun restoreEditTextSearch(savedInstanceState: Bundle) {
+        val searchString = savedInstanceState.getString(SEARCH_STRING)
+        editTextSearch.setText(searchString)
+    }
+
     @SuppressLint("ClickableViewAccessibility")
-    fun EditText.onDrawableEndClick(action: () -> Unit) {
+    private fun EditText.onDrawableEndClick(action: () -> Unit) {
         setOnTouchListener { view, motionEvent ->
             if (motionEvent.action == MotionEvent.ACTION_UP) {
                 view as EditText
@@ -87,5 +105,9 @@ class SearchActivity : AppCompatActivity() {
             }
             return@setOnTouchListener false
         }
+    }
+
+    companion object {
+        private const val SEARCH_STRING = "SEARCH_STRING"
     }
 }
