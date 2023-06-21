@@ -12,6 +12,8 @@ import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 
+private var textSearch: String = ""
+
 class SearchActivity : AppCompatActivity() {
 
     private lateinit var imageViewBack: ImageView
@@ -29,7 +31,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putString(SEARCH_STRING, editTextSearch.text.toString())
+        outState.putString(SEARCH_STRING, textSearch)
         super.onSaveInstanceState(outState)
     }
 
@@ -54,13 +56,15 @@ class SearchActivity : AppCompatActivity() {
                 } else {
                     setDrawableEndVisibility(true, editTextSearch)
                 }
+                textSearch = p0.toString()
             }
 
             override fun afterTextChanged(p0: Editable?) {}
         }
         editTextSearch.addTextChangedListener(searchTextWatcher)
         editTextSearch.onDrawableEndClick {
-            editTextSearch.setText("")
+            textSearch = ""
+            editTextSearch.setText(textSearch)
             setDrawableEndVisibility(false, editTextSearch)
             hideKeyboard(editTextSearch)
         }
@@ -87,8 +91,8 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun restoreEditTextSearch(savedInstanceState: Bundle) {
-        val searchString = savedInstanceState.getString(SEARCH_STRING)
-        editTextSearch.setText(searchString)
+        textSearch = savedInstanceState.getString(SEARCH_STRING, "")
+        editTextSearch.setText(textSearch)
     }
 
     @SuppressLint("ClickableViewAccessibility")
