@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:paddingHorizontal="@dimen/padding_horizontal"
     tools:context=".MainActivity">
 
     <TextView
@@ -22,6 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="40dp"
+        android:layout_weight="1"
         android:text="@string/search"
         app:icon="@drawable/ic_search" />
 
@@ -31,6 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/main_margin_top"
+        android:layout_weight="1"
         android:text="@string/media_library"
         app:icon="@drawable/ic_media_library" />
 
@@ -41,6 +44,7 @@
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/main_margin_top"
         android:layout_marginBottom="28dp"
+        android:layout_weight="1"
         android:text="@string/settings"
         app:icon="@drawable/ic_settings" />
 

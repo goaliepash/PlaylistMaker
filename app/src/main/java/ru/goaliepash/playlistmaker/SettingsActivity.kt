@@ -42,29 +42,29 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun imageViewShareAppOnClick() {
-        val intent = Intent().apply {
+        Intent().apply {
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_TEXT, getString(R.string.yp_android_course_url))
             type = "text/plain"
+            startActivity(Intent.createChooser(this, null))
         }
-        startActivity(Intent.createChooser(intent, null))
     }
 
     private fun imageViewSupportOnClick() {
-        val intent = Intent().apply {
+        Intent().apply {
             action = Intent.ACTION_SENDTO
             data = Uri.parse("mailto:")
             putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.student_email)))
             putExtra(Intent.EXTRA_TEXT, getString(R.string.message_to_developers))
+            startActivity(this)
         }
-        startActivity(intent)
     }
 
     private fun imageViewTermsOfUseOnClick() {
-        val intent = Intent().apply {
+        Intent().apply {
             action = Intent.ACTION_VIEW
             data = Uri.parse(getString(R.string.yandex_offer_url))
+            startActivity(this)
         }
-        startActivity(intent)
     }
 }

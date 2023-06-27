@@ -12,12 +12,12 @@ import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 
-private var textSearch: String = ""
-
 class SearchActivity : AppCompatActivity() {
 
     private lateinit var imageViewBack: ImageView
     private lateinit var editTextSearch: EditText
+
+    private var textSearch: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

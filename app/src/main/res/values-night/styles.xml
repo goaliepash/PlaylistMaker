@@ -3,38 +3,41 @@
 
     <style name="Theme.PlaylistMaker.MainActivityLayout" parent="Theme.PlaylistMaker">
         <item name="android:background">@color/yp_black</item>
-        <item name="android:paddingHorizontal">@dimen/padding_horizontal</item>
     </style>
 
     <style name="BackImageView">
-        <item name="android:layout_gravity">center</item>
         <item name="tint">@color/yp_white</item>
     </style>
 
     <style name="TitleTextView">
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:textFontWeight">500</item>
-        <item name="android:textSize">@dimen/title_text_size</item>
+        <item name="android:textSize">22sp</item>
         <item name="android:textColor">@color/yp_white</item>
     </style>
 
+    <style name="Widget.Material3.Button.UnelevatedButton.MainActivityButton" parent="Widget.Material3.Button.UnelevatedButton">
+        <item name="android:backgroundTint">@color/yp_white</item>
+        <item name="android:textColor">@color/yp_black</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">10dp</item>
+        <item name="iconTint">@color/yp_black</item>
+    </style>
+
     <style name="SettingsItemTextView">
-        <item name="android:layout_gravity">center</item>
-        <item name="android:layout_weight">1</item>
         <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:textColor">@color/yp_white</item>
-        <item name="android:textSize">@dimen/settings_item_text_size</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
     <style name="SearchEditText">
         <item name="android:background">@drawable/edit_text_search_background</item>
-        <item name="android:drawablePadding">8dp</item>
         <item name="android:drawableTint">@color/yp_black</item>
         <item name="android:fontFamily">@font/ys_display_regular</item>
-        <item name="android:inputType">text</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:paddingHorizontal">12dp</item>
-        <item name="android:paddingVertical">8dp</item>
         <item name="android:textColor">@color/yp_black</item>
         <item name="android:textColorHint">@color/yp_black</item>
         <item name="android:textFontWeight">400</item>
@@ -42,7 +45,6 @@
     </style>
 
     <style name="SettingsItemImageView">
-        <item name="android:layout_gravity">center</item>
         <item name="tint">@color/yp_white</item>
     </style>
 

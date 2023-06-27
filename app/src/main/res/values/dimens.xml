@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="padding_horizontal">16dp</dimen>
-    <dimen name="button_corner_radius">16dp</dimen>
-    <dimen name="button_icon_padding">10dp</dimen>
-    <dimen name="title_text_size">22sp</dimen>
-    <dimen name="button_text_size">22sp</dimen>
-    <dimen name="settings_item_text_size">16sp</dimen>
     <dimen name="main_margin_top">16dp</dimen>
     <dimen name="settings_margin_top">42dp</dimen>
+    <dimen name="edit_text_drawable_padding">8dp</dimen>
+    <dimen name="edit_text_padding_horizontal">12dp</dimen>
+    <dimen name="edit_text_padding_vertical">8dp</dimen>
 </resources>
