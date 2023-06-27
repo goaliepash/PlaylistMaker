@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingHorizontal="@dimen/padding_horizontal">
+    android:paddingHorizontal="@dimen/padding_horizontal"
+    tools:context=".SettingsActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,19 +15,19 @@
 
         <ImageView
             android:id="@+id/image_view_back"
+            style="@style/BackImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:src="@drawable/ic_arrow_back" />
 
         <TextView
+            style="@style/TitleTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginStart="28dp"
-            android:text="@string/settings"
-            android:textColor="@color/yp_black"
-            android:textSize="@dimen/title_text_size" />
+            android:text="@string/settings" />
 
     </LinearLayout>
 
@@ -36,13 +38,12 @@
         android:orientation="horizontal">
 
         <TextView
+            style="@style/SettingsItemTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:text="@string/dark_theme"
-            android:textColor="@android:color/black"
-            android:textSize="@dimen/settings_item_text_size" />
+            android:text="@string/dark_theme" />
 
         <Switch
             android:layout_width="wrap_content"
@@ -58,15 +59,16 @@
         android:orientation="horizontal">
 
         <TextView
+            style="@style/SettingsItemTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:text="@string/share_app"
-            android:textColor="@android:color/black"
-            android:textSize="@dimen/settings_item_text_size" />
+            android:text="@string/share_app" />
 
         <ImageView
+            android:id="@+id/image_view_share_app"
+            style="@style/SettingsItemImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -81,15 +83,16 @@
         android:orientation="horizontal">
 
         <TextView
+            style="@style/SettingsItemTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:text="@string/write_to_support"
-            android:textColor="@android:color/black"
-            android:textSize="@dimen/settings_item_text_size" />
+            android:text="@string/write_to_support" />
 
         <ImageView
+            android:id="@+id/image_view_support"
+            style="@style/SettingsItemImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -104,15 +107,16 @@
         android:orientation="horizontal">
 
         <TextView
+            style="@style/SettingsItemTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:text="@string/terms_of_use"
-            android:textColor="@android:color/black"
-            android:textSize="@dimen/settings_item_text_size" />
+            android:text="@string/terms_of_use" />
 
         <ImageView
+            android:id="@+id/image_view_terms_of_use"
+            style="@style/SettingsItemImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
