@@ -17,4 +17,5 @@
     <string name="student_email">goaltenders@yandex.ru</string>
     <string name="message_to_developers">Спасибо разработчикам и разработчицам за крутое приложение!</string>
     <string name="yandex_offer_url">https://yandex.ru/legal/practicum_offer/</string>
+    <string name="artist_and_time">%1$s • %2$s</string>
 </resources>

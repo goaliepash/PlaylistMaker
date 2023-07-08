@@ -4,12 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingHorizontal="@dimen/padding_horizontal"
     tools:context=".SearchActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/margin_horizontal"
         android:layout_marginTop="14dp"
         android:orientation="horizontal">
 
@@ -36,6 +36,7 @@
         style="@style/SearchEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/margin_horizontal"
         android:layout_marginTop="24dp"
         android:drawableStart="@drawable/ic_search"
         android:drawableEnd="@drawable/ic_close"
@@ -45,5 +46,11 @@
         android:maxLines="1"
         android:paddingHorizontal="@dimen/edit_text_padding_horizontal"
         android:paddingVertical="@dimen/edit_text_padding_vertical" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_tracks"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp" />
 
 </LinearLayout>
