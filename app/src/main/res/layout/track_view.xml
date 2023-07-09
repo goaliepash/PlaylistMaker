@@ -17,7 +17,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginHorizontal="8dp"
+        android:layout_marginHorizontal="@dimen/offset_8"
         android:layout_weight="1"
         android:orientation="vertical">
 
@@ -41,6 +41,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        tools:src="@drawable/ic_arrow_forward" />
+        android:src="@drawable/ic_arrow_forward" />
 
 </LinearLayout>

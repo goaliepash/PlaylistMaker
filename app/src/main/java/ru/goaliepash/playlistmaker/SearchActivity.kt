@@ -146,7 +146,7 @@ class SearchActivity : AppCompatActivity() {
     private fun initRecyclerViewTracks() {
         recyclerViewTracks = findViewById(R.id.recycler_view_tracks)
         recyclerViewTracks.adapter = TrackAdapter(trackList)
-        recyclerViewTracks.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        recyclerViewTracks.layoutManager = LinearLayoutManager(this)
     }
 
     companion object {
