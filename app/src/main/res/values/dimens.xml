@@ -13,4 +13,5 @@
     <dimen name="offset_16">16dp</dimen>
     <dimen name="offset_24">24dp</dimen>
     <dimen name="offset_28">28dp</dimen>
+    <dimen name="offset_20">20dp</dimen>
 </resources>
