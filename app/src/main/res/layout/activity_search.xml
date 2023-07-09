@@ -4,13 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingHorizontal="@dimen/padding_horizontal"
     tools:context=".SearchActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
+        android:layout_marginHorizontal="@dimen/margin_horizontal"
+        android:layout_marginTop="@dimen/offset_16"
         android:orientation="horizontal">
 
         <ImageView
@@ -19,14 +19,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="@dimen/offset_4"
             android:src="@drawable/ic_arrow_back" />
 
         <TextView
             style="@style/TitleTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="28dp"
+            android:layout_marginStart="@dimen/offset_28"
             android:text="@string/search" />
 
     </LinearLayout>
@@ -36,7 +36,8 @@
         style="@style/SearchEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginHorizontal="@dimen/margin_horizontal"
+        android:layout_marginTop="@dimen/offset_24"
         android:drawableStart="@drawable/ic_search"
         android:drawableEnd="@drawable/ic_close"
         android:drawablePadding="@dimen/edit_text_drawable_padding"
@@ -45,5 +46,11 @@
         android:maxLines="1"
         android:paddingHorizontal="@dimen/edit_text_padding_horizontal"
         android:paddingVertical="@dimen/edit_text_padding_vertical" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_tracks"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/offset_8" />
 
 </LinearLayout>

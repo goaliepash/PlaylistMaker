@@ -8,5 +8,5 @@
     <color name="yp_background">#801A1B22</color>
     <color name="yp_red">#F56B6C</color>
     <color name="cover_place_holder_fill_color">#AEAFB4</color>
-    <color name="item_fill_color">#AEAFB4</color>
+    <color name="item_fill_color">#FFFFFF</color>
 </resources>
