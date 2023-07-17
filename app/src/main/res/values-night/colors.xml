@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="yp_blue">#3772E7</color>
-    <color name="yp_white">#FFFFFF</color>
-    <color name="yp_black">#1A1B22</color>
-    <color name="yp_text_gray">#AEAFB4</color>
-    <color name="yp_light_gray">#E6E8EB</color>
-    <color name="yp_background">#801A1B22</color>
-    <color name="yp_red">#F56B6C</color>
-    <color name="cover_place_holder_fill_color">#AEAFB4</color>
-    <color name="item_fill_color">#FFFFFF</color>
+    <color name="cover_place_holder_fill_color">@color/yp_text_gray</color>
+    <color name="item_fill_color">@color/yp_white</color>
+    <color name="placeholder_message_text_color">@color/yp_white</color>
+    <color name="refresh_button_background_tint">@color/yp_white</color>
+    <color name="refresh_button_text_color">@color/yp_black</color>
 </resources>

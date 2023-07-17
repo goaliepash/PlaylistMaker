@@ -7,52 +7,37 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import ru.goaliepash.playlistmaker.model.SearchResponse
 import ru.goaliepash.playlistmaker.model.Track
 
 class SearchActivity : AppCompatActivity() {
 
-    private val trackList = listOf(
-        Track(
-            "Smells Like Teen Spirit",
-            "Nirvana",
-            "5:01",
-            "https://is5-ssl.mzstatic.com/image/thumb/Music115/v4/7b/58/c2/7b58c21a-2b51-2bb2-e59a-9bb9b96ad8c3/00602567924166.rgb.jpg/100x100bb.jpg"
-        ),
-        Track(
-            "Billie Jean",
-            "Michael Jackson",
-            "4:35",
-            "https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/3d/9d/38/3d9d3811-71f0-3a0e-1ada-3004e56ff852/827969428726.jpg/100x100bb.jpg"
-        ),
-        Track(
-            "Stayin' Alive",
-            "Bee Gees",
-            "4:10",
-            "https://is4-ssl.mzstatic.com/image/thumb/Music115/v4/1f/80/1f/1f801fc1-8c0f-ea3e-d3e5-387c6619619e/16UMGIM86640.rgb.jpg/100x100bb.jpg"
-        ),
-        Track(
-            "Whole Lotta Love",
-            "Led Zeppelin",
-            "5:33",
-            "https://is2-ssl.mzstatic.com/image/thumb/Music62/v4/7e/17/e3/7e17e33f-2efa-2a36-e916-7f808576cf6b/mzm.fyigqcbs.jpg/100x100bb.jpg"
-        ),
-        Track(
-            "Sweet Child O'Mine",
-            "Guns N' Roses",
-            "5:03",
-            "https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/a0/4d/c4/a04dc484-03cc-02aa-fa82-5334fcb4bc16/18UMGIM24878.rgb.jpg/100x100bb.jpg"
-        )
-    )
+    private val itunesRepository = ItunesRepository(ItunesService.getItunesApi())
+    private val tracks = ArrayList<Track>()
+    private val trackAdapter = TrackAdapter(tracks)
 
     private lateinit var imageViewBack: ImageView
     private lateinit var editTextSearch: EditText
     private lateinit var recyclerViewTracks: RecyclerView
+    private lateinit var linearLayoutPlaceholderMessage: LinearLayout
+    private lateinit var imageViewPlaceholderMessage: ImageView
+    private lateinit var textViewPlaceholderMessage: TextView
+    private lateinit var buttonPlaceholderRefresh: Button
 
     private var textSearch: String = ""
 
@@ -76,6 +61,7 @@ class SearchActivity : AppCompatActivity() {
         initImageViewBack()
         initEditTextSearch()
         initRecyclerViewTracks()
+        initLinearLayoutPlaceholderMessage()
     }
 
     private fun initImageViewBack() {
@@ -100,13 +86,15 @@ class SearchActivity : AppCompatActivity() {
             override fun afterTextChanged(p0: Editable?) {}
         }
         editTextSearch.addTextChangedListener(searchTextWatcher)
-        editTextSearch.onDrawableEndClick {
-            textSearch = ""
-            editTextSearch.setText(textSearch)
-            setDrawableEndVisibility(false, editTextSearch)
-            hideKeyboard(editTextSearch)
-        }
+        editTextSearch.onDrawableEndClick { clickOnEditTextSearchClear() }
         setDrawableEndVisibility(false, editTextSearch)
+        editTextSearch.setOnEditorActionListener { _, i, _ ->
+            if (i == EditorInfo.IME_ACTION_DONE) {
+                search(textSearch)
+                true
+            }
+            false
+        }
     }
 
     private fun setDrawableEndVisibility(isVisible: Boolean, editText: EditText) {
@@ -145,8 +133,78 @@ class SearchActivity : AppCompatActivity() {
 
     private fun initRecyclerViewTracks() {
         recyclerViewTracks = findViewById(R.id.recycler_view_tracks)
-        recyclerViewTracks.adapter = TrackAdapter(trackList)
+        recyclerViewTracks.adapter = trackAdapter
         recyclerViewTracks.layoutManager = LinearLayoutManager(this)
+    }
+
+    private fun initLinearLayoutPlaceholderMessage() {
+        linearLayoutPlaceholderMessage = findViewById(R.id.linear_layout_placeholder_message)
+        imageViewPlaceholderMessage = findViewById(R.id.image_view_placeholder_message)
+        textViewPlaceholderMessage = findViewById(R.id.text_view_placeholder_message)
+        initButtonPlaceholderRefresh()
+    }
+
+    private fun initButtonPlaceholderRefresh() {
+        buttonPlaceholderRefresh = findViewById(R.id.button_placeholder_refresh)
+        buttonPlaceholderRefresh.setOnClickListener { search(textSearch) }
+    }
+
+    private fun search(term: String) {
+        itunesRepository
+            .getSearch(term)
+            .enqueue(object : Callback<SearchResponse> {
+                override fun onResponse(call: Call<SearchResponse>, response: Response<SearchResponse>) {
+                    when (response.code()) {
+                        200 -> {
+                            if (response.body()?.results?.isNotEmpty() == true) {
+                                showTracks(response.body()?.results!!)
+                            } else {
+                                showNothingWasFoundPlaceholder()
+                            }
+                        }
+
+                        else -> showErrorMessagePlaceholder(R.drawable.ic_search_error, R.string.something_went_wrong)
+                    }
+                }
+
+                override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
+                    showErrorMessagePlaceholder(R.drawable.ic_search_no_internet, R.string.no_internet_connection)
+                }
+            })
+    }
+
+    private fun showTracks(results: List<Track>) {
+        recyclerViewTracks.visibility = View.VISIBLE
+        linearLayoutPlaceholderMessage.visibility = View.GONE
+        tracks.clear()
+        tracks.addAll(results)
+        trackAdapter.notifyDataSetChanged()
+    }
+
+    private fun showNothingWasFoundPlaceholder() {
+        recyclerViewTracks.visibility = View.GONE
+        linearLayoutPlaceholderMessage.visibility = View.VISIBLE
+        imageViewPlaceholderMessage.setBackgroundResource(R.drawable.ic_search_error)
+        textViewPlaceholderMessage.text = getString(R.string.nothing_was_found)
+        buttonPlaceholderRefresh.visibility = View.GONE
+    }
+
+    private fun showErrorMessagePlaceholder(@DrawableRes backgroundResource: Int, @StringRes text: Int) {
+        recyclerViewTracks.visibility = View.GONE
+        linearLayoutPlaceholderMessage.visibility = View.VISIBLE
+        imageViewPlaceholderMessage.setBackgroundResource(backgroundResource)
+        textViewPlaceholderMessage.text = getString(text)
+        buttonPlaceholderRefresh.visibility = View.VISIBLE
+    }
+
+    private fun clickOnEditTextSearchClear() {
+        textSearch = ""
+        editTextSearch.setText(textSearch)
+        setDrawableEndVisibility(false, editTextSearch)
+        hideKeyboard(editTextSearch)
+        tracks.clear()
+        trackAdapter.notifyDataSetChanged()
+        linearLayoutPlaceholderMessage.visibility = View.GONE
     }
 
     companion object {

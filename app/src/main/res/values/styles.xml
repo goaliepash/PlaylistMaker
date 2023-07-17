@@ -62,4 +62,18 @@
         <item name="android:ellipsize">end</item>
     </style>
 
+    <style name="PlaceholderMessageTextView">
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:lineHeight">22sp</item>
+        <item name="android:textColor">@color/placeholder_message_text_color</item>
+        <item name="android:textSize">19sp</item>
+    </style>
+
+    <style name="PlaceholderRefreshButton">
+        <item name="android:backgroundTint">@color/refresh_button_background_tint</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textColor">@color/refresh_button_text_color</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
 </resources>
