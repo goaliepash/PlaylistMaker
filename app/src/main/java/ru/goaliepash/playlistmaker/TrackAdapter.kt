@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import ru.goaliepash.playlistmaker.model.Track
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class TrackAdapter(private val trackList: List<Track>) : RecyclerView.Adapter<TrackAdapter.TrackViewHolder>() {
 
@@ -46,16 +48,21 @@ class TrackAdapter(private val trackList: List<Track>) : RecyclerView.Adapter<Tr
                 .transform(RoundedCorners(dpToPx(2.0f, itemView.context)))
                 .into(imageViewCover)
             textViewTrackName.text = model.trackName
-            setTextViewArtistAndTime(model.artistName, model.trackTime)
+            setTextViewArtistAndTime(model.artistName, model.trackTimeMillis)
         }
 
-        private fun setTextViewArtistAndTime(artistName: String, trackTime: String) {
-            val artistAndTime = itemView.context.getString(R.string.artist_and_time, artistName, trackTime)
+        private fun setTextViewArtistAndTime(artistName: String, trackTimeMillis: Long) {
+            val formattedTrackTime = SimpleDateFormat(TIME_FORMAT, Locale.getDefault()).format(trackTimeMillis)
+            val artistAndTime = itemView.context.getString(R.string.artist_and_time, artistName, formattedTrackTime)
             textViewArtistAndTime.text = artistAndTime
         }
 
         private fun dpToPx(dp: Float, context: Context): Int {
             return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.resources.displayMetrics).toInt()
+        }
+
+        companion object {
+            private const val TIME_FORMAT = "mm:ss"
         }
     }
 }

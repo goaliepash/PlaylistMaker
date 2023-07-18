@@ -13,7 +13,7 @@
         style="@style/TitleTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
+        android:layout_marginTop="@dimen/offset_16"
         android:text="@string/playlist_maker"
         android:textColor="@color/yp_white" />
 
@@ -22,7 +22,7 @@
         style="@style/Widget.Material3.Button.UnelevatedButton.MainActivityButton"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="@dimen/offset_40"
         android:layout_weight="1"
         android:text="@string/search"
         app:icon="@drawable/ic_search" />
@@ -43,7 +43,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/main_margin_top"
-        android:layout_marginBottom="28dp"
+        android:layout_marginBottom="@dimen/offset_28"
         android:layout_weight="1"
         android:text="@string/settings"
         app:icon="@drawable/ic_settings" />

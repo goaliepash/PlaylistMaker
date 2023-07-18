@@ -42,15 +42,52 @@
         android:drawableEnd="@drawable/ic_close"
         android:drawablePadding="@dimen/edit_text_drawable_padding"
         android:hint="@string/search"
+        android:imeOptions="actionDone"
         android:inputType="text"
         android:maxLines="1"
         android:paddingHorizontal="@dimen/edit_text_padding_horizontal"
-        android:paddingVertical="@dimen/edit_text_padding_vertical" />
+        android:paddingVertical="@dimen/edit_text_padding_vertical"
+        android:singleLine="true" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_tracks"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/offset_8" />
+
+    <LinearLayout
+        android:id="@+id/linear_layout_placeholder_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/offset_100"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/image_view_placeholder_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:src="@drawable/ic_search_no_internet" />
+
+        <TextView
+            android:id="@+id/text_view_placeholder_message"
+            style="@style/PlaceholderMessageTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/offset_24"
+            android:layout_marginTop="@dimen/offset_16"
+            android:gravity="center_horizontal|top"
+            tools:text="@string/no_internet_connection" />
+
+        <Button
+            android:id="@+id/button_placeholder_refresh"
+            style="@style/PlaceholderRefreshButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/offset_24"
+            android:text="@string/refresh" />
+
+    </LinearLayout>
 
 </LinearLayout>
