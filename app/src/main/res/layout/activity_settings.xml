@@ -31,26 +31,13 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/switch_material_dark_theme"
+        style="@style/SettingsSwitcher"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginTop="@dimen/offset_60"
-        android:orientation="horizontal">
-
-        <TextView
-            style="@style/SettingsItemTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:text="@string/dark_theme" />
-
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center" />
-
-    </LinearLayout>
+        android:text="@string/dark_theme" />
 
     <LinearLayout
         android:layout_width="match_parent"

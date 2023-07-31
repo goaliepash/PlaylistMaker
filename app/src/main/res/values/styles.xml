@@ -6,14 +6,14 @@
     </style>
 
     <style name="BackImageView">
-        <item name="tint">@color/yp_black</item>
+        <item name="tint">@color/back_image_view_tint</item>
     </style>
 
     <style name="TitleTextView">
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:textFontWeight">500</item>
         <item name="android:textSize">22sp</item>
-        <item name="android:textColor">@color/yp_black</item>
+        <item name="android:textColor">@color/title_text_color</item>
     </style>
 
     <style name="Widget.Material3.Button.UnelevatedButton.MainActivityButton" parent="Widget.Material3.Button.UnelevatedButton">
@@ -30,7 +30,7 @@
 
     <style name="SettingsItemTextView">
         <item name="android:fontFamily">@font/ys_display_regular</item>
-        <item name="android:textColor">@color/yp_black</item>
+        <item name="android:textColor">@color/settings_item_text_color</item>
         <item name="android:textSize">16sp</item>
     </style>
 
@@ -74,6 +74,12 @@
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:textColor">@color/refresh_button_text_color</item>
         <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="SettingsSwitcher">
+        <item name="thumbTint">@color/settings_switcher_thumb_tint</item>
+        <item name="trackTint">@color/settings_switcher_track_tint</item>
+        <item name="android:textAppearance">@style/SettingsItemTextView</item>
     </style>
 
 </resources>

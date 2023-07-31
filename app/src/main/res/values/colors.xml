@@ -7,10 +7,16 @@
     <color name="yp_light_gray">#E6E8EB</color>
     <color name="yp_background">#801A1B22</color>
     <color name="yp_red">#F56B6C</color>
+    <color name="yp_blue_light">#9FBBF3</color>
 
     <color name="cover_place_holder_fill_color">@color/yp_text_gray</color>
     <color name="item_fill_color">@color/yp_text_gray</color>
     <color name="placeholder_message_text_color">@color/yp_black</color>
     <color name="refresh_button_background_tint">@color/yp_black</color>
     <color name="refresh_button_text_color">@color/yp_white</color>
+    <color name="settings_item_text_color">@color/yp_black</color>
+    <color name="back_image_view_tint">@color/yp_black</color>
+    <color name="title_text_color">@color/yp_black</color>
+    <color name="settings_switcher_thumb_tint">@color/yp_text_gray</color>
+    <color name="settings_switcher_track_tint">@color/yp_light_gray</color>
 </resources>

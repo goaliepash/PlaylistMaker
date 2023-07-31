@@ -15,7 +15,10 @@ import ru.goaliepash.playlistmaker.model.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class TrackAdapter(private val trackList: List<Track>) : RecyclerView.Adapter<TrackAdapter.TrackViewHolder>() {
+class TrackAdapter(
+    private val trackList: List<Track>,
+    private val onTrackClickListener: OnTrackClickListener
+) : RecyclerView.Adapter<TrackAdapter.TrackViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.track_view, parent, false)
@@ -26,6 +29,7 @@ class TrackAdapter(private val trackList: List<Track>) : RecyclerView.Adapter<Tr
 
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
         holder.bind(trackList[position])
+        holder.itemView.setOnClickListener { onTrackClickListener.onTrackClick(trackList[position]) }
     }
 
     class TrackViewHolder(itemView: View) : ViewHolder(itemView) {

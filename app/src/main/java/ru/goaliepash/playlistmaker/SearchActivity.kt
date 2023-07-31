@@ -14,6 +14,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
@@ -24,13 +25,17 @@ import retrofit2.Callback
 import retrofit2.Response
 import ru.goaliepash.playlistmaker.model.SearchResponse
 import ru.goaliepash.playlistmaker.model.Track
+import java.util.LinkedList
 
 class SearchActivity : AppCompatActivity() {
 
     private val itunesRepository = ItunesRepository(ItunesService.getItunesApi())
     private val tracks = ArrayList<Track>()
-    private val trackAdapter = TrackAdapter(tracks)
+    private val searchHistoryTracks = LinkedList<Track>()
 
+    private lateinit var searchHistory: SearchHistory
+    private lateinit var trackAdapter: TrackAdapter
+    private lateinit var searchHistoryTrackAdapter: TrackAdapter
     private lateinit var imageViewBack: ImageView
     private lateinit var editTextSearch: EditText
     private lateinit var recyclerViewTracks: RecyclerView
@@ -38,12 +43,17 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var imageViewPlaceholderMessage: ImageView
     private lateinit var textViewPlaceholderMessage: TextView
     private lateinit var buttonPlaceholderRefresh: Button
+    private lateinit var linearLayoutSearchHistory: LinearLayout
+    private lateinit var textViewSearchHistory: TextView
+    private lateinit var recyclerViewSearchHistory: RecyclerView
+    private lateinit var buttonClearSearchHistory: Button
 
     private var textSearch: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
+        searchHistory = SearchHistory(getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE))
         initUI()
     }
 
@@ -62,6 +72,7 @@ class SearchActivity : AppCompatActivity() {
         initEditTextSearch()
         initRecyclerViewTracks()
         initLinearLayoutPlaceholderMessage()
+        initSearchHistory()
     }
 
     private fun initImageViewBack() {
@@ -71,10 +82,22 @@ class SearchActivity : AppCompatActivity() {
 
     private fun initEditTextSearch() {
         editTextSearch = findViewById(R.id.edit_text_search)
+        editTextSearch.setOnFocusChangeListener { _, b ->
+            if (b && editTextSearch.text.isEmpty()) {
+                showSearchHistory()
+            } else {
+                linearLayoutSearchHistory.visibility = View.GONE
+            }
+        }
         val searchTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                if (editTextSearch.hasFocus() && p0?.isEmpty() == true) {
+                    showSearchHistory()
+                } else {
+                    linearLayoutSearchHistory.visibility = View.GONE
+                }
                 if (p0.isNullOrEmpty()) {
                     setDrawableEndVisibility(false, editTextSearch)
                 } else {
@@ -86,7 +109,7 @@ class SearchActivity : AppCompatActivity() {
             override fun afterTextChanged(p0: Editable?) {}
         }
         editTextSearch.addTextChangedListener(searchTextWatcher)
-        editTextSearch.onDrawableEndClick { clickOnEditTextSearchClear() }
+        editTextSearch.onDrawableEndClick { onEditTextSearchClearClick() }
         setDrawableEndVisibility(false, editTextSearch)
         editTextSearch.setOnEditorActionListener { _, i, _ ->
             if (i == EditorInfo.IME_ACTION_DONE) {
@@ -95,6 +118,46 @@ class SearchActivity : AppCompatActivity() {
             }
             false
         }
+    }
+
+    private fun initRecyclerViewTracks() {
+        recyclerViewTracks = findViewById(R.id.recycler_view_tracks)
+        val onTrackClickListener = OnTrackClickListener { track -> onTrackClick(track) }
+        trackAdapter = TrackAdapter(tracks, onTrackClickListener)
+        recyclerViewTracks.adapter = trackAdapter
+        recyclerViewTracks.layoutManager = LinearLayoutManager(this)
+    }
+
+    private fun initLinearLayoutPlaceholderMessage() {
+        linearLayoutPlaceholderMessage = findViewById(R.id.linear_layout_placeholder_message)
+        imageViewPlaceholderMessage = findViewById(R.id.image_view_placeholder_message)
+        textViewPlaceholderMessage = findViewById(R.id.text_view_placeholder_message)
+        initButtonPlaceholderRefresh()
+    }
+
+    private fun initButtonPlaceholderRefresh() {
+        buttonPlaceholderRefresh = findViewById(R.id.button_placeholder_refresh)
+        buttonPlaceholderRefresh.setOnClickListener { search(textSearch) }
+    }
+
+    private fun initSearchHistory() {
+        linearLayoutSearchHistory = findViewById(R.id.linear_layout_search_history)
+        textViewSearchHistory = findViewById(R.id.text_view_search_history)
+        initRecyclerViewSearchHistory()
+        initButtonClearHistory()
+    }
+
+    private fun initRecyclerViewSearchHistory() {
+        recyclerViewSearchHistory = findViewById(R.id.recycler_view_search_history)
+        val onTrackClickListener = OnTrackClickListener { track -> onTrackClick(track) }
+        searchHistoryTrackAdapter = TrackAdapter(searchHistoryTracks, onTrackClickListener)
+        recyclerViewSearchHistory.adapter = searchHistoryTrackAdapter
+        recyclerViewSearchHistory.layoutManager = LinearLayoutManager(this)
+    }
+
+    private fun initButtonClearHistory() {
+        buttonClearSearchHistory = findViewById(R.id.button_clear_search_history)
+        buttonClearSearchHistory.setOnClickListener { onButtonClearSearchHistoryClick() }
     }
 
     private fun setDrawableEndVisibility(isVisible: Boolean, editText: EditText) {
@@ -106,8 +169,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun hideKeyboard(editText: EditText) {
-        val inputMethodManager =
-            getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
         inputMethodManager?.hideSoftInputFromWindow(editText.windowToken, 0)
     }
 
@@ -129,24 +191,6 @@ class SearchActivity : AppCompatActivity() {
             }
             return@setOnTouchListener false
         }
-    }
-
-    private fun initRecyclerViewTracks() {
-        recyclerViewTracks = findViewById(R.id.recycler_view_tracks)
-        recyclerViewTracks.adapter = trackAdapter
-        recyclerViewTracks.layoutManager = LinearLayoutManager(this)
-    }
-
-    private fun initLinearLayoutPlaceholderMessage() {
-        linearLayoutPlaceholderMessage = findViewById(R.id.linear_layout_placeholder_message)
-        imageViewPlaceholderMessage = findViewById(R.id.image_view_placeholder_message)
-        textViewPlaceholderMessage = findViewById(R.id.text_view_placeholder_message)
-        initButtonPlaceholderRefresh()
-    }
-
-    private fun initButtonPlaceholderRefresh() {
-        buttonPlaceholderRefresh = findViewById(R.id.button_placeholder_refresh)
-        buttonPlaceholderRefresh.setOnClickListener { search(textSearch) }
     }
 
     private fun search(term: String) {
@@ -176,6 +220,7 @@ class SearchActivity : AppCompatActivity() {
     private fun showTracks(results: List<Track>) {
         recyclerViewTracks.visibility = View.VISIBLE
         linearLayoutPlaceholderMessage.visibility = View.GONE
+        linearLayoutSearchHistory.visibility = View.GONE
         tracks.clear()
         tracks.addAll(results)
         trackAdapter.notifyDataSetChanged()
@@ -184,6 +229,7 @@ class SearchActivity : AppCompatActivity() {
     private fun showNothingWasFoundPlaceholder() {
         recyclerViewTracks.visibility = View.GONE
         linearLayoutPlaceholderMessage.visibility = View.VISIBLE
+        linearLayoutSearchHistory.visibility = View.GONE
         imageViewPlaceholderMessage.setBackgroundResource(R.drawable.ic_search_error)
         textViewPlaceholderMessage.text = getString(R.string.nothing_was_found)
         buttonPlaceholderRefresh.visibility = View.GONE
@@ -192,12 +238,25 @@ class SearchActivity : AppCompatActivity() {
     private fun showErrorMessagePlaceholder(@DrawableRes backgroundResource: Int, @StringRes text: Int) {
         recyclerViewTracks.visibility = View.GONE
         linearLayoutPlaceholderMessage.visibility = View.VISIBLE
+        linearLayoutSearchHistory.visibility = View.GONE
         imageViewPlaceholderMessage.setBackgroundResource(backgroundResource)
         textViewPlaceholderMessage.text = getString(text)
         buttonPlaceholderRefresh.visibility = View.VISIBLE
     }
 
-    private fun clickOnEditTextSearchClear() {
+    private fun showSearchHistory() {
+        val tracks = searchHistory.get()
+        if (tracks.isNotEmpty()) {
+            recyclerViewTracks.visibility = View.GONE
+            linearLayoutPlaceholderMessage.visibility = View.GONE
+            linearLayoutSearchHistory.visibility = View.VISIBLE
+            searchHistoryTracks.clear()
+            searchHistoryTracks.addAll(tracks)
+            searchHistoryTrackAdapter.notifyDataSetChanged()
+        }
+    }
+
+    private fun onEditTextSearchClearClick() {
         textSearch = ""
         editTextSearch.setText(textSearch)
         setDrawableEndVisibility(false, editTextSearch)
@@ -205,9 +264,32 @@ class SearchActivity : AppCompatActivity() {
         tracks.clear()
         trackAdapter.notifyDataSetChanged()
         linearLayoutPlaceholderMessage.visibility = View.GONE
+        showSearchHistory()
+    }
+
+    private fun onTrackClick(track: Track) {
+        searchHistoryTracks.clear()
+        searchHistoryTracks.addAll(searchHistory.get())
+        if (searchHistoryTracks.contains(track)) {
+            searchHistoryTracks.remove(track)
+        } else if (searchHistoryTracks.size == MAX_SIZE_OF_SEARCH_HISTORY_TRACKS) {
+            searchHistoryTracks.removeAt(MAX_SIZE_OF_SEARCH_HISTORY_TRACKS - 1)
+        }
+        searchHistoryTracks.add(0, track)
+        searchHistory.add(searchHistoryTracks)
+        Toast.makeText(this, getString(R.string.save_track_in_search_history, track.trackName), Toast.LENGTH_SHORT).show()
+    }
+
+    private fun onButtonClearSearchHistoryClick() {
+        searchHistory.clear()
+        linearLayoutSearchHistory.visibility = View.GONE
+        searchHistoryTracks.clear()
+        searchHistoryTrackAdapter.notifyDataSetChanged()
     }
 
     companion object {
         private const val SEARCH_STRING = "SEARCH_STRING"
+        private const val PLAYLIST_MAKER_PREFERENCES = "PLAYLIST_MAKER_PREFERENCES"
+        private const val MAX_SIZE_OF_SEARCH_HISTORY_TRACKS = 10
     }
 }

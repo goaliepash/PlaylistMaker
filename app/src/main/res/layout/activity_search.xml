@@ -90,4 +90,41 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/linear_layout_search_history"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/offset_24"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/text_view_search_history"
+            style="@style/PlaceholderMessageTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="@dimen/offset_16"
+            android:text="@string/you_searched"
+            android:visibility="visible" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_search_history"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/offset_8" />
+
+        <Button
+            android:id="@+id/button_clear_search_history"
+            style="@style/PlaceholderRefreshButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/offset_24"
+            android:text="@string/clear_history"
+            android:visibility="visible" />
+
+    </LinearLayout>
+
 </LinearLayout>
