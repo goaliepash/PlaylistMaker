@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -19,6 +20,7 @@ class SettingsActivity : AppCompatActivity() {
         initImageViewShareApp()
         initImageViewSupport()
         initImageViewTermsOfUse()
+        initSwitchMaterialDarkTheme()
     }
 
     private fun initImageViewBack() {
@@ -65,6 +67,14 @@ class SettingsActivity : AppCompatActivity() {
             action = Intent.ACTION_VIEW
             data = Uri.parse(getString(R.string.yandex_offer_url))
             startActivity(this)
+        }
+    }
+
+    private fun initSwitchMaterialDarkTheme() {
+        val switchMaterialDarkTheme = findViewById<SwitchMaterial>(R.id.switch_material_dark_theme)
+        switchMaterialDarkTheme.apply {
+            isChecked = (applicationContext as App).darkTheme
+            setOnCheckedChangeListener { _, checked -> (applicationContext as App).switchTheme(checked) }
         }
     }
 }
