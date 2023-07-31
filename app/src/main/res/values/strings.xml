@@ -22,4 +22,7 @@
     <string name="something_went_wrong">Что-то пошло не так…</string>
     <string name="no_internet_connection">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
     <string name="refresh">Обновить</string>
+    <string name="clear_history">Очистить историю</string>
+    <string name="you_searched">Вы искали</string>
+    <string name="save_track_in_search_history">Композиция \"%1$s\" сохранена в историю поиска."</string>
 </resources>
