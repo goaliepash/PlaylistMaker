@@ -25,4 +25,10 @@
     <string name="clear_history">Очистить историю</string>
     <string name="you_searched">Вы искали</string>
     <string name="save_track_in_search_history">Композиция \"%1$s\" сохранена в историю поиска."</string>
+    <string name="country">Страна</string>
+    <string name="genre">Жанр</string>
+    <string name="year">Год</string>
+    <string name="album">Альбом</string>
+    <string name="length">Длительность</string>
+    <string name="mock_track_time">0:30</string>
 </resources>

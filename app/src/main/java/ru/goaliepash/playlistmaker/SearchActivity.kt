@@ -2,6 +2,7 @@ package ru.goaliepash.playlistmaker
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -14,7 +15,6 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
@@ -277,7 +277,8 @@ class SearchActivity : AppCompatActivity() {
         }
         searchHistoryTracks.add(0, track)
         searchHistory.add(searchHistoryTracks)
-        Toast.makeText(this, getString(R.string.save_track_in_search_history, track.trackName), Toast.LENGTH_SHORT).show()
+        openTrackActivity(track)
+        searchHistoryTrackAdapter.notifyDataSetChanged()
     }
 
     private fun onButtonClearSearchHistoryClick() {
@@ -285,6 +286,13 @@ class SearchActivity : AppCompatActivity() {
         linearLayoutSearchHistory.visibility = View.GONE
         searchHistoryTracks.clear()
         searchHistoryTrackAdapter.notifyDataSetChanged()
+    }
+
+    private fun openTrackActivity(track: Track) {
+        Intent(this, AudioPlayerActivity::class.java).apply {
+            putExtra(AudioPlayerActivity.EXTRA_TRACK, track)
+            startActivity(this)
+        }
     }
 
     companion object {

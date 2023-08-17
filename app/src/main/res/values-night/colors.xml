@@ -10,4 +10,14 @@
     <color name="title_text_color">@color/yp_white</color>
     <color name="settings_switcher_thumb_tint">@color/yp_blue</color>
     <color name="settings_switcher_track_tint">@color/yp_blue_light</color>
+    <color name="track_info_title_text_color">@color/yp_text_gray</color>
+    <color name="track_info_value_text_color">@color/yp_white</color>
+    <color name="track_time_text_color">@color/yp_white</color>
+    <color name="add_to_track_list_fill_color_1">@color/yp_white</color>
+    <color name="add_to_track_list_fill_color_2">@color/yp_white</color>
+    <color name="heart_fill_color_1">@color/yp_white</color>
+    <color name="heart_fill_color_2">@color/yp_white</color>
+    <color name="play_fill_color">@color/yp_white</color>
+    <color name="track_artist_text_color">@color/yp_white</color>
+    <color name="track_name_info_text_color">@color/yp_white</color>
 </resources>
