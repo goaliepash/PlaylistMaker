@@ -1,9 +1,7 @@
 package ru.goaliepash.playlistmaker
 
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import android.util.TypedValue
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -68,12 +66,8 @@ class AudioPlayerActivity : AppCompatActivity() {
             .with(this)
             .load(artworkUrl512)
             .placeholder(R.drawable.ic_cover_track_info_place_holder)
-            .transform(RoundedCorners(dpToPx(8.0f, this)))
+            .transform(RoundedCorners(resources.getDimensionPixelSize(R.dimen.offset_8)))
             .into(imageViewCover)
-    }
-
-    private fun dpToPx(dp: Float, context: Context): Int {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.resources.displayMetrics).toInt()
     }
 
     private fun initTextViewTrackName() {
@@ -94,7 +88,7 @@ class AudioPlayerActivity : AppCompatActivity() {
 
     private fun initTextViewAlbumValue() {
         textViewAlbumValue = findViewById(R.id.text_view_album_value)
-        textViewAlbumValue.text = track.collectionName ?: ""
+        textViewAlbumValue.text = track.collectionName.orEmpty()
     }
 
     private fun initTextViewYearValue() {
@@ -108,12 +102,12 @@ class AudioPlayerActivity : AppCompatActivity() {
 
     private fun initTextViewGenreValue() {
         textViewGenreValue = findViewById(R.id.text_view_genre_value)
-        textViewGenreValue.text = track.primaryGenreName ?: ""
+        textViewGenreValue.text = track.primaryGenreName.orEmpty()
     }
 
     private fun initTextViewCountryValue() {
         textViewCountryValue = findViewById(R.id.text_view_country_value)
-        textViewCountryValue.text = track.country ?: ""
+        textViewCountryValue.text = track.country.orEmpty()
     }
 
     companion object {

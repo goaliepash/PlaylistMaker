@@ -25,7 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="end"
-        app:constraint_referenced_tags="length, album, year, genre, country" />
+        app:constraint_referenced_tags="length_title, album_title, year_title, genre_title, country_title" />
 
     <ImageView
         android:id="@+id/image_view_back"
@@ -78,7 +78,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/offset_4"
         android:src="@drawable/ic_play"
-        app:layout_constraintBottom_toTopOf="@id/text_view_length_title"
+        app:layout_constraintBottom_toTopOf="@id/barrier_length"
         app:layout_constraintEnd_toStartOf="@id/image_view_like"
         app:layout_constraintStart_toEndOf="@id/image_view_add_to_track_list"
         app:layout_constraintTop_toBottomOf="@id/text_view_artist" />
@@ -89,7 +89,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/offset_8"
         android:src="@drawable/ic_add_to_track_list"
-        app:layout_constraintBottom_toTopOf="@id/text_view_length_title"
+        app:layout_constraintBottom_toTopOf="@id/barrier_length"
         app:layout_constraintStart_toEndOf="@id/guide_line_start"
         app:layout_constraintTop_toBottomOf="@id/text_view_artist" />
 
@@ -99,7 +99,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/offset_8"
         android:src="@drawable/ic_heart"
-        app:layout_constraintBottom_toTopOf="@id/text_view_length_title"
+        app:layout_constraintBottom_toTopOf="@id/barrier_length"
         app:layout_constraintEnd_toStartOf="@id/guide_line_end"
         app:layout_constraintTop_toBottomOf="@id/text_view_artist" />
 
@@ -114,6 +114,13 @@
         app:layout_constraintTop_toBottomOf="@id/image_view_play_pause"
         tools:text="@string/mock_track_time" />
 
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier_length"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="top"
+        app:constraint_referenced_tags="length_title, length_value" />
+
     <TextView
         android:id="@+id/text_view_length_title"
         style="@style/TrackInfoTitleTextView"
@@ -121,9 +128,29 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/offset_16"
         android:text="@string/length"
-        app:layout_constraintBottom_toTopOf="@id/text_view_album_title"
+        app:layout_constraintBottom_toTopOf="@id/barrier_album"
         app:layout_constraintStart_toEndOf="@id/guide_line_start"
-        app:layout_constraintTag="length" />
+        app:layout_constraintTag="length_title" />
+
+    <TextView
+        android:id="@+id/text_view_length_value"
+        style="@style/TrackInfoValueTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/offset_16"
+        android:gravity="end"
+        app:layout_constraintBottom_toBottomOf="@id/text_view_length_title"
+        app:layout_constraintEnd_toStartOf="@id/guide_line_end"
+        app:layout_constraintStart_toEndOf="@id/barrier_info_titles"
+        app:layout_constraintTag="length_value"
+        tools:text="5:35" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier_album"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="top"
+        app:constraint_referenced_tags="album_title, album_value" />
 
     <TextView
         android:id="@+id/text_view_album_title"
@@ -132,9 +159,29 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/offset_16"
         android:text="@string/album"
-        app:layout_constraintBottom_toTopOf="@id/text_view_year_title"
+        app:layout_constraintBottom_toTopOf="@id/barrier_year"
         app:layout_constraintStart_toEndOf="@id/guide_line_start"
-        app:layout_constraintTag="album" />
+        app:layout_constraintTag="album_title" />
+
+    <TextView
+        android:id="@+id/text_view_album_value"
+        style="@style/TrackInfoValueTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/offset_16"
+        android:gravity="end"
+        app:layout_constraintBottom_toBottomOf="@id/text_view_album_title"
+        app:layout_constraintEnd_toStartOf="@id/guide_line_end"
+        app:layout_constraintStart_toEndOf="@id/barrier_info_titles"
+        app:layout_constraintTag="album_value"
+        tools:text="Yesterday (Remastered 2009) Yesterday (Remastered 2009) Yesterday (Remastered 2009) Yesterday (Remastered 2009) Yesterday (Remastered 2009)" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier_year"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="top"
+        app:constraint_referenced_tags="year_title, year_value" />
 
     <TextView
         android:id="@+id/text_view_year_title"
@@ -143,9 +190,29 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/offset_16"
         android:text="@string/year"
-        app:layout_constraintBottom_toTopOf="@id/text_view_genre_title"
+        app:layout_constraintBottom_toTopOf="@id/barrier_genre"
         app:layout_constraintStart_toEndOf="@id/guide_line_start"
-        app:layout_constraintTag="year" />
+        app:layout_constraintTag="year_title" />
+
+    <TextView
+        android:id="@+id/text_view_year_value"
+        style="@style/TrackInfoValueTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/offset_16"
+        android:gravity="end"
+        app:layout_constraintBottom_toBottomOf="@id/text_view_year_title"
+        app:layout_constraintEnd_toStartOf="@id/guide_line_end"
+        app:layout_constraintStart_toEndOf="@id/barrier_info_titles"
+        app:layout_constraintTag="year_value"
+        tools:text="1965" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier_genre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="top"
+        app:constraint_referenced_tags="genre_title, genre_value" />
 
     <TextView
         android:id="@+id/text_view_genre_title"
@@ -154,9 +221,29 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/offset_16"
         android:text="@string/genre"
-        app:layout_constraintBottom_toTopOf="@id/text_view_country_title"
+        app:layout_constraintBottom_toTopOf="@id/barrier_country"
         app:layout_constraintStart_toEndOf="@id/guide_line_start"
-        app:layout_constraintTag="genre" />
+        app:layout_constraintTag="genre_title" />
+
+    <TextView
+        android:id="@+id/text_view_genre_value"
+        style="@style/TrackInfoValueTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/offset_16"
+        android:gravity="end"
+        app:layout_constraintBottom_toBottomOf="@id/text_view_genre_title"
+        app:layout_constraintEnd_toStartOf="@id/guide_line_end"
+        app:layout_constraintStart_toEndOf="@id/barrier_info_titles"
+        app:layout_constraintTag="genre_value"
+        tools:text="Rock" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier_country"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="top"
+        app:constraint_referenced_tags="country_title, country_value" />
 
     <TextView
         android:id="@+id/text_view_country_title"
@@ -167,55 +254,7 @@
         android:text="@string/country"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/guide_line_start"
-        app:layout_constraintTag="country" />
-
-    <TextView
-        android:id="@+id/text_view_length_value"
-        style="@style/TrackInfoValueTextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/offset_16"
-        android:gravity="end"
-        app:layout_constraintBaseline_toBaselineOf="@id/text_view_length_title"
-        app:layout_constraintEnd_toStartOf="@id/guide_line_end"
-        app:layout_constraintStart_toEndOf="@id/barrier_info_titles"
-        tools:text="5:35" />
-
-    <TextView
-        android:id="@+id/text_view_album_value"
-        style="@style/TrackInfoValueTextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/offset_16"
-        android:gravity="end"
-        app:layout_constraintBaseline_toBaselineOf="@id/text_view_album_title"
-        app:layout_constraintEnd_toStartOf="@id/guide_line_end"
-        app:layout_constraintStart_toEndOf="@id/barrier_info_titles"
-        tools:text="Yesterday (Remastered 2009)" />
-
-    <TextView
-        android:id="@+id/text_view_year_value"
-        style="@style/TrackInfoValueTextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/offset_16"
-        android:gravity="end"
-        app:layout_constraintBaseline_toBaselineOf="@id/text_view_year_title"
-        app:layout_constraintEnd_toStartOf="@id/guide_line_end"
-        app:layout_constraintStart_toEndOf="@id/barrier_info_titles"
-        tools:text="1965" />
-
-    <TextView
-        android:id="@+id/text_view_genre_value"
-        style="@style/TrackInfoValueTextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/offset_16"
-        android:gravity="end"
-        app:layout_constraintBaseline_toBaselineOf="@id/text_view_genre_title"
-        app:layout_constraintEnd_toStartOf="@id/guide_line_end"
-        app:layout_constraintStart_toEndOf="@id/barrier_info_titles"
-        tools:text="Rock" />
+        app:layout_constraintTag="country_title" />
 
     <TextView
         android:id="@+id/text_view_country_value"
@@ -224,9 +263,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/offset_16"
         android:gravity="end"
-        app:layout_constraintBaseline_toBaselineOf="@id/text_view_country_title"
+        app:layout_constraintBottom_toBottomOf="@id/text_view_country_title"
         app:layout_constraintEnd_toStartOf="@id/guide_line_end"
         app:layout_constraintStart_toEndOf="@id/barrier_info_titles"
+        app:layout_constraintTag="country_value"
         tools:text="Великобритания" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
