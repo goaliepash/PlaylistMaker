@@ -112,8 +112,9 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_search_history"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/offset_8" />
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/offset_8"
+            android:layout_weight="1" />
 
         <Button
             android:id="@+id/button_clear_search_history"
