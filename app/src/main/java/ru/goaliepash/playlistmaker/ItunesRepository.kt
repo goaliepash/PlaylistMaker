@@ -1,7 +1,6 @@
 package ru.goaliepash.playlistmaker
 
 import retrofit2.Call
-import ru.goaliepash.playlistmaker.model.SearchResponse
 
 class ItunesRepository(private val itunesApi: ItunesApi) {
 

@@ -2,7 +2,6 @@ package ru.goaliepash.playlistmaker
 
 import android.content.SharedPreferences
 import com.google.gson.Gson
-import ru.goaliepash.playlistmaker.model.Track
 
 class SearchHistory(private val sharedPreferences: SharedPreferences) {
 

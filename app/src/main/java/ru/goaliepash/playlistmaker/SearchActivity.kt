@@ -23,8 +23,6 @@ import androidx.recyclerview.widget.RecyclerView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import ru.goaliepash.playlistmaker.model.SearchResponse
-import ru.goaliepash.playlistmaker.model.Track
 import java.util.LinkedList
 
 class SearchActivity : AppCompatActivity() {

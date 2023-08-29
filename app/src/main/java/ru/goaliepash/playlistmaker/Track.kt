@@ -1,4 +1,4 @@
-package ru.goaliepash.playlistmaker.model
+package ru.goaliepash.playlistmaker
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
