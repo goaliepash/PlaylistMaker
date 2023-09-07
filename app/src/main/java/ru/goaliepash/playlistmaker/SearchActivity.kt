@@ -56,6 +56,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
 
     private var textSearch: String = ""
+    private var isClickAllowed = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -151,8 +152,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun initRecyclerViewSearchHistory() {
         recyclerViewSearchHistory = findViewById(R.id.recycler_view_search_history)
-        val onTrackClickListener = OnTrackClickListener { track -> onTrackClick(track) }
-        searchHistoryTrackAdapter = TrackAdapter(searchHistoryTracks, onTrackClickListener)
+        searchHistoryTrackAdapter = TrackAdapter(searchHistoryTracks) { track -> onTrackClick(track) }
         recyclerViewSearchHistory.adapter = searchHistoryTrackAdapter
         recyclerViewSearchHistory.layoutManager = LinearLayoutManager(this)
     }
@@ -277,17 +277,19 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun onTrackClick(track: Track) {
-        searchHistoryTracks.clear()
-        searchHistoryTracks.addAll(searchHistory.get())
-        if (searchHistoryTracks.contains(track)) {
-            searchHistoryTracks.remove(track)
-        } else if (searchHistoryTracks.size == MAX_SIZE_OF_SEARCH_HISTORY_TRACKS) {
-            searchHistoryTracks.removeAt(MAX_SIZE_OF_SEARCH_HISTORY_TRACKS - 1)
+        if (clickDebounce()) {
+            searchHistoryTracks.clear()
+            searchHistoryTracks.addAll(searchHistory.get())
+            if (searchHistoryTracks.contains(track)) {
+                searchHistoryTracks.remove(track)
+            } else if (searchHistoryTracks.size == MAX_SIZE_OF_SEARCH_HISTORY_TRACKS) {
+                searchHistoryTracks.removeAt(MAX_SIZE_OF_SEARCH_HISTORY_TRACKS - 1)
+            }
+            searchHistoryTracks.add(0, track)
+            searchHistory.add(searchHistoryTracks)
+            openTrackActivity(track)
+            searchHistoryTrackAdapter.notifyDataSetChanged()
         }
-        searchHistoryTracks.add(0, track)
-        searchHistory.add(searchHistoryTracks)
-        openTrackActivity(track)
-        searchHistoryTrackAdapter.notifyDataSetChanged()
     }
 
     private fun onButtonClearSearchHistoryClick() {
@@ -322,10 +324,20 @@ class SearchActivity : AppCompatActivity() {
         searchDebounce()
     }
 
+    private fun clickDebounce(): Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            mainThreadHandler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
+        }
+        return current
+    }
+
     companion object {
         private const val SEARCH_STRING = "SEARCH_STRING"
         private const val PLAYLIST_MAKER_PREFERENCES = "PLAYLIST_MAKER_PREFERENCES"
         private const val MAX_SIZE_OF_SEARCH_HISTORY_TRACKS = 10
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 }
