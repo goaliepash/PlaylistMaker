@@ -4,16 +4,18 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.MotionEvent
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -30,6 +32,12 @@ class SearchActivity : AppCompatActivity() {
     private val itunesRepository = ItunesRepository(ItunesService.getItunesApi())
     private val tracks = ArrayList<Track>()
     private val searchHistoryTracks = LinkedList<Track>()
+    private val mainThreadHandler = Handler(Looper.getMainLooper())
+    private val searchRunnable = Runnable {
+        if (textSearch.isNotEmpty()) {
+            search(textSearch)
+        }
+    }
 
     private lateinit var searchHistory: SearchHistory
     private lateinit var trackAdapter: TrackAdapter
@@ -45,6 +53,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var textViewSearchHistory: TextView
     private lateinit var recyclerViewSearchHistory: RecyclerView
     private lateinit var buttonClearSearchHistory: Button
+    private lateinit var progressBar: ProgressBar
 
     private var textSearch: String = ""
 
@@ -71,6 +80,7 @@ class SearchActivity : AppCompatActivity() {
         initRecyclerViewTracks()
         initLinearLayoutPlaceholderMessage()
         initSearchHistory()
+        initProgressBar()
     }
 
     private fun initImageViewBack() {
@@ -102,6 +112,7 @@ class SearchActivity : AppCompatActivity() {
                     setDrawableEndVisibility(true, editTextSearch)
                 }
                 textSearch = p0.toString()
+                searchDebounce()
             }
 
             override fun afterTextChanged(p0: Editable?) {}
@@ -109,13 +120,13 @@ class SearchActivity : AppCompatActivity() {
         editTextSearch.addTextChangedListener(searchTextWatcher)
         editTextSearch.onDrawableEndClick { onEditTextSearchClearClick() }
         setDrawableEndVisibility(false, editTextSearch)
-        editTextSearch.setOnEditorActionListener { _, i, _ ->
+        /*editTextSearch.setOnEditorActionListener { _, i, _ ->
             if (i == EditorInfo.IME_ACTION_DONE) {
                 search(textSearch)
                 true
             }
             false
-        }
+        }*/
     }
 
     private fun initRecyclerViewTracks() {
@@ -135,7 +146,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun initButtonPlaceholderRefresh() {
         buttonPlaceholderRefresh = findViewById(R.id.button_placeholder_refresh)
-        buttonPlaceholderRefresh.setOnClickListener { search(textSearch) }
+        buttonPlaceholderRefresh.setOnClickListener { searchDebounce() }
     }
 
     private fun initSearchHistory() {
@@ -156,6 +167,10 @@ class SearchActivity : AppCompatActivity() {
     private fun initButtonClearHistory() {
         buttonClearSearchHistory = findViewById(R.id.button_clear_search_history)
         buttonClearSearchHistory.setOnClickListener { onButtonClearSearchHistoryClick() }
+    }
+
+    private fun initProgressBar() {
+        progressBar = findViewById(R.id.progress_bar)
     }
 
     private fun setDrawableEndVisibility(isVisible: Boolean, editText: EditText) {
@@ -192,10 +207,12 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun search(term: String) {
+        showLoader()
         itunesRepository
             .getSearch(term)
             .enqueue(object : Callback<SearchResponse> {
                 override fun onResponse(call: Call<SearchResponse>, response: Response<SearchResponse>) {
+                    hideLoader()
                     when (response.code()) {
                         200 -> {
                             if (response.body()?.results?.isNotEmpty() == true) {
@@ -210,6 +227,7 @@ class SearchActivity : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
+                    hideLoader()
                     showErrorMessagePlaceholder(R.drawable.ic_search_no_internet, R.string.no_internet_connection)
                 }
             })
@@ -293,9 +311,23 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
+    private fun searchDebounce() {
+        mainThreadHandler.removeCallbacks(searchRunnable)
+        mainThreadHandler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+    }
+
+    private fun showLoader() {
+        progressBar.visibility = View.VISIBLE
+    }
+
+    private fun hideLoader() {
+        progressBar.visibility = View.GONE
+    }
+
     companion object {
         private const val SEARCH_STRING = "SEARCH_STRING"
         private const val PLAYLIST_MAKER_PREFERENCES = "PLAYLIST_MAKER_PREFERENCES"
         private const val MAX_SIZE_OF_SEARCH_HISTORY_TRACKS = 10
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
     }
 }
