@@ -120,13 +120,6 @@ class SearchActivity : AppCompatActivity() {
         editTextSearch.addTextChangedListener(searchTextWatcher)
         editTextSearch.onDrawableEndClick { onEditTextSearchClearClick() }
         setDrawableEndVisibility(false, editTextSearch)
-        /*editTextSearch.setOnEditorActionListener { _, i, _ ->
-            if (i == EditorInfo.IME_ACTION_DONE) {
-                search(textSearch)
-                true
-            }
-            false
-        }*/
     }
 
     private fun initRecyclerViewTracks() {
@@ -146,7 +139,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun initButtonPlaceholderRefresh() {
         buttonPlaceholderRefresh = findViewById(R.id.button_placeholder_refresh)
-        buttonPlaceholderRefresh.setOnClickListener { searchDebounce() }
+        buttonPlaceholderRefresh.setOnClickListener { onButtonPlaceHolderRefresh() }
     }
 
     private fun initSearchHistory() {
@@ -322,6 +315,11 @@ class SearchActivity : AppCompatActivity() {
 
     private fun hideLoader() {
         progressBar.visibility = View.GONE
+    }
+
+    private fun onButtonPlaceHolderRefresh() {
+        linearLayoutPlaceholderMessage.visibility = View.GONE
+        searchDebounce()
     }
 
     companion object {
