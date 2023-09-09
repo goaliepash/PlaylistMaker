@@ -39,11 +39,12 @@
 
     <ImageView
         android:id="@+id/image_view_cover"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginTop="@dimen/offset_24"
-        android:scaleType="centerCrop"
-        app:layout_constraintDimensionRatio="h,1:1"
+        android:layout_marginBottom="@dimen/offset_24"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toTopOf="@id/text_view_track_name"
         app:layout_constraintEnd_toStartOf="@id/guide_line_end"
         app:layout_constraintStart_toEndOf="@id/guide_line_start"
         app:layout_constraintTag="cover"
@@ -55,10 +56,10 @@
         style="@style/TrackNameInfoTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/offset_24"
+        android:layout_marginBottom="@dimen/offset_8"
+        app:layout_constraintBottom_toTopOf="@id/text_view_artist"
         app:layout_constraintEnd_toStartOf="@id/guide_line_end"
         app:layout_constraintStart_toEndOf="@id/guide_line_start"
-        app:layout_constraintTop_toBottomOf="@id/image_view_cover"
         tools:text="Yesterday (Remastered 2009)" />
 
     <TextView
@@ -66,11 +67,23 @@
         style="@style/TrackArtistTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/offset_12"
+        android:layout_marginBottom="@dimen/offset_24"
+        app:layout_constraintBottom_toTopOf="@id/image_button_play_pause"
         app:layout_constraintEnd_toStartOf="@id/guide_line_end"
         app:layout_constraintStart_toEndOf="@id/guide_line_start"
-        app:layout_constraintTop_toBottomOf="@id/text_view_track_name"
         tools:text="The Beatles" />
+
+    <ImageView
+        android:id="@+id/image_view_add_to_track_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/offset_8"
+        android:src="@drawable/ic_add_to_track_list"
+        app:layout_constraintBottom_toTopOf="@id/text_view_time"
+        app:layout_constraintEnd_toStartOf="@id/image_button_play_pause"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintStart_toEndOf="@id/guide_line_start"
+        app:layout_constraintTop_toTopOf="@id/image_button_play_pause" />
 
     <ImageButton
         android:id="@+id/image_button_play_pause"
@@ -80,20 +93,9 @@
         android:background="@null"
         android:clickable="false"
         android:src="@drawable/ic_play"
-        app:layout_constraintBottom_toTopOf="@id/barrier_length"
+        app:layout_constraintBottom_toTopOf="@id/text_view_time"
         app:layout_constraintEnd_toStartOf="@id/image_view_like"
-        app:layout_constraintStart_toEndOf="@id/image_view_add_to_track_list"
-        app:layout_constraintTop_toBottomOf="@id/text_view_artist" />
-
-    <ImageView
-        android:id="@+id/image_view_add_to_track_list"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/offset_8"
-        android:src="@drawable/ic_add_to_track_list"
-        app:layout_constraintBottom_toTopOf="@id/barrier_length"
-        app:layout_constraintStart_toEndOf="@id/guide_line_start"
-        app:layout_constraintTop_toBottomOf="@id/text_view_artist" />
+        app:layout_constraintStart_toEndOf="@id/image_view_add_to_track_list" />
 
     <ImageView
         android:id="@+id/image_view_like"
@@ -101,19 +103,21 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/offset_8"
         android:src="@drawable/ic_heart"
-        app:layout_constraintBottom_toTopOf="@id/barrier_length"
+        app:layout_constraintBottom_toTopOf="@id/text_view_time"
         app:layout_constraintEnd_toStartOf="@id/guide_line_end"
-        app:layout_constraintTop_toBottomOf="@id/text_view_artist" />
+        app:layout_constraintStart_toEndOf="@id/image_button_play_pause"
+        app:layout_constraintTop_toTopOf="@id/image_button_play_pause" />
 
     <TextView
         android:id="@+id/text_view_time"
         style="@style/TrackTimeTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/offset_24"
         android:text="@string/mock_track_time"
+        app:layout_constraintBottom_toTopOf="@id/barrier_length"
         app:layout_constraintEnd_toStartOf="@id/guide_line_end"
         app:layout_constraintStart_toEndOf="@id/guide_line_start"
-        app:layout_constraintTop_toBottomOf="@id/image_button_play_pause"
         tools:text="@string/mock_track_time" />
 
     <androidx.constraintlayout.widget.Barrier
