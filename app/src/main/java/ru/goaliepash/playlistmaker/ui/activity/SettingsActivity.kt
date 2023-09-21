@@ -1,4 +1,4 @@
-package ru.goaliepash.playlistmaker
+package ru.goaliepash.playlistmaker.ui.activity
 
 import android.content.Intent
 import android.net.Uri
@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.switchmaterial.SwitchMaterial
+import ru.goaliepash.playlistmaker.R
+import ru.goaliepash.playlistmaker.ui.App
 
 class SettingsActivity : AppCompatActivity() {
 

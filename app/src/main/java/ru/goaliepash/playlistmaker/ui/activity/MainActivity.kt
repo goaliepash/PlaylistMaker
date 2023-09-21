@@ -1,10 +1,11 @@
-package ru.goaliepash.playlistmaker
+package ru.goaliepash.playlistmaker.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import ru.goaliepash.playlistmaker.R
 
 class MainActivity : AppCompatActivity() {
 
