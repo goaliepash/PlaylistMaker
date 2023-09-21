@@ -53,7 +53,8 @@
         android:id="@+id/recycler_view_tracks"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/offset_8" />
+        android:layout_marginTop="@dimen/offset_8"
+        android:visibility="visible" />
 
     <LinearLayout
         android:id="@+id/linear_layout_placeholder_message"
@@ -127,5 +128,14 @@
             android:visibility="visible" />
 
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/offset_136"
+        android:indeterminateTint="@color/yp_blue"
+        android:visibility="gone" />
 
 </LinearLayout>

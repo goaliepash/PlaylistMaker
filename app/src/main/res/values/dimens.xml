@@ -18,4 +18,5 @@
     <dimen name="offset_40">40dp</dimen>
     <dimen name="offset_60">60dp</dimen>
     <dimen name="offset_100">100dp</dimen>
+    <dimen name="offset_136">136dp</dimen>
 </resources>

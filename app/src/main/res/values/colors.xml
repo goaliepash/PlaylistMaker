@@ -8,6 +8,7 @@
     <color name="yp_background">#801A1B22</color>
     <color name="yp_red">#F56B6C</color>
     <color name="yp_blue_light">#9FBBF3</color>
+    <color name="yp_yellow">#FCD452</color>
 
     <color name="cover_place_holder_fill_color">@color/yp_text_gray</color>
     <color name="item_fill_color">@color/yp_text_gray</color>
@@ -29,4 +30,13 @@
     <color name="play_fill_color">@color/yp_black</color>
     <color name="track_artist_text_color">@color/yp_black</color>
     <color name="track_name_info_text_color">@color/yp_black</color>
+    <color name="search_background">@color/yp_light_gray</color>
+    <color name="search_error_fill_color_1">@color/yp_black</color>
+    <color name="search_error_fill_color_2">@color/yp_black</color>
+    <color name="search_error_fill_color_3">@color/yp_yellow</color>
+    <color name="search_error_fill_color_4">@color/yp_black</color>
+    <color name="search_no_internet_fill_color_1">@color/yp_black</color>
+    <color name="search_no_internet_fill_color_2">@color/yp_blue</color>
+    <color name="search_no_internet_fill_color_3">@color/yp_white</color>
+    <color name="search_no_internet_fill_color_4">@color/yp_black</color>
 </resources>

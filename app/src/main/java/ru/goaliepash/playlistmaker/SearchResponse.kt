@@ -1,4 +1,4 @@
-package ru.goaliepash.playlistmaker.model
+package ru.goaliepash.playlistmaker
 
 data class SearchResponse(
     val resultCount: Int,
