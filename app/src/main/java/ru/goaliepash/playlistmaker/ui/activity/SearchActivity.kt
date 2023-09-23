@@ -225,7 +225,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun search(term: String) {
         val observable: Observable<List<Track>> = Observable
-            .fromCallable { getSearchUseCase.execute(term) }
+            .fromCallable { getSearchUseCase(term) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { showLoader() }
@@ -275,7 +275,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun showSearchHistory() {
-        val tracks = getSearchHistoryUseCase.execute()
+        val tracks = getSearchHistoryUseCase()
         if (tracks.isNotEmpty()) {
             recyclerViewTracks.visibility = View.GONE
             linearLayoutPlaceholderMessage.visibility = View.GONE
@@ -300,21 +300,21 @@ class SearchActivity : AppCompatActivity() {
     private fun onTrackClick(track: Track) {
         if (clickDebounce()) {
             searchHistoryTracks.clear()
-            searchHistoryTracks.addAll(getSearchHistoryUseCase.execute())
+            searchHistoryTracks.addAll(getSearchHistoryUseCase())
             if (searchHistoryTracks.contains(track)) {
                 searchHistoryTracks.remove(track)
             } else if (searchHistoryTracks.size == MAX_SIZE_OF_SEARCH_HISTORY_TRACKS) {
                 searchHistoryTracks.removeAt(MAX_SIZE_OF_SEARCH_HISTORY_TRACKS - 1)
             }
             searchHistoryTracks.add(0, track)
-            addSearchHistoryUseCase.execute(searchHistoryTracks)
+            addSearchHistoryUseCase(searchHistoryTracks)
             openTrackActivity(track)
             searchHistoryTrackAdapter.notifyDataSetChanged()
         }
     }
 
     private fun onButtonClearSearchHistoryClick() {
-        clearSearchHistoryUseCase.execute()
+        clearSearchHistoryUseCase()
         linearLayoutSearchHistory.visibility = View.GONE
         searchHistoryTracks.clear()
         searchHistoryTrackAdapter.notifyDataSetChanged()

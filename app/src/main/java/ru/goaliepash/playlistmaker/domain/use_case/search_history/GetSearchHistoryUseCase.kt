@@ -5,7 +5,7 @@ import ru.goaliepash.playlistmaker.domain.model.Track
 
 class GetSearchHistoryUseCase(private val searchHistoryRepository: SearchHistoryRepository) {
 
-    fun execute(): Array<Track> {
+    operator fun invoke(): Array<Track> {
         return searchHistoryRepository.get()
     }
 }

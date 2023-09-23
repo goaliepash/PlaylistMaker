@@ -5,7 +5,7 @@ import ru.goaliepash.playlistmaker.domain.model.Track
 
 class GetSearchUseCase(private val itunesRepository: ItunesRepository) {
 
-    fun execute(term: String): List<Track> {
+    operator fun invoke(term: String): List<Track> {
         return itunesRepository.getSearch(term)
     }
 }

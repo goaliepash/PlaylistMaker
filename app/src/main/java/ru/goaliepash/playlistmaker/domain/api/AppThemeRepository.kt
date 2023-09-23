@@ -2,7 +2,7 @@ package ru.goaliepash.playlistmaker.domain.api
 
 interface AppThemeRepository {
 
-    fun get(): Boolean
+    fun isDarkThemeEnabled(): Boolean
 
-    fun set(darkThemeEnabled: Boolean)
+    fun setDarkThemeEnabled(darkThemeEnabled: Boolean)
 }

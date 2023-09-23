@@ -18,7 +18,7 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        setTheme(getAppThemeUseCase.execute())
+        setTheme(getAppThemeUseCase())
     }
 
     fun switchTheme(darkThemeEnabled: Boolean) {
@@ -37,5 +37,5 @@ class App : Application() {
         )
     }
 
-    private fun saveDarkThemeStatus(darkThemeEnabled: Boolean) = setAppThemeUseCase.execute(darkThemeEnabled)
+    private fun saveDarkThemeStatus(darkThemeEnabled: Boolean) = setAppThemeUseCase(darkThemeEnabled)
 }

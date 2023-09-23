@@ -5,7 +5,7 @@ import ru.goaliepash.playlistmaker.domain.model.Track
 
 class AddSearchHistoryUseCase(private val searchHistoryRepository: SearchHistoryRepository) {
 
-    fun execute(searchHistoryTracks: List<Track>) {
+    operator fun invoke(searchHistoryTracks: List<Track>) {
         searchHistoryRepository.add(searchHistoryTracks)
     }
 }

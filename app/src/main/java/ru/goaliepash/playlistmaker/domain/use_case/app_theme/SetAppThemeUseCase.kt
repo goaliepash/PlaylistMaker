@@ -4,7 +4,7 @@ import ru.goaliepash.playlistmaker.domain.api.AppThemeRepository
 
 class SetAppThemeUseCase(private val appThemeRepository: AppThemeRepository) {
 
-    fun execute(darkThemeEnabled: Boolean) {
-        appThemeRepository.set(darkThemeEnabled)
+    operator fun invoke(darkThemeEnabled: Boolean) {
+        appThemeRepository.setDarkThemeEnabled(darkThemeEnabled)
     }
 }

@@ -15,13 +15,9 @@ class ItunesClientImpl : ItunesClient {
         .build()
     private val itunesService = retrofit.create(ItunesService::class.java)
 
-    override fun search(dto: Any): Response {
-        return if (dto is SearchRequest) {
-            val response = itunesService.search(dto.term).execute()
-            val body = response.body() ?: Response()
-            body.apply { resultCode = response.code() }
-        } else {
-            Response().apply { resultCode = 400 }
-        }
+    override fun search(searchRequest: SearchRequest): Response {
+        val response = itunesService.search(searchRequest.term).execute()
+        val body = response.body() ?: Response()
+        return body.apply { resultCode = response.code() }
     }
 }

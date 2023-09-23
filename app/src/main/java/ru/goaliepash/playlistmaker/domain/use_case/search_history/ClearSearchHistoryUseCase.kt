@@ -4,7 +4,7 @@ import ru.goaliepash.playlistmaker.domain.api.SearchHistoryRepository
 
 class ClearSearchHistoryUseCase(private val searchHistoryRepository: SearchHistoryRepository) {
 
-    fun execute() {
+    operator fun invoke() {
         searchHistoryRepository.clear()
     }
 }
