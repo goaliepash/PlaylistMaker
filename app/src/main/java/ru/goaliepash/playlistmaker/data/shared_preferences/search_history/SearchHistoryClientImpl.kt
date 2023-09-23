@@ -1,19 +1,23 @@
-package ru.goaliepash.playlistmaker
+package ru.goaliepash.playlistmaker.data.shared_preferences.search_history
 
-import android.content.SharedPreferences
+import android.content.Context
 import com.google.gson.Gson
+import ru.goaliepash.playlistmaker.data.shared_preferences.SharedPreferencesService
+import ru.goaliepash.playlistmaker.domain.model.Track
 
-class SearchHistory(private val sharedPreferences: SharedPreferences) {
+class SearchHistoryClientImpl(context: Context) : SearchHistoryClient {
 
-    fun add(searchHistoryTracks: List<Track>) {
+    private val sharedPreferences = SharedPreferencesService.get(context)
+
+    override fun add(searchHistoryTracks: List<Track>) {
         sharedPreferences.edit().putString(SEARCH_HISTORY_KEY, createJsonFromTrackList(searchHistoryTracks)).apply()
     }
 
-    fun get(): Array<Track> {
+    override fun get(): Array<Track> {
         return createTracksFromJson(sharedPreferences.getString(SEARCH_HISTORY_KEY, JSON_EMPTY_LIST) ?: JSON_EMPTY_LIST)
     }
 
-    fun clear() {
+    override fun clear() {
         sharedPreferences.edit().clear().apply()
     }
 

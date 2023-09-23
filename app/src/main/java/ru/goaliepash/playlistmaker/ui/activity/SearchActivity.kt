@@ -1,4 +1,4 @@
-package ru.goaliepash.playlistmaker
+package ru.goaliepash.playlistmaker.ui.activity
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -22,14 +22,26 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.schedulers.Schedulers
+import ru.goaliepash.playlistmaker.R
+import ru.goaliepash.playlistmaker.data.network.itunes.ItunesClientImpl
+import ru.goaliepash.playlistmaker.data.repository.ItunesRepositoryImpl
+import ru.goaliepash.playlistmaker.data.repository.SearchHistoryRepositoryImpl
+import ru.goaliepash.playlistmaker.data.shared_preferences.search_history.SearchHistoryClientImpl
+import ru.goaliepash.playlistmaker.domain.model.Track
+import ru.goaliepash.playlistmaker.domain.use_case.itunes.GetSearchUseCase
+import ru.goaliepash.playlistmaker.domain.use_case.search_history.AddSearchHistoryUseCase
+import ru.goaliepash.playlistmaker.domain.use_case.search_history.ClearSearchHistoryUseCase
+import ru.goaliepash.playlistmaker.domain.use_case.search_history.GetSearchHistoryUseCase
+import ru.goaliepash.playlistmaker.ui.adapter.TrackAdapter
+import ru.goaliepash.playlistmaker.ui.listener.OnTrackClickListener
 import java.util.LinkedList
 
 class SearchActivity : AppCompatActivity() {
 
-    private val itunesRepository = ItunesRepository(ItunesService.getItunesApi())
     private val tracks = ArrayList<Track>()
     private val searchHistoryTracks = LinkedList<Track>()
     private val mainThreadHandler = Handler(Looper.getMainLooper())
@@ -38,8 +50,16 @@ class SearchActivity : AppCompatActivity() {
             search(textSearch)
         }
     }
+    private val itunesClient by lazy { ItunesClientImpl() }
+    private val searchHistoryClient by lazy { SearchHistoryClientImpl(applicationContext) }
+    private val itunesRepository by lazy { ItunesRepositoryImpl(itunesClient) }
+    private val searchHistoryRepository by lazy { SearchHistoryRepositoryImpl(searchHistoryClient) }
+    private val getSearchUseCase by lazy { GetSearchUseCase(itunesRepository) }
+    private val addSearchHistoryUseCase by lazy { AddSearchHistoryUseCase(searchHistoryRepository) }
+    private val getSearchHistoryUseCase by lazy { GetSearchHistoryUseCase(searchHistoryRepository) }
+    private val clearSearchHistoryUseCase by lazy { ClearSearchHistoryUseCase(searchHistoryRepository) }
+    private val compositeDisposable = CompositeDisposable()
 
-    private lateinit var searchHistory: SearchHistory
     private lateinit var trackAdapter: TrackAdapter
     private lateinit var searchHistoryTrackAdapter: TrackAdapter
     private lateinit var imageViewBack: ImageView
@@ -61,8 +81,12 @@ class SearchActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
-        searchHistory = SearchHistory(getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE))
         initUI()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        compositeDisposable.clear()
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -200,30 +224,27 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun search(term: String) {
-        showLoader()
-        itunesRepository
-            .getSearch(term)
-            .enqueue(object : Callback<SearchResponse> {
-                override fun onResponse(call: Call<SearchResponse>, response: Response<SearchResponse>) {
-                    hideLoader()
-                    when (response.code()) {
-                        200 -> {
-                            if (response.body()?.results?.isNotEmpty() == true) {
-                                showTracks(response.body()?.results!!)
-                            } else {
-                                showNothingWasFoundPlaceholder()
-                            }
-                        }
-
-                        else -> showErrorMessagePlaceholder(R.drawable.ic_search_error, R.string.something_went_wrong)
+        val observable: Observable<List<Track>> = Observable
+            .fromCallable { getSearchUseCase(term) }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { showLoader() }
+        val disposable = observable
+            .subscribe(
+                { result ->
+                    if (result.isNotEmpty()) {
+                        showTracks(result)
+                    } else {
+                        showNothingWasFoundPlaceholder()
                     }
-                }
-
-                override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
-                    hideLoader()
+                },
+                { _ ->
                     showErrorMessagePlaceholder(R.drawable.ic_search_no_internet, R.string.no_internet_connection)
-                }
-            })
+                    hideLoader()
+                },
+                { hideLoader() }
+            )
+        compositeDisposable.add(disposable)
     }
 
     private fun showTracks(results: List<Track>) {
@@ -254,7 +275,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun showSearchHistory() {
-        val tracks = searchHistory.get()
+        val tracks = getSearchHistoryUseCase()
         if (tracks.isNotEmpty()) {
             recyclerViewTracks.visibility = View.GONE
             linearLayoutPlaceholderMessage.visibility = View.GONE
@@ -279,21 +300,21 @@ class SearchActivity : AppCompatActivity() {
     private fun onTrackClick(track: Track) {
         if (clickDebounce()) {
             searchHistoryTracks.clear()
-            searchHistoryTracks.addAll(searchHistory.get())
+            searchHistoryTracks.addAll(getSearchHistoryUseCase())
             if (searchHistoryTracks.contains(track)) {
                 searchHistoryTracks.remove(track)
             } else if (searchHistoryTracks.size == MAX_SIZE_OF_SEARCH_HISTORY_TRACKS) {
                 searchHistoryTracks.removeAt(MAX_SIZE_OF_SEARCH_HISTORY_TRACKS - 1)
             }
             searchHistoryTracks.add(0, track)
-            searchHistory.add(searchHistoryTracks)
+            addSearchHistoryUseCase(searchHistoryTracks)
             openTrackActivity(track)
             searchHistoryTrackAdapter.notifyDataSetChanged()
         }
     }
 
     private fun onButtonClearSearchHistoryClick() {
-        searchHistory.clear()
+        clearSearchHistoryUseCase()
         linearLayoutSearchHistory.visibility = View.GONE
         searchHistoryTracks.clear()
         searchHistoryTrackAdapter.notifyDataSetChanged()
@@ -335,7 +356,6 @@ class SearchActivity : AppCompatActivity() {
 
     companion object {
         private const val SEARCH_STRING = "SEARCH_STRING"
-        private const val PLAYLIST_MAKER_PREFERENCES = "PLAYLIST_MAKER_PREFERENCES"
         private const val MAX_SIZE_OF_SEARCH_HISTORY_TRACKS = 10
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
         private const val CLICK_DEBOUNCE_DELAY = 1000L
