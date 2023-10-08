@@ -11,17 +11,11 @@ import android.text.TextWatcher
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -31,6 +25,7 @@ import ru.goaliepash.playlistmaker.data.network.itunes.ItunesClientImpl
 import ru.goaliepash.playlistmaker.data.repository.ItunesRepositoryImpl
 import ru.goaliepash.playlistmaker.data.repository.SearchHistoryRepositoryImpl
 import ru.goaliepash.playlistmaker.data.shared_preferences.search_history.SearchHistoryClientImpl
+import ru.goaliepash.playlistmaker.databinding.ActivitySearchBinding
 import ru.goaliepash.playlistmaker.domain.model.Track
 import ru.goaliepash.playlistmaker.domain.use_case.itunes.GetSearchUseCase
 import ru.goaliepash.playlistmaker.domain.use_case.search_history.AddSearchHistoryUseCase
@@ -60,27 +55,16 @@ class SearchActivity : AppCompatActivity() {
     private val clearSearchHistoryUseCase by lazy { ClearSearchHistoryUseCase(searchHistoryRepository) }
     private val compositeDisposable = CompositeDisposable()
 
+    private lateinit var binding: ActivitySearchBinding
     private lateinit var trackAdapter: TrackAdapter
     private lateinit var searchHistoryTrackAdapter: TrackAdapter
-    private lateinit var imageViewBack: ImageView
-    private lateinit var editTextSearch: EditText
-    private lateinit var recyclerViewTracks: RecyclerView
-    private lateinit var linearLayoutPlaceholderMessage: LinearLayout
-    private lateinit var imageViewPlaceholderMessage: ImageView
-    private lateinit var textViewPlaceholderMessage: TextView
-    private lateinit var buttonPlaceholderRefresh: Button
-    private lateinit var linearLayoutSearchHistory: LinearLayout
-    private lateinit var textViewSearchHistory: TextView
-    private lateinit var recyclerViewSearchHistory: RecyclerView
-    private lateinit var buttonClearSearchHistory: Button
-    private lateinit var progressBar: ProgressBar
 
     private var textSearch: String = ""
     private var isClickAllowed = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_search)
+        binding = ActivitySearchBinding.inflate(layoutInflater).also { setContentView(it.root) }
         initUI()
     }
 
@@ -103,38 +87,35 @@ class SearchActivity : AppCompatActivity() {
         initImageViewBack()
         initEditTextSearch()
         initRecyclerViewTracks()
-        initLinearLayoutPlaceholderMessage()
+        initButtonPlaceholderRefresh()
         initSearchHistory()
-        initProgressBar()
     }
 
     private fun initImageViewBack() {
-        imageViewBack = findViewById(R.id.image_view_back)
-        imageViewBack.setOnClickListener { finish() }
+        binding.imageViewBack.setOnClickListener { finish() }
     }
 
     private fun initEditTextSearch() {
-        editTextSearch = findViewById(R.id.edit_text_search)
-        editTextSearch.setOnFocusChangeListener { _, b ->
-            if (b && editTextSearch.text.isEmpty()) {
+        binding.editTextSearch.setOnFocusChangeListener { _, b ->
+            if (b && binding.editTextSearch.text.isEmpty()) {
                 showSearchHistory()
             } else {
-                linearLayoutSearchHistory.visibility = View.GONE
+                binding.linearLayoutSearchHistory.visibility = View.GONE
             }
         }
         val searchTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                if (editTextSearch.hasFocus() && p0?.isEmpty() == true) {
+                if (binding.editTextSearch.hasFocus() && p0?.isEmpty() == true) {
                     showSearchHistory()
                 } else {
-                    linearLayoutSearchHistory.visibility = View.GONE
+                    binding.linearLayoutSearchHistory.visibility = View.GONE
                 }
                 if (p0.isNullOrEmpty()) {
-                    setDrawableEndVisibility(false, editTextSearch)
+                    setDrawableEndVisibility(false, binding.editTextSearch)
                 } else {
-                    setDrawableEndVisibility(true, editTextSearch)
+                    setDrawableEndVisibility(true, binding.editTextSearch)
                 }
                 textSearch = p0.toString()
                 searchDebounce()
@@ -142,52 +123,35 @@ class SearchActivity : AppCompatActivity() {
 
             override fun afterTextChanged(p0: Editable?) {}
         }
-        editTextSearch.addTextChangedListener(searchTextWatcher)
-        editTextSearch.onDrawableEndClick { onEditTextSearchClearClick() }
-        setDrawableEndVisibility(false, editTextSearch)
+        binding.editTextSearch.addTextChangedListener(searchTextWatcher)
+        binding.editTextSearch.onDrawableEndClick { onEditTextSearchClearClick() }
+        setDrawableEndVisibility(false, binding.editTextSearch)
     }
 
     private fun initRecyclerViewTracks() {
-        recyclerViewTracks = findViewById(R.id.recycler_view_tracks)
         val onTrackClickListener = OnTrackClickListener { track -> onTrackClick(track) }
         trackAdapter = TrackAdapter(tracks, onTrackClickListener)
-        recyclerViewTracks.adapter = trackAdapter
-        recyclerViewTracks.layoutManager = LinearLayoutManager(this)
-    }
-
-    private fun initLinearLayoutPlaceholderMessage() {
-        linearLayoutPlaceholderMessage = findViewById(R.id.linear_layout_placeholder_message)
-        imageViewPlaceholderMessage = findViewById(R.id.image_view_placeholder_message)
-        textViewPlaceholderMessage = findViewById(R.id.text_view_placeholder_message)
-        initButtonPlaceholderRefresh()
+        binding.recyclerViewTracks.adapter = trackAdapter
+        binding.recyclerViewTracks.layoutManager = LinearLayoutManager(this)
     }
 
     private fun initButtonPlaceholderRefresh() {
-        buttonPlaceholderRefresh = findViewById(R.id.button_placeholder_refresh)
-        buttonPlaceholderRefresh.setOnClickListener { onButtonPlaceHolderRefresh() }
+        binding.buttonPlaceholderRefresh.setOnClickListener { onButtonPlaceHolderRefresh() }
     }
 
     private fun initSearchHistory() {
-        linearLayoutSearchHistory = findViewById(R.id.linear_layout_search_history)
-        textViewSearchHistory = findViewById(R.id.text_view_search_history)
         initRecyclerViewSearchHistory()
         initButtonClearHistory()
     }
 
     private fun initRecyclerViewSearchHistory() {
-        recyclerViewSearchHistory = findViewById(R.id.recycler_view_search_history)
         searchHistoryTrackAdapter = TrackAdapter(searchHistoryTracks) { track -> onTrackClick(track) }
-        recyclerViewSearchHistory.adapter = searchHistoryTrackAdapter
-        recyclerViewSearchHistory.layoutManager = LinearLayoutManager(this)
+        binding.recyclerViewSearchHistory.adapter = searchHistoryTrackAdapter
+        binding.recyclerViewSearchHistory.layoutManager = LinearLayoutManager(this)
     }
 
     private fun initButtonClearHistory() {
-        buttonClearSearchHistory = findViewById(R.id.button_clear_search_history)
-        buttonClearSearchHistory.setOnClickListener { onButtonClearSearchHistoryClick() }
-    }
-
-    private fun initProgressBar() {
-        progressBar = findViewById(R.id.progress_bar)
+        binding.buttonClearSearchHistory.setOnClickListener { onButtonClearSearchHistoryClick() }
     }
 
     private fun setDrawableEndVisibility(isVisible: Boolean, editText: EditText) {
@@ -205,7 +169,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun restoreEditTextSearch(savedInstanceState: Bundle) {
         textSearch = savedInstanceState.getString(SEARCH_STRING, "")
-        editTextSearch.setText(textSearch)
+        binding.editTextSearch.setText(textSearch)
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -248,38 +212,38 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun showTracks(results: List<Track>) {
-        recyclerViewTracks.visibility = View.VISIBLE
-        linearLayoutPlaceholderMessage.visibility = View.GONE
-        linearLayoutSearchHistory.visibility = View.GONE
+        binding.recyclerViewTracks.visibility = View.VISIBLE
+        binding.linearLayoutPlaceholderMessage.visibility = View.GONE
+        binding.linearLayoutSearchHistory.visibility = View.GONE
         tracks.clear()
         tracks.addAll(results)
         trackAdapter.notifyDataSetChanged()
     }
 
     private fun showNothingWasFoundPlaceholder() {
-        recyclerViewTracks.visibility = View.GONE
-        linearLayoutPlaceholderMessage.visibility = View.VISIBLE
-        linearLayoutSearchHistory.visibility = View.GONE
-        imageViewPlaceholderMessage.setBackgroundResource(R.drawable.ic_search_error)
-        textViewPlaceholderMessage.text = getString(R.string.nothing_was_found)
-        buttonPlaceholderRefresh.visibility = View.GONE
+        binding.recyclerViewTracks.visibility = View.GONE
+        binding.linearLayoutPlaceholderMessage.visibility = View.VISIBLE
+        binding.linearLayoutSearchHistory.visibility = View.GONE
+        binding.imageViewPlaceholderMessage.setBackgroundResource(R.drawable.ic_search_error)
+        binding.textViewPlaceholderMessage.text = getString(R.string.nothing_was_found)
+        binding.buttonPlaceholderRefresh.visibility = View.GONE
     }
 
     private fun showErrorMessagePlaceholder(@DrawableRes backgroundResource: Int, @StringRes text: Int) {
-        recyclerViewTracks.visibility = View.GONE
-        linearLayoutPlaceholderMessage.visibility = View.VISIBLE
-        linearLayoutSearchHistory.visibility = View.GONE
-        imageViewPlaceholderMessage.setBackgroundResource(backgroundResource)
-        textViewPlaceholderMessage.text = getString(text)
-        buttonPlaceholderRefresh.visibility = View.VISIBLE
+        binding.recyclerViewTracks.visibility = View.GONE
+        binding.linearLayoutPlaceholderMessage.visibility = View.VISIBLE
+        binding.linearLayoutSearchHistory.visibility = View.GONE
+        binding.imageViewPlaceholderMessage.setBackgroundResource(backgroundResource)
+        binding.textViewPlaceholderMessage.text = getString(text)
+        binding.buttonPlaceholderRefresh.visibility = View.VISIBLE
     }
 
     private fun showSearchHistory() {
         val tracks = getSearchHistoryUseCase()
         if (tracks.isNotEmpty()) {
-            recyclerViewTracks.visibility = View.GONE
-            linearLayoutPlaceholderMessage.visibility = View.GONE
-            linearLayoutSearchHistory.visibility = View.VISIBLE
+            binding.recyclerViewTracks.visibility = View.GONE
+            binding.linearLayoutPlaceholderMessage.visibility = View.GONE
+            binding.linearLayoutSearchHistory.visibility = View.VISIBLE
             searchHistoryTracks.clear()
             searchHistoryTracks.addAll(tracks)
             searchHistoryTrackAdapter.notifyDataSetChanged()
@@ -288,12 +252,12 @@ class SearchActivity : AppCompatActivity() {
 
     private fun onEditTextSearchClearClick() {
         textSearch = ""
-        editTextSearch.setText(textSearch)
-        setDrawableEndVisibility(false, editTextSearch)
-        hideKeyboard(editTextSearch)
+        binding.editTextSearch.setText(textSearch)
+        setDrawableEndVisibility(false, binding.editTextSearch)
+        hideKeyboard(binding.editTextSearch)
         tracks.clear()
         trackAdapter.notifyDataSetChanged()
-        linearLayoutPlaceholderMessage.visibility = View.GONE
+        binding.linearLayoutPlaceholderMessage.visibility = View.GONE
         showSearchHistory()
     }
 
@@ -315,7 +279,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun onButtonClearSearchHistoryClick() {
         clearSearchHistoryUseCase()
-        linearLayoutSearchHistory.visibility = View.GONE
+        binding.linearLayoutSearchHistory.visibility = View.GONE
         searchHistoryTracks.clear()
         searchHistoryTrackAdapter.notifyDataSetChanged()
     }
@@ -333,15 +297,15 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun showLoader() {
-        progressBar.visibility = View.VISIBLE
+        binding.progressBar.visibility = View.VISIBLE
     }
 
     private fun hideLoader() {
-        progressBar.visibility = View.GONE
+        binding.progressBar.visibility = View.GONE
     }
 
     private fun onButtonPlaceHolderRefresh() {
-        linearLayoutPlaceholderMessage.visibility = View.GONE
+        binding.linearLayoutPlaceholderMessage.visibility = View.GONE
         searchDebounce()
     }
 
