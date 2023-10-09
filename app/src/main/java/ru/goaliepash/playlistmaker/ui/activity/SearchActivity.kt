@@ -15,72 +15,40 @@ import android.widget.EditText
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.schedulers.Schedulers
 import ru.goaliepash.playlistmaker.R
-import ru.goaliepash.playlistmaker.data.network.itunes.ItunesClientImpl
-import ru.goaliepash.playlistmaker.data.repository.ItunesRepositoryImpl
-import ru.goaliepash.playlistmaker.data.repository.SearchHistoryRepositoryImpl
-import ru.goaliepash.playlistmaker.data.shared_preferences.search_history.SearchHistoryClientImpl
 import ru.goaliepash.playlistmaker.databinding.ActivitySearchBinding
 import ru.goaliepash.playlistmaker.domain.model.Track
-import ru.goaliepash.playlistmaker.domain.use_case.itunes.GetSearchUseCase
-import ru.goaliepash.playlistmaker.domain.use_case.search_history.AddSearchHistoryUseCase
-import ru.goaliepash.playlistmaker.domain.use_case.search_history.ClearSearchHistoryUseCase
-import ru.goaliepash.playlistmaker.domain.use_case.search_history.GetSearchHistoryUseCase
+import ru.goaliepash.playlistmaker.presentation.state.TracksState
+import ru.goaliepash.playlistmaker.presentation.view_model.SearchViewModel
 import ru.goaliepash.playlistmaker.ui.adapter.TrackAdapter
 import ru.goaliepash.playlistmaker.ui.listener.OnTrackClickListener
-import java.util.LinkedList
 
 class SearchActivity : AppCompatActivity() {
 
-    private val tracks = ArrayList<Track>()
-    private val searchHistoryTracks = LinkedList<Track>()
     private val mainThreadHandler = Handler(Looper.getMainLooper())
     private val searchRunnable = Runnable {
-        if (textSearch.isNotEmpty()) {
-            search(textSearch)
+        if (binding.editTextSearch.text.toString().isNotEmpty()) {
+            viewModel.search(binding.editTextSearch.text.toString())
         }
     }
-    private val itunesClient by lazy { ItunesClientImpl() }
-    private val searchHistoryClient by lazy { SearchHistoryClientImpl(applicationContext) }
-    private val itunesRepository by lazy { ItunesRepositoryImpl(itunesClient) }
-    private val searchHistoryRepository by lazy { SearchHistoryRepositoryImpl(searchHistoryClient) }
-    private val getSearchUseCase by lazy { GetSearchUseCase(itunesRepository) }
-    private val addSearchHistoryUseCase by lazy { AddSearchHistoryUseCase(searchHistoryRepository) }
-    private val getSearchHistoryUseCase by lazy { GetSearchHistoryUseCase(searchHistoryRepository) }
-    private val clearSearchHistoryUseCase by lazy { ClearSearchHistoryUseCase(searchHistoryRepository) }
-    private val compositeDisposable = CompositeDisposable()
+    private val onTrackClickListener = OnTrackClickListener { track -> onTrackClick(track) }
 
-    private lateinit var binding: ActivitySearchBinding
+    private var isClickAllowed = true
+
     private lateinit var trackAdapter: TrackAdapter
     private lateinit var searchHistoryTrackAdapter: TrackAdapter
-
-    private var textSearch: String = ""
-    private var isClickAllowed = true
+    private lateinit var binding: ActivitySearchBinding
+    private lateinit var viewModel: SearchViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchBinding.inflate(layoutInflater).also { setContentView(it.root) }
+        viewModel = ViewModelProvider(this, SearchViewModel.getViewModelFactory(applicationContext))[SearchViewModel::class.java]
+        viewModel.getTracksState().observe(this) { renderTracksState(it) }
+        viewModel.getSearchHistoryTracks().observe(this) { renderSearchHistoryTracks(it) }
         initUI()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        compositeDisposable.clear()
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        restoreEditTextSearch(savedInstanceState)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putString(SEARCH_STRING, textSearch)
-        super.onSaveInstanceState(outState)
     }
 
     private fun initUI() {
@@ -98,7 +66,7 @@ class SearchActivity : AppCompatActivity() {
     private fun initEditTextSearch() {
         binding.editTextSearch.setOnFocusChangeListener { _, b ->
             if (b && binding.editTextSearch.text.isEmpty()) {
-                showSearchHistory()
+                viewModel.getSearchHistory()
             } else {
                 binding.linearLayoutSearchHistory.visibility = View.GONE
             }
@@ -108,7 +76,7 @@ class SearchActivity : AppCompatActivity() {
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 if (binding.editTextSearch.hasFocus() && p0?.isEmpty() == true) {
-                    showSearchHistory()
+                    viewModel.getSearchHistory()
                 } else {
                     binding.linearLayoutSearchHistory.visibility = View.GONE
                 }
@@ -117,7 +85,6 @@ class SearchActivity : AppCompatActivity() {
                 } else {
                     setDrawableEndVisibility(true, binding.editTextSearch)
                 }
-                textSearch = p0.toString()
                 searchDebounce()
             }
 
@@ -129,8 +96,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun initRecyclerViewTracks() {
-        val onTrackClickListener = OnTrackClickListener { track -> onTrackClick(track) }
-        trackAdapter = TrackAdapter(tracks, onTrackClickListener)
+        trackAdapter = TrackAdapter(onTrackClickListener)
         binding.recyclerViewTracks.adapter = trackAdapter
         binding.recyclerViewTracks.layoutManager = LinearLayoutManager(this)
     }
@@ -145,13 +111,13 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun initRecyclerViewSearchHistory() {
-        searchHistoryTrackAdapter = TrackAdapter(searchHistoryTracks) { track -> onTrackClick(track) }
+        searchHistoryTrackAdapter = TrackAdapter(onTrackClickListener)
         binding.recyclerViewSearchHistory.adapter = searchHistoryTrackAdapter
         binding.recyclerViewSearchHistory.layoutManager = LinearLayoutManager(this)
     }
 
     private fun initButtonClearHistory() {
-        binding.buttonClearSearchHistory.setOnClickListener { onButtonClearSearchHistoryClick() }
+        binding.buttonClearSearchHistory.setOnClickListener { viewModel.clearSearchHistory() }
     }
 
     private fun setDrawableEndVisibility(isVisible: Boolean, editText: EditText) {
@@ -165,11 +131,6 @@ class SearchActivity : AppCompatActivity() {
     private fun hideKeyboard(editText: EditText) {
         val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
         inputMethodManager?.hideSoftInputFromWindow(editText.windowToken, 0)
-    }
-
-    private fun restoreEditTextSearch(savedInstanceState: Bundle) {
-        textSearch = savedInstanceState.getString(SEARCH_STRING, "")
-        binding.editTextSearch.setText(textSearch)
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -187,36 +148,13 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    private fun search(term: String) {
-        val observable: Observable<List<Track>> = Observable
-            .fromCallable { getSearchUseCase(term) }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe { showLoader() }
-        val disposable = observable
-            .subscribe(
-                { result ->
-                    if (result.isNotEmpty()) {
-                        showTracks(result)
-                    } else {
-                        showNothingWasFoundPlaceholder()
-                    }
-                },
-                { _ ->
-                    showErrorMessagePlaceholder(R.drawable.ic_search_no_internet, R.string.no_internet_connection)
-                    hideLoader()
-                },
-                { hideLoader() }
-            )
-        compositeDisposable.add(disposable)
-    }
-
-    private fun showTracks(results: List<Track>) {
+    private fun showTracks(tracks: List<Track>) {
         binding.recyclerViewTracks.visibility = View.VISIBLE
         binding.linearLayoutPlaceholderMessage.visibility = View.GONE
         binding.linearLayoutSearchHistory.visibility = View.GONE
-        tracks.clear()
-        tracks.addAll(results)
+        binding.progressBar.visibility = View.GONE
+        trackAdapter.tracks.clear()
+        trackAdapter.tracks.addAll(tracks)
         trackAdapter.notifyDataSetChanged()
     }
 
@@ -227,6 +165,7 @@ class SearchActivity : AppCompatActivity() {
         binding.imageViewPlaceholderMessage.setBackgroundResource(R.drawable.ic_search_error)
         binding.textViewPlaceholderMessage.text = getString(R.string.nothing_was_found)
         binding.buttonPlaceholderRefresh.visibility = View.GONE
+        binding.progressBar.visibility = View.GONE
     }
 
     private fun showErrorMessagePlaceholder(@DrawableRes backgroundResource: Int, @StringRes text: Int) {
@@ -236,52 +175,33 @@ class SearchActivity : AppCompatActivity() {
         binding.imageViewPlaceholderMessage.setBackgroundResource(backgroundResource)
         binding.textViewPlaceholderMessage.text = getString(text)
         binding.buttonPlaceholderRefresh.visibility = View.VISIBLE
-    }
-
-    private fun showSearchHistory() {
-        val tracks = getSearchHistoryUseCase()
-        if (tracks.isNotEmpty()) {
-            binding.recyclerViewTracks.visibility = View.GONE
-            binding.linearLayoutPlaceholderMessage.visibility = View.GONE
-            binding.linearLayoutSearchHistory.visibility = View.VISIBLE
-            searchHistoryTracks.clear()
-            searchHistoryTracks.addAll(tracks)
-            searchHistoryTrackAdapter.notifyDataSetChanged()
-        }
+        binding.progressBar.visibility = View.GONE
     }
 
     private fun onEditTextSearchClearClick() {
-        textSearch = ""
-        binding.editTextSearch.setText(textSearch)
+        binding.editTextSearch.setText("")
         setDrawableEndVisibility(false, binding.editTextSearch)
         hideKeyboard(binding.editTextSearch)
-        tracks.clear()
+        trackAdapter.tracks.clear()
         trackAdapter.notifyDataSetChanged()
         binding.linearLayoutPlaceholderMessage.visibility = View.GONE
-        showSearchHistory()
+        viewModel.getSearchHistory()
     }
 
     private fun onTrackClick(track: Track) {
         if (clickDebounce()) {
-            searchHistoryTracks.clear()
-            searchHistoryTracks.addAll(getSearchHistoryUseCase())
-            if (searchHistoryTracks.contains(track)) {
-                searchHistoryTracks.remove(track)
-            } else if (searchHistoryTracks.size == MAX_SIZE_OF_SEARCH_HISTORY_TRACKS) {
-                searchHistoryTracks.removeAt(MAX_SIZE_OF_SEARCH_HISTORY_TRACKS - 1)
+            searchHistoryTrackAdapter.tracks.clear()
+            viewModel.getSearchHistoryTracks().value?.let { searchHistoryTrackAdapter.tracks.addAll(it) }
+            if (searchHistoryTrackAdapter.tracks.contains(track)) {
+                searchHistoryTrackAdapter.tracks.remove(track)
+            } else if (searchHistoryTrackAdapter.tracks.size == MAX_SIZE_OF_SEARCH_HISTORY_TRACKS) {
+                searchHistoryTrackAdapter.tracks.removeAt(MAX_SIZE_OF_SEARCH_HISTORY_TRACKS - 1)
             }
-            searchHistoryTracks.add(0, track)
-            addSearchHistoryUseCase(searchHistoryTracks)
+            searchHistoryTrackAdapter.tracks.add(0, track)
+            viewModel.addSearchHistory(searchHistoryTrackAdapter.tracks)
             openTrackActivity(track)
             searchHistoryTrackAdapter.notifyDataSetChanged()
         }
-    }
-
-    private fun onButtonClearSearchHistoryClick() {
-        clearSearchHistoryUseCase()
-        binding.linearLayoutSearchHistory.visibility = View.GONE
-        searchHistoryTracks.clear()
-        searchHistoryTrackAdapter.notifyDataSetChanged()
     }
 
     private fun openTrackActivity(track: Track) {
@@ -296,12 +216,11 @@ class SearchActivity : AppCompatActivity() {
         mainThreadHandler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }
 
-    private fun showLoader() {
+    private fun showLoading() {
+        binding.recyclerViewTracks.visibility = View.GONE
+        binding.linearLayoutPlaceholderMessage.visibility = View.GONE
+        binding.linearLayoutSearchHistory.visibility = View.GONE
         binding.progressBar.visibility = View.VISIBLE
-    }
-
-    private fun hideLoader() {
-        binding.progressBar.visibility = View.GONE
     }
 
     private fun onButtonPlaceHolderRefresh() {
@@ -318,10 +237,33 @@ class SearchActivity : AppCompatActivity() {
         return current
     }
 
+    private fun renderTracksState(tracksState: TracksState) {
+        when (tracksState) {
+            is TracksState.Loading -> showLoading()
+            is TracksState.Content -> showTracks(tracksState.tracks)
+            is TracksState.Empty -> showNothingWasFoundPlaceholder()
+            is TracksState.Error -> showErrorMessagePlaceholder(R.drawable.ic_search_no_internet, R.string.no_internet_connection)
+        }
+    }
+
+    private fun renderSearchHistoryTracks(searchHistoryTracks: List<Track>) {
+        if (searchHistoryTracks.isNotEmpty()) {
+            binding.recyclerViewTracks.visibility = View.GONE
+            binding.linearLayoutPlaceholderMessage.visibility = View.GONE
+            binding.linearLayoutSearchHistory.visibility = View.VISIBLE
+            searchHistoryTrackAdapter.tracks.clear()
+            searchHistoryTrackAdapter.tracks.addAll(searchHistoryTracks)
+            searchHistoryTrackAdapter.notifyDataSetChanged()
+        } else {
+            binding.linearLayoutSearchHistory.visibility = View.GONE
+            searchHistoryTrackAdapter.tracks.clear()
+            searchHistoryTrackAdapter.notifyDataSetChanged()
+        }
+    }
+
     companion object {
-        private const val SEARCH_STRING = "SEARCH_STRING"
         private const val MAX_SIZE_OF_SEARCH_HISTORY_TRACKS = 10
-        private const val SEARCH_DEBOUNCE_DELAY = 2000L
         private const val CLICK_DEBOUNCE_DELAY = 1000L
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
     }
 }
