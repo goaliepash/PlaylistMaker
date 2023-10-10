@@ -19,7 +19,7 @@ import java.util.Locale
 
 class TrackAdapter(private val onTrackClickListener: OnTrackClickListener) : RecyclerView.Adapter<TrackAdapter.TrackViewHolder>() {
 
-    val tracks = mutableListOf<Track>()
+    val tracks = ArrayList<Track>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.track_view, parent, false)
