@@ -12,6 +12,7 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import ru.goaliepash.playlistmaker.domain.model.Track
+import ru.goaliepash.playlistmaker.presentation.state.SearchHistoryTracksState
 import ru.goaliepash.playlistmaker.presentation.state.TracksState
 import ru.goaliepash.playlistmaker.util.Creator
 
@@ -22,7 +23,7 @@ class SearchViewModel(context: Context) : ViewModel() {
     private val getSearchHistoryUseCase by lazy { Creator.provideGetSearchHistoryUseCase(context) }
     private val clearSearchHistoryUseCase by lazy { Creator.provideClearSearchHistoryUseCase(context) }
     private val tracksState = MutableLiveData<TracksState>()
-    private val searchHistoryTracks = MutableLiveData<ArrayList<Track>>()
+    private val searchHistoryTracksState = MutableLiveData<SearchHistoryTracksState>()
     private val compositeDisposable = CompositeDisposable()
 
     override fun onCleared() {
@@ -32,7 +33,7 @@ class SearchViewModel(context: Context) : ViewModel() {
 
     fun getTracksState(): LiveData<TracksState> = tracksState
 
-    fun getSearchHistoryTracks(): LiveData<ArrayList<Track>> = searchHistoryTracks
+    fun getSearchHistoryTracksState(): LiveData<SearchHistoryTracksState> = searchHistoryTracksState
 
     fun search(term: String) {
         val observable: Observable<List<Track>> = Observable
@@ -54,26 +55,41 @@ class SearchViewModel(context: Context) : ViewModel() {
         compositeDisposable.add(disposable)
     }
 
-    fun addSearchHistory(tracks: List<Track>) {
+    fun addSearchHistory(track: Track) {
+        val tracks = mutableListOf<Track>()
+        tracks.addAll(getSearchHistoryUseCase())
+        if (tracks.contains(track)) {
+            tracks.remove(track)
+        } else if (tracks.size == MAX_SIZE_OF_SEARCH_HISTORY_TRACKS) {
+            tracks.removeAt(MAX_SIZE_OF_SEARCH_HISTORY_TRACKS - 1)
+        }
+        tracks.add(0, track)
         addSearchHistoryUseCase(tracks)
+        renderSearchHistoryTrackState(SearchHistoryTracksState.Addition(tracks))
     }
 
     fun getSearchHistory() {
-        val trackList = ArrayList<Track>()
-        trackList.addAll(getSearchHistoryUseCase())
-        searchHistoryTracks.value = trackList
+        if (getSearchHistoryUseCase().isNotEmpty()) {
+            renderSearchHistoryTrackState(SearchHistoryTracksState.Receipt(getSearchHistoryUseCase().toList()))
+        }
     }
 
     fun clearSearchHistory() {
-        searchHistoryTracks.value = ArrayList()
         clearSearchHistoryUseCase()
+        renderSearchHistoryTrackState(SearchHistoryTracksState.Cleaning(emptyList()))
     }
 
     private fun renderTracksState(state: TracksState) {
         tracksState.postValue(state)
     }
 
+    private fun renderSearchHistoryTrackState(state: SearchHistoryTracksState) {
+        searchHistoryTracksState.value = state
+    }
+
     companion object {
+        private const val MAX_SIZE_OF_SEARCH_HISTORY_TRACKS = 10
+
         fun getViewModelFactory(context: Context): ViewModelProvider.Factory = viewModelFactory { initializer { SearchViewModel(context) } }
     }
 }

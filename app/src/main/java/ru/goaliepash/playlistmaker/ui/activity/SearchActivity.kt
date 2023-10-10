@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import ru.goaliepash.playlistmaker.R
 import ru.goaliepash.playlistmaker.databinding.ActivitySearchBinding
 import ru.goaliepash.playlistmaker.domain.model.Track
+import ru.goaliepash.playlistmaker.presentation.state.SearchHistoryTracksState
 import ru.goaliepash.playlistmaker.presentation.state.TracksState
 import ru.goaliepash.playlistmaker.presentation.view_model.SearchViewModel
 import ru.goaliepash.playlistmaker.ui.adapter.TrackAdapter
@@ -47,7 +48,7 @@ class SearchActivity : AppCompatActivity() {
         binding = ActivitySearchBinding.inflate(layoutInflater).also { setContentView(it.root) }
         viewModel = ViewModelProvider(this, SearchViewModel.getViewModelFactory(applicationContext))[SearchViewModel::class.java]
         viewModel.getTracksState().observe(this) { renderTracksState(it) }
-        viewModel.getSearchHistoryTracks().observe(this) { renderSearchHistoryTracks(it) }
+        viewModel.getSearchHistoryTracksState().observe(this) { renderSearchHistoryTracksState(it) }
         initUI()
     }
 
@@ -190,17 +191,8 @@ class SearchActivity : AppCompatActivity() {
 
     private fun onTrackClick(track: Track) {
         if (clickDebounce()) {
-            searchHistoryTrackAdapter.tracks.clear()
-            viewModel.getSearchHistoryTracks().value?.let { searchHistoryTrackAdapter.tracks.addAll(it) }
-            if (searchHistoryTrackAdapter.tracks.contains(track)) {
-                searchHistoryTrackAdapter.tracks.remove(track)
-            } else if (searchHistoryTrackAdapter.tracks.size == MAX_SIZE_OF_SEARCH_HISTORY_TRACKS) {
-                searchHistoryTrackAdapter.tracks.removeAt(MAX_SIZE_OF_SEARCH_HISTORY_TRACKS - 1)
-            }
-            searchHistoryTrackAdapter.tracks.add(0, track)
-            viewModel.addSearchHistory(searchHistoryTrackAdapter.tracks)
+            viewModel.addSearchHistory(track)
             openTrackActivity(track)
-            searchHistoryTrackAdapter.notifyDataSetChanged()
         }
     }
 
@@ -237,32 +229,41 @@ class SearchActivity : AppCompatActivity() {
         return current
     }
 
-    private fun renderTracksState(tracksState: TracksState) {
-        when (tracksState) {
+    private fun renderTracksState(state: TracksState) {
+        when (state) {
             is TracksState.Loading -> showLoading()
-            is TracksState.Content -> showTracks(tracksState.tracks)
+            is TracksState.Content -> showTracks(state.tracks)
             is TracksState.Empty -> showNothingWasFoundPlaceholder()
             is TracksState.Error -> showErrorMessagePlaceholder(R.drawable.ic_search_no_internet, R.string.no_internet_connection)
         }
     }
 
-    private fun renderSearchHistoryTracks(searchHistoryTracks: List<Track>) {
-        if (searchHistoryTracks.isNotEmpty()) {
-            binding.recyclerViewTracks.visibility = View.GONE
-            binding.linearLayoutPlaceholderMessage.visibility = View.GONE
-            binding.linearLayoutSearchHistory.visibility = View.VISIBLE
-            searchHistoryTrackAdapter.tracks.clear()
-            searchHistoryTrackAdapter.tracks.addAll(searchHistoryTracks)
-            searchHistoryTrackAdapter.notifyDataSetChanged()
-        } else {
-            binding.linearLayoutSearchHistory.visibility = View.GONE
-            searchHistoryTrackAdapter.tracks.clear()
-            searchHistoryTrackAdapter.notifyDataSetChanged()
+    private fun renderSearchHistoryTracksState(state: SearchHistoryTracksState) {
+        when (state) {
+            is SearchHistoryTracksState.Addition -> {
+                searchHistoryTrackAdapter.tracks.clear()
+                searchHistoryTrackAdapter.tracks.addAll(state.tracks)
+                searchHistoryTrackAdapter.notifyDataSetChanged()
+            }
+
+            is SearchHistoryTracksState.Receipt -> {
+                binding.recyclerViewTracks.visibility = View.GONE
+                binding.linearLayoutPlaceholderMessage.visibility = View.GONE
+                binding.linearLayoutSearchHistory.visibility = View.VISIBLE
+                searchHistoryTrackAdapter.tracks.clear()
+                searchHistoryTrackAdapter.tracks.addAll(state.tracks)
+                searchHistoryTrackAdapter.notifyDataSetChanged()
+            }
+
+            is SearchHistoryTracksState.Cleaning -> {
+                binding.linearLayoutSearchHistory.visibility = View.GONE
+                searchHistoryTrackAdapter.tracks.clear()
+                searchHistoryTrackAdapter.notifyDataSetChanged()
+            }
         }
     }
 
     companion object {
-        private const val MAX_SIZE_OF_SEARCH_HISTORY_TRACKS = 10
         private const val CLICK_DEBOUNCE_DELAY = 1000L
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
     }
