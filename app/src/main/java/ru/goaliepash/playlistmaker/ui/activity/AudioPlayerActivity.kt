@@ -11,10 +11,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import ru.goaliepash.playlistmaker.R
 import ru.goaliepash.playlistmaker.databinding.ActivityAudioPlayerBinding
 import ru.goaliepash.playlistmaker.domain.model.Track
-import java.text.SimpleDateFormat
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.util.Locale
+import ru.goaliepash.playlistmaker.util.DateTimeUtil
 
 class AudioPlayerActivity : AppCompatActivity() {
 
@@ -23,15 +20,15 @@ class AudioPlayerActivity : AppCompatActivity() {
     private val updateTimeRunnable = object : Runnable {
         override fun run() {
             val currentPosition = mediaPlayer.currentPosition.toLong()
-            binding.textViewTime.text = formatTrackTime(currentPosition)
+            binding.textViewTime.text = DateTimeUtil.getFormattedTrackTime(currentPosition)
             mainThreadHandler.postDelayed(this, UPDATE_TIME_DELAY)
         }
     }
 
+    private var playerState = STATE_DEFAULT
+
     private lateinit var binding: ActivityAudioPlayerBinding
     private lateinit var track: Track
-
-    private var playerState = STATE_DEFAULT
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,7 +95,7 @@ class AudioPlayerActivity : AppCompatActivity() {
     }
 
     private fun initTextViewLengthValue() {
-        val formattedTrackTime = formatTrackTime(track.trackTimeMillis)
+        val formattedTrackTime = DateTimeUtil.getFormattedTrackTime(track.trackTimeMillis)
         binding.textViewLengthValue.text = formattedTrackTime
     }
 
@@ -107,9 +104,7 @@ class AudioPlayerActivity : AppCompatActivity() {
     }
 
     private fun initTextViewYearValue() {
-        val formatter = DateTimeFormatter.ofPattern(RELEASED_DATE_FORMAT)
-        val releaseDateTime = LocalDateTime.parse(track.releaseDate, formatter)
-        binding.textViewYearValue.text = releaseDateTime.year.toString()
+        binding.textViewYearValue.text = DateTimeUtil.getReleasedDateTimeYear(track.releaseDate)
     }
 
     private fun initTextViewGenreValue() {
@@ -125,7 +120,7 @@ class AudioPlayerActivity : AppCompatActivity() {
     }
 
     private fun initTextViewTime() {
-        binding.textViewTime.text = formatTrackTime(TRACK_START_TIME)
+        binding.textViewTime.text = DateTimeUtil.getFormattedTrackTime(TRACK_START_TIME)
     }
 
     private fun preparePlayer() {
@@ -138,7 +133,7 @@ class AudioPlayerActivity : AppCompatActivity() {
         mediaPlayer.setOnCompletionListener {
             mainThreadHandler.removeCallbacks(updateTimeRunnable)
             binding.imageButtonPlayPause.setImageResource(R.drawable.ic_play)
-            binding.textViewTime.text = formatTrackTime(TRACK_START_TIME)
+            binding.textViewTime.text = DateTimeUtil.getFormattedTrackTime(TRACK_START_TIME)
             playerState = STATE_PREPARED
         }
     }
@@ -164,20 +159,14 @@ class AudioPlayerActivity : AppCompatActivity() {
         playerState = STATE_PAUSED
     }
 
-    private fun formatTrackTime(timeMillis: Long): String {
-        return SimpleDateFormat(TIME_FORMAT, Locale.getDefault()).format(timeMillis)
-    }
-
     companion object {
         const val EXTRA_TRACK = "EXTRA_TRACK"
 
         private const val ART_WORK_NEW_VALUE = "512x512bb.jpg"
-        private const val TIME_FORMAT = "mm:ss"
-        private const val RELEASED_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'"
         private const val STATE_DEFAULT = 0
         private const val STATE_PREPARED = 1
         private const val STATE_PLAYING = 2
-        private const val STATE_PAUSED = 4
+        private const val STATE_PAUSED = 3
         private const val TRACK_START_TIME = 0L
         private const val UPDATE_TIME_DELAY = 500L
     }

@@ -7,8 +7,11 @@ import androidx.appcompat.app.AppCompatActivity
 import ru.goaliepash.playlistmaker.R
 import ru.goaliepash.playlistmaker.databinding.ActivitySettingsBinding
 import ru.goaliepash.playlistmaker.ui.App
+import ru.goaliepash.playlistmaker.util.Creator
 
 class SettingsActivity : AppCompatActivity() {
+
+    private val getAppThemeUseCase by lazy { Creator.provideGetAppThemeUseCase(applicationContext) }
 
     private lateinit var binding: ActivitySettingsBinding
 
@@ -71,7 +74,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun initSwitchMaterialDarkTheme() {
         binding.switchMaterialDarkTheme.apply {
-            isChecked = (applicationContext as App).darkTheme
+            isChecked = getAppThemeUseCase()
             setOnCheckedChangeListener { _, checked -> (applicationContext as App).switchTheme(checked) }
         }
     }
