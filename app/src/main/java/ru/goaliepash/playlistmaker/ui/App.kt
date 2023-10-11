@@ -2,19 +2,14 @@ package ru.goaliepash.playlistmaker.ui
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import ru.goaliepash.playlistmaker.data.repository.AppThemeRepositoryImpl
-import ru.goaliepash.playlistmaker.data.shared_preferences.app_theme.AppThemeClientImpl
-import ru.goaliepash.playlistmaker.domain.use_case.app_theme.GetAppThemeUseCase
-import ru.goaliepash.playlistmaker.domain.use_case.app_theme.SetAppThemeUseCase
+import ru.goaliepash.playlistmaker.util.Creator
 
 class App : Application() {
 
     var darkTheme = false
 
-    private val appThemeClient by lazy { AppThemeClientImpl(applicationContext) }
-    private val appThemeRepository by lazy { AppThemeRepositoryImpl(appThemeClient) }
-    private val getAppThemeUseCase by lazy { GetAppThemeUseCase(appThemeRepository) }
-    private val setAppThemeUseCase by lazy { SetAppThemeUseCase(appThemeRepository) }
+    private val getAppThemeUseCase by lazy { Creator.provideGetAppThemeUseCase(applicationContext) }
+    private val setAppThemeUseCase by lazy { Creator.provideSetAppThemeUseCase(applicationContext) }
 
     override fun onCreate() {
         super.onCreate()
