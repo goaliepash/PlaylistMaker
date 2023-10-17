@@ -2,16 +2,26 @@ package ru.goaliepash.playlistmaker.ui
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import ru.goaliepash.playlistmaker.util.Creator
+import org.koin.android.ext.android.inject
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
+import ru.goaliepash.domain.interactor.AppThemeInteractor
+import ru.goaliepash.playlistmaker.di.appModule
+import ru.goaliepash.playlistmaker.di.dataModule
+import ru.goaliepash.playlistmaker.di.domainModule
 
 class App : Application() {
 
     private var darkTheme = false
 
-    private val appThemeInteractor by lazy { Creator.provideAppThemeInteractor(applicationContext) }
+    private val appThemeInteractor: AppThemeInteractor by inject()
 
     override fun onCreate() {
         super.onCreate()
+        startKoin {
+            androidContext(this@App)
+            modules(listOf(appModule, domainModule, dataModule))
+        }
         setTheme(appThemeInteractor.getAppTheme())
     }
 

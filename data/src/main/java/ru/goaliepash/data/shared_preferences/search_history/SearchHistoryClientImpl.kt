@@ -1,13 +1,10 @@
 package ru.goaliepash.data.shared_preferences.search_history
 
-import android.content.Context
+import android.content.SharedPreferences
 import com.google.gson.Gson
-import ru.goaliepash.data.shared_preferences.SharedPreferencesService
 import ru.goaliepash.domain.model.Track
 
-class SearchHistoryClientImpl(context: Context) : SearchHistoryClient {
-
-    private val sharedPreferences = SharedPreferencesService.get(context)
+class SearchHistoryClientImpl(private val sharedPreferences: SharedPreferences) : SearchHistoryClient {
 
     override fun add(searchHistoryTracks: List<Track>) {
         sharedPreferences.edit().putString(SEARCH_HISTORY_KEY, createJsonFromTrackList(searchHistoryTracks)).apply()
@@ -18,7 +15,7 @@ class SearchHistoryClientImpl(context: Context) : SearchHistoryClient {
     }
 
     override fun clear() {
-        sharedPreferences.edit().clear().apply()
+        sharedPreferences.edit().remove(SEARCH_HISTORY_KEY).apply()
     }
 
     private fun createJsonFromTrackList(tracks: List<Track>): String {

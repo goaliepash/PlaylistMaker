@@ -1,11 +1,8 @@
 package ru.goaliepash.data.shared_preferences.app_theme
 
-import android.content.Context
-import ru.goaliepash.data.shared_preferences.SharedPreferencesService
+import android.content.SharedPreferences
 
-class AppThemeClientImpl(context: Context) : AppThemeClient {
-
-    private val sharedPreferences = SharedPreferencesService.get(context)
+class AppThemeClientImpl(private val sharedPreferences: SharedPreferences) : AppThemeClient {
 
     override fun get(): Boolean {
         return sharedPreferences.getBoolean(DARK_THEME_KEY, false)

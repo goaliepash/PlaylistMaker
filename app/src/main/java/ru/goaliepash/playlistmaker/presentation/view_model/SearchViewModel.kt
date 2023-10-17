@@ -3,9 +3,6 @@ package ru.goaliepash.playlistmaker.presentation.view_model
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -85,10 +82,5 @@ class SearchViewModel(private val itunesInteractor: ItunesInteractor, private va
 
     companion object {
         private const val MAX_SIZE_OF_SEARCH_HISTORY_TRACKS = 10
-
-        fun getViewModelFactory(
-            itunesInteractor: ItunesInteractor,
-            searchHistoryInteractor: SearchHistoryInteractor
-        ): ViewModelProvider.Factory = viewModelFactory { initializer { SearchViewModel(itunesInteractor, searchHistoryInteractor) } }
     }
 }

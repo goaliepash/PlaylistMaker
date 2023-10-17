@@ -4,20 +4,24 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.goaliepash.playlistmaker.R
 import ru.goaliepash.playlistmaker.databinding.ActivitySettingsBinding
+import ru.goaliepash.playlistmaker.presentation.view_model.SettingsViewModel
 import ru.goaliepash.playlistmaker.ui.App
-import ru.goaliepash.playlistmaker.util.Creator
 
 class SettingsActivity : AppCompatActivity() {
 
-    private val appThemeInteractor by lazy { Creator.provideAppThemeInteractor(applicationContext) }
+    private val settingsViewModel by viewModel<SettingsViewModel>()
 
     private lateinit var binding: ActivitySettingsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsBinding.inflate(layoutInflater).also { setContentView(it.root) }
+        settingsViewModel.isThemeDark().observe(this) {
+            binding.switchMaterialDarkTheme.isChecked = it
+        }
         initUI()
     }
 
@@ -73,9 +77,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun initSwitchMaterialDarkTheme() {
-        binding.switchMaterialDarkTheme.apply {
-            isChecked = appThemeInteractor.getAppTheme()
-            setOnCheckedChangeListener { _, checked -> (applicationContext as App).switchTheme(checked) }
-        }
+        settingsViewModel.getAppTheme()
+        binding.switchMaterialDarkTheme.setOnCheckedChangeListener { _, checked -> (applicationContext as App).switchTheme(checked) }
     }
 }
