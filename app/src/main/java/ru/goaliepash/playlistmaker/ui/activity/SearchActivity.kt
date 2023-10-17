@@ -25,6 +25,7 @@ import ru.goaliepash.playlistmaker.presentation.state.TracksState
 import ru.goaliepash.playlistmaker.presentation.view_model.SearchViewModel
 import ru.goaliepash.playlistmaker.ui.adapter.TrackAdapter
 import ru.goaliepash.playlistmaker.ui.listener.OnTrackClickListener
+import ru.goaliepash.playlistmaker.util.Creator
 
 class SearchActivity : AppCompatActivity() {
 
@@ -35,6 +36,8 @@ class SearchActivity : AppCompatActivity() {
         }
     }
     private val onTrackClickListener = OnTrackClickListener { track -> onTrackClick(track) }
+    private val itunesInteractor by lazy { Creator.provideItunesInteractor() }
+    private val searchHistoryInteractor by lazy { Creator.provideSearchHistoryInteractor(applicationContext) }
 
     private var isClickAllowed = true
 
@@ -46,7 +49,8 @@ class SearchActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchBinding.inflate(layoutInflater).also { setContentView(it.root) }
-        viewModel = ViewModelProvider(this, SearchViewModel.getViewModelFactory(applicationContext))[SearchViewModel::class.java]
+        viewModel =
+            ViewModelProvider(this, SearchViewModel.getViewModelFactory(itunesInteractor, searchHistoryInteractor))[SearchViewModel::class.java]
         viewModel.getTracksState().observe(this) { renderTracksState(it) }
         viewModel.getSearchHistoryTracksState().observe(this) { renderSearchHistoryTracksState(it) }
         initUI()

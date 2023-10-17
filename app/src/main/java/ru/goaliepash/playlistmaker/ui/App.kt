@@ -8,12 +8,11 @@ class App : Application() {
 
     private var darkTheme = false
 
-    private val getAppThemeUseCase by lazy { Creator.provideGetAppThemeUseCase(applicationContext) }
-    private val setAppThemeUseCase by lazy { Creator.provideSetAppThemeUseCase(applicationContext) }
+    private val appThemeInteractor by lazy { Creator.provideAppThemeInteractor(applicationContext) }
 
     override fun onCreate() {
         super.onCreate()
-        setTheme(getAppThemeUseCase())
+        setTheme(appThemeInteractor.getAppTheme())
     }
 
     fun switchTheme(darkThemeEnabled: Boolean) {
@@ -23,14 +22,8 @@ class App : Application() {
 
     private fun setTheme(darkThemeEnabled: Boolean) {
         this.darkTheme = darkThemeEnabled
-        AppCompatDelegate.setDefaultNightMode(
-            if (darkThemeEnabled) {
-                AppCompatDelegate.MODE_NIGHT_YES
-            } else {
-                AppCompatDelegate.MODE_NIGHT_NO
-            }
-        )
+        AppCompatDelegate.setDefaultNightMode(if (darkThemeEnabled) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO)
     }
 
-    private fun saveDarkThemeStatus(darkThemeEnabled: Boolean) = setAppThemeUseCase(darkThemeEnabled)
+    private fun saveDarkThemeStatus(darkThemeEnabled: Boolean) = appThemeInteractor.setAppTheme(darkThemeEnabled)
 }

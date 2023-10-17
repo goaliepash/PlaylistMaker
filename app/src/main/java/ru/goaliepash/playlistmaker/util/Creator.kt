@@ -12,37 +12,25 @@ import ru.goaliepash.data.shared_preferences.search_history.SearchHistoryClient
 import ru.goaliepash.data.shared_preferences.search_history.SearchHistoryClientImpl
 import ru.goaliepash.domain.api.AppThemeRepository
 import ru.goaliepash.domain.api.ItunesRepository
-import ru.goaliepash.domain.use_case.app_theme.GetAppThemeUseCase
-import ru.goaliepash.domain.use_case.app_theme.SetAppThemeUseCase
-import ru.goaliepash.domain.use_case.itunes.GetSearchUseCase
-import ru.goaliepash.domain.use_case.search_history.AddSearchHistoryUseCase
-import ru.goaliepash.domain.use_case.search_history.ClearSearchHistoryUseCase
-import ru.goaliepash.domain.use_case.search_history.GetSearchHistoryUseCase
+import ru.goaliepash.domain.interactor.AppThemeInteractor
+import ru.goaliepash.domain.interactor.ItunesInteractor
+import ru.goaliepash.domain.interactor.SearchHistoryInteractor
+import ru.goaliepash.domain.interactor.implementation.AppThemeInteractorImpl
+import ru.goaliepash.domain.interactor.implementation.ItunesInteractorImpl
+import ru.goaliepash.domain.interactor.implementation.SearchHistoryInteractorImpl
 
 object Creator {
 
-    fun provideGetAppThemeUseCase(context: Context): GetAppThemeUseCase {
-        return GetAppThemeUseCase(provideAppThemeRepository(context))
+    fun provideAppThemeInteractor(context: Context): AppThemeInteractor {
+        return AppThemeInteractorImpl(provideAppThemeRepository(context))
     }
 
-    fun provideSetAppThemeUseCase(context: Context): SetAppThemeUseCase {
-        return SetAppThemeUseCase(provideAppThemeRepository(context))
+    fun provideItunesInteractor(): ItunesInteractor {
+        return ItunesInteractorImpl(provideItunesRepository())
     }
 
-    fun provideGetSearchUseCase(): GetSearchUseCase {
-        return GetSearchUseCase(provideItunesRepository())
-    }
-
-    fun provideAddSearchHistoryUseCase(context: Context): AddSearchHistoryUseCase {
-        return AddSearchHistoryUseCase(provideSearchHistoryRepository(context))
-    }
-
-    fun provideGetSearchHistoryUseCase(context: Context): GetSearchHistoryUseCase {
-        return GetSearchHistoryUseCase(provideSearchHistoryRepository(context))
-    }
-
-    fun provideClearSearchHistoryUseCase(context: Context): ClearSearchHistoryUseCase {
-        return ClearSearchHistoryUseCase(provideSearchHistoryRepository(context))
+    fun provideSearchHistoryInteractor(context: Context): SearchHistoryInteractor {
+        return SearchHistoryInteractorImpl(provideSearchHistoryRepository(context))
     }
 
     private fun provideAppThemeRepository(context: Context): AppThemeRepository {

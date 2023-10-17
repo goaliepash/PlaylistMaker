@@ -1,6 +1,5 @@
 package ru.goaliepash.playlistmaker.presentation.view_model
 
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,17 +10,14 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
+import ru.goaliepash.domain.interactor.ItunesInteractor
+import ru.goaliepash.domain.interactor.SearchHistoryInteractor
 import ru.goaliepash.domain.model.Track
 import ru.goaliepash.playlistmaker.presentation.state.SearchHistoryTracksState
 import ru.goaliepash.playlistmaker.presentation.state.TracksState
-import ru.goaliepash.playlistmaker.util.Creator
 
-class SearchViewModel(context: Context) : ViewModel() {
+class SearchViewModel(private val itunesInteractor: ItunesInteractor, private val searchHistoryInteractor: SearchHistoryInteractor) : ViewModel() {
 
-    private val getSearchUseCase by lazy { Creator.provideGetSearchUseCase() }
-    private val addSearchHistoryUseCase by lazy { Creator.provideAddSearchHistoryUseCase(context) }
-    private val getSearchHistoryUseCase by lazy { Creator.provideGetSearchHistoryUseCase(context) }
-    private val clearSearchHistoryUseCase by lazy { Creator.provideClearSearchHistoryUseCase(context) }
     private val tracksState = MutableLiveData<TracksState>()
     private val searchHistoryTracksState = MutableLiveData<SearchHistoryTracksState>()
     private val compositeDisposable = CompositeDisposable()
@@ -37,7 +33,7 @@ class SearchViewModel(context: Context) : ViewModel() {
 
     fun search(term: String) {
         val observable: Observable<List<Track>> = Observable
-            .fromCallable { getSearchUseCase(term) }
+            .fromCallable { itunesInteractor.getSearch(term) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { renderTracksState(TracksState.Loading) }
@@ -57,25 +53,25 @@ class SearchViewModel(context: Context) : ViewModel() {
 
     fun addSearchHistory(track: Track) {
         val tracks = mutableListOf<Track>()
-        tracks.addAll(getSearchHistoryUseCase())
+        tracks.addAll(searchHistoryInteractor.getSearchHistory())
         if (tracks.contains(track)) {
             tracks.remove(track)
         } else if (tracks.size == MAX_SIZE_OF_SEARCH_HISTORY_TRACKS) {
             tracks.removeAt(MAX_SIZE_OF_SEARCH_HISTORY_TRACKS - 1)
         }
         tracks.add(0, track)
-        addSearchHistoryUseCase(tracks)
+        searchHistoryInteractor.addSearchHistory(tracks)
         renderSearchHistoryTrackState(SearchHistoryTracksState.Addition(tracks))
     }
 
     fun getSearchHistory() {
-        if (getSearchHistoryUseCase().isNotEmpty()) {
-            renderSearchHistoryTrackState(SearchHistoryTracksState.Receipt(getSearchHistoryUseCase().toList()))
+        if (searchHistoryInteractor.getSearchHistory().isNotEmpty()) {
+            renderSearchHistoryTrackState(SearchHistoryTracksState.Receipt(searchHistoryInteractor.getSearchHistory().toList()))
         }
     }
 
     fun clearSearchHistory() {
-        clearSearchHistoryUseCase()
+        searchHistoryInteractor.clearSearchHistory()
         renderSearchHistoryTrackState(SearchHistoryTracksState.Cleaning(emptyList()))
     }
 
@@ -90,6 +86,9 @@ class SearchViewModel(context: Context) : ViewModel() {
     companion object {
         private const val MAX_SIZE_OF_SEARCH_HISTORY_TRACKS = 10
 
-        fun getViewModelFactory(context: Context): ViewModelProvider.Factory = viewModelFactory { initializer { SearchViewModel(context) } }
+        fun getViewModelFactory(
+            itunesInteractor: ItunesInteractor,
+            searchHistoryInteractor: SearchHistoryInteractor
+        ): ViewModelProvider.Factory = viewModelFactory { initializer { SearchViewModel(itunesInteractor, searchHistoryInteractor) } }
     }
 }
