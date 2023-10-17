@@ -17,9 +17,9 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import ru.goaliepash.domain.model.Track
 import ru.goaliepash.playlistmaker.R
 import ru.goaliepash.playlistmaker.databinding.ActivitySearchBinding
-import ru.goaliepash.playlistmaker.domain.model.Track
 import ru.goaliepash.playlistmaker.presentation.state.SearchHistoryTracksState
 import ru.goaliepash.playlistmaker.presentation.state.TracksState
 import ru.goaliepash.playlistmaker.presentation.view_model.SearchViewModel

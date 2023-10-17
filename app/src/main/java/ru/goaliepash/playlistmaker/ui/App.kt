@@ -6,7 +6,7 @@ import ru.goaliepash.playlistmaker.util.Creator
 
 class App : Application() {
 
-    var darkTheme = false
+    private var darkTheme = false
 
     private val getAppThemeUseCase by lazy { Creator.provideGetAppThemeUseCase(applicationContext) }
     private val setAppThemeUseCase by lazy { Creator.provideSetAppThemeUseCase(applicationContext) }

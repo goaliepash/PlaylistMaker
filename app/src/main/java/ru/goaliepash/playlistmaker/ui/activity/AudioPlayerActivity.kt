@@ -8,9 +8,9 @@ import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import ru.goaliepash.domain.model.Track
 import ru.goaliepash.playlistmaker.R
 import ru.goaliepash.playlistmaker.databinding.ActivityAudioPlayerBinding
-import ru.goaliepash.playlistmaker.domain.model.Track
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -54,9 +54,9 @@ class AudioPlayerActivity : AppCompatActivity() {
 
     private fun getTrackFromIntent(): Track {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra(EXTRA_TRACK, Track::class.java)!!
+            intent.getSerializableExtra(EXTRA_TRACK, Track::class.java)!!
         } else {
-            intent.getParcelableExtra(EXTRA_TRACK)!!
+            intent.getSerializableExtra(EXTRA_TRACK) as Track
         }
     }
 

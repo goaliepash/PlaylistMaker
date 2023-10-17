@@ -1,23 +1,23 @@
 package ru.goaliepash.playlistmaker.util
 
 import android.content.Context
-import ru.goaliepash.playlistmaker.data.network.itunes.ItunesClient
-import ru.goaliepash.playlistmaker.data.network.itunes.ItunesClientImpl
-import ru.goaliepash.playlistmaker.data.repository.AppThemeRepositoryImpl
-import ru.goaliepash.playlistmaker.data.repository.ItunesRepositoryImpl
-import ru.goaliepash.playlistmaker.data.repository.SearchHistoryRepositoryImpl
-import ru.goaliepash.playlistmaker.data.shared_preferences.app_theme.AppThemeClient
-import ru.goaliepash.playlistmaker.data.shared_preferences.app_theme.AppThemeClientImpl
-import ru.goaliepash.playlistmaker.data.shared_preferences.search_history.SearchHistoryClient
-import ru.goaliepash.playlistmaker.data.shared_preferences.search_history.SearchHistoryClientImpl
-import ru.goaliepash.playlistmaker.domain.api.AppThemeRepository
-import ru.goaliepash.playlistmaker.domain.api.ItunesRepository
-import ru.goaliepash.playlistmaker.domain.use_case.app_theme.GetAppThemeUseCase
-import ru.goaliepash.playlistmaker.domain.use_case.app_theme.SetAppThemeUseCase
-import ru.goaliepash.playlistmaker.domain.use_case.itunes.GetSearchUseCase
-import ru.goaliepash.playlistmaker.domain.use_case.search_history.AddSearchHistoryUseCase
-import ru.goaliepash.playlistmaker.domain.use_case.search_history.ClearSearchHistoryUseCase
-import ru.goaliepash.playlistmaker.domain.use_case.search_history.GetSearchHistoryUseCase
+import ru.goaliepash.data.itunes.ItunesClient
+import ru.goaliepash.data.itunes.ItunesClientImpl
+import ru.goaliepash.data.repository.AppThemeRepositoryImpl
+import ru.goaliepash.data.repository.ItunesRepositoryImpl
+import ru.goaliepash.data.repository.SearchHistoryRepositoryImpl
+import ru.goaliepash.data.shared_preferences.app_theme.AppThemeClient
+import ru.goaliepash.data.shared_preferences.app_theme.AppThemeClientImpl
+import ru.goaliepash.data.shared_preferences.search_history.SearchHistoryClient
+import ru.goaliepash.data.shared_preferences.search_history.SearchHistoryClientImpl
+import ru.goaliepash.domain.api.AppThemeRepository
+import ru.goaliepash.domain.api.ItunesRepository
+import ru.goaliepash.domain.use_case.app_theme.GetAppThemeUseCase
+import ru.goaliepash.domain.use_case.app_theme.SetAppThemeUseCase
+import ru.goaliepash.domain.use_case.itunes.GetSearchUseCase
+import ru.goaliepash.domain.use_case.search_history.AddSearchHistoryUseCase
+import ru.goaliepash.domain.use_case.search_history.ClearSearchHistoryUseCase
+import ru.goaliepash.domain.use_case.search_history.GetSearchHistoryUseCase
 
 object Creator {
 
