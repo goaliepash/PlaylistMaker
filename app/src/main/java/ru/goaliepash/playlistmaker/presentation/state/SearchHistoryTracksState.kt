@@ -1,6 +1,6 @@
 package ru.goaliepash.playlistmaker.presentation.state
 
-import ru.goaliepash.playlistmaker.domain.model.Track
+import ru.goaliepash.domain.model.Track
 
 sealed interface SearchHistoryTracksState {
 
