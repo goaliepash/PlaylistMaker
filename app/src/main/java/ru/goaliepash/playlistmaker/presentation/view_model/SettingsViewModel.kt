@@ -14,9 +14,4 @@ class SettingsViewModel(private val appThemeInteractor: AppThemeInteractor) : Vi
     fun getAppTheme() {
         isThemeDark.value = appThemeInteractor.getAppTheme()
     }
-
-    fun setAppTheme(darkThemeEnabled: Boolean) {
-        appThemeInteractor.setAppTheme(darkThemeEnabled)
-        isThemeDark.value = darkThemeEnabled
-    }
 }
