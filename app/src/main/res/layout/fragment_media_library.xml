@@ -6,28 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".ui.fragment.implementation.MediaLibraryFragment">
 
-    <ImageView
-        android:id="@+id/image_view_back"
-        style="@style/BackImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:importantForAccessibility="no"
-        android:padding="@dimen/offset_16"
-        android:src="@drawable/ic_arrow_back"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <TextView
         android:id="@+id/text_view_title"
         style="@style/TitleTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/offset_16"
+        android:layout_marginTop="@dimen/offset_16"
         android:text="@string/media_library"
-        app:layout_constraintBottom_toBottomOf="@id/image_view_back"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/image_view_back"
-        app:layout_constraintTop_toTopOf="@id/image_view_back" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_layout"
@@ -37,7 +26,7 @@
         android:layout_marginTop="@dimen/offset_4"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/image_view_back" />
+        app:layout_constraintTop_toBottomOf="@id/text_view_title" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager_2"

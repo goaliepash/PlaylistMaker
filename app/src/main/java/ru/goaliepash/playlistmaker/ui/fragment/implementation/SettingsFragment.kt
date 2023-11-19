@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.goaliepash.playlistmaker.R
 import ru.goaliepash.playlistmaker.databinding.FragmentSettingsBinding
@@ -35,17 +34,10 @@ class SettingsFragment : BindingFragment<FragmentSettingsBinding>() {
     }
 
     private fun initUI() {
-        initImageViewBack()
         initImageViewShareApp()
         initImageViewSupport()
         initImageViewTermsOfUse()
         initSwitchMaterialDarkTheme()
-    }
-
-    private fun initImageViewBack() {
-        binding.imageViewBack.setOnClickListener {
-            findNavController().navigateUp()
-        }
     }
 
     private fun initImageViewShareApp() {

@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.fragment.findNavController
 import com.google.android.material.tabs.TabLayoutMediator
 import ru.goaliepash.playlistmaker.R
 import ru.goaliepash.playlistmaker.databinding.FragmentMediaLibraryBinding
@@ -30,14 +29,7 @@ class MediaLibraryFragment : BindingFragment<FragmentMediaLibraryBinding>() {
     }
 
     private fun initUI() {
-        initImageViewBack()
         initViewPagerAndTabLayout()
-    }
-
-    private fun initImageViewBack() {
-        binding.imageViewBack.setOnClickListener {
-            findNavController().navigateUp()
-        }
     }
 
     private fun initViewPagerAndTabLayout() {

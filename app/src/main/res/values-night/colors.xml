@@ -31,4 +31,6 @@
     <color name="search_no_internet_fill_color_4">@color/yp_white</color>
     <color name="playlist_maker_tab_layout_text_color">@color/yp_white</color>
     <color name="playlist_maker_tab_layout_indicator_color">@color/yp_white</color>
+    <color name="main_bottom_navigation_text_color_active">@color/yp_blue</color>
+    <color name="main_bottom_navigation_text_color_inactive">@color/yp_white</color>
 </resources>

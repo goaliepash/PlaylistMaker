@@ -16,7 +16,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.goaliepash.domain.model.Track
@@ -62,17 +61,10 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     }
 
     private fun initUI() {
-        initImageViewBack()
         initEditTextSearch()
         initRecyclerViewTracks()
         initButtonPlaceholderRefresh()
         initSearchHistory()
-    }
-
-    private fun initImageViewBack() {
-        binding.imageViewBack.setOnClickListener {
-            findNavController().navigateUp()
-        }
     }
 
     private fun initEditTextSearch() {

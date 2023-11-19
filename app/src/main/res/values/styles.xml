@@ -125,4 +125,18 @@
         <item name="tabIndicatorFullWidth">true</item>
     </style>
 
+    <style name="MainBottomNavigationView" parent="@style/Widget.MaterialComponents.BottomNavigationView">
+        <item name="backgroundTint">@android:color/transparent</item>
+        <item name="elevation">0dp</item>
+        <item name="itemIconTint">@color/main_bottom_navigation_view_color</item>
+        <item name="itemTextAppearanceActive">@style/BottomNavigationItemTextAppearance</item>
+        <item name="itemTextAppearanceInactive">@style/BottomNavigationItemTextAppearance</item>
+        <item name="itemTextColor">@color/main_bottom_navigation_view_color</item>
+    </style>
+
+    <style name="BottomNavigationItemTextAppearance">
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
 </resources>
