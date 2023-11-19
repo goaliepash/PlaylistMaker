@@ -1,27 +1,35 @@
-package ru.goaliepash.playlistmaker.ui.activity
+package ru.goaliepash.playlistmaker.ui.fragment.implementation
 
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.goaliepash.playlistmaker.R
-import ru.goaliepash.playlistmaker.databinding.ActivitySettingsBinding
+import ru.goaliepash.playlistmaker.databinding.FragmentSettingsBinding
 import ru.goaliepash.playlistmaker.presentation.view_model.SettingsViewModel
 import ru.goaliepash.playlistmaker.ui.App
+import ru.goaliepash.playlistmaker.ui.fragment.BindingFragment
 
-class SettingsActivity : AppCompatActivity() {
+class SettingsFragment : BindingFragment<FragmentSettingsBinding>() {
 
     private val settingsViewModel by viewModel<SettingsViewModel>()
 
-    private lateinit var binding: ActivitySettingsBinding
+    override fun createBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentSettingsBinding {
+        return FragmentSettingsBinding.inflate(inflater, container, false)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivitySettingsBinding.inflate(layoutInflater).also { setContentView(it.root) }
         settingsViewModel.isThemeDark().observe(this) {
             binding.switchMaterialDarkTheme.isChecked = it
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         initUI()
     }
 
@@ -34,19 +42,27 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun initImageViewBack() {
-        binding.imageViewBack.setOnClickListener { finish() }
+        binding.imageViewBack.setOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
     }
 
     private fun initImageViewShareApp() {
-        binding.imageViewShareApp.setOnClickListener { imageViewShareAppOnClick() }
+        binding.imageViewShareApp.setOnClickListener {
+            imageViewShareAppOnClick()
+        }
     }
 
     private fun initImageViewSupport() {
-        binding.imageViewSupport.setOnClickListener { imageViewSupportOnClick() }
+        binding.imageViewSupport.setOnClickListener {
+            imageViewSupportOnClick()
+        }
     }
 
     private fun initImageViewTermsOfUse() {
-        binding.imageViewTermsOfUse.setOnClickListener { imageViewTermsOfUseOnClick() }
+        binding.imageViewTermsOfUse.setOnClickListener {
+            imageViewTermsOfUseOnClick()
+        }
     }
 
     private fun imageViewShareAppOnClick() {
@@ -78,6 +94,12 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun initSwitchMaterialDarkTheme() {
         settingsViewModel.getAppTheme()
-        binding.switchMaterialDarkTheme.setOnCheckedChangeListener { _, checked -> (applicationContext as App).switchTheme(checked) }
+        binding.switchMaterialDarkTheme.setOnCheckedChangeListener { _, checked ->
+            (requireActivity().applicationContext as App).switchTheme(checked)
+        }
+    }
+
+    companion object {
+        fun newInstance() = SettingsFragment()
     }
 }

@@ -1,4 +1,4 @@
-package ru.goaliepash.playlistmaker.ui.activity
+package ru.goaliepash.playlistmaker.ui.fragment.implementation
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -8,25 +8,28 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.goaliepash.domain.model.Track
 import ru.goaliepash.playlistmaker.R
-import ru.goaliepash.playlistmaker.databinding.ActivitySearchBinding
+import ru.goaliepash.playlistmaker.databinding.FragmentSearchBinding
 import ru.goaliepash.playlistmaker.presentation.state.SearchHistoryTracksState
 import ru.goaliepash.playlistmaker.presentation.state.TracksState
 import ru.goaliepash.playlistmaker.presentation.view_model.SearchViewModel
+import ru.goaliepash.playlistmaker.ui.activity.AudioPlayerActivity
 import ru.goaliepash.playlistmaker.ui.adapter.TrackAdapter
+import ru.goaliepash.playlistmaker.ui.fragment.BindingFragment
 import ru.goaliepash.playlistmaker.ui.listener.OnTrackClickListener
 
-class SearchActivity : AppCompatActivity() {
+class SearchFragment : BindingFragment<FragmentSearchBinding>() {
 
     private val mainThreadHandler = Handler(Looper.getMainLooper())
     private val searchRunnable = Runnable {
@@ -41,13 +44,19 @@ class SearchActivity : AppCompatActivity() {
 
     private lateinit var trackAdapter: TrackAdapter
     private lateinit var searchHistoryTrackAdapter: TrackAdapter
-    private lateinit var binding: ActivitySearchBinding
+
+    override fun createBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentSearchBinding {
+        return FragmentSearchBinding.inflate(inflater, container, false)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivitySearchBinding.inflate(layoutInflater).also { setContentView(it.root) }
         viewModel.getTracksState().observe(this) { renderTracksState(it) }
         viewModel.getSearchHistoryTracksState().observe(this) { renderSearchHistoryTracksState(it) }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         initUI()
     }
 
@@ -60,7 +69,9 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun initImageViewBack() {
-        binding.imageViewBack.setOnClickListener { finish() }
+        binding.imageViewBack.setOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
     }
 
     private fun initEditTextSearch() {
@@ -98,7 +109,7 @@ class SearchActivity : AppCompatActivity() {
     private fun initRecyclerViewTracks() {
         trackAdapter = TrackAdapter(onTrackClickListener)
         binding.recyclerViewTracks.adapter = trackAdapter
-        binding.recyclerViewTracks.layoutManager = LinearLayoutManager(this)
+        binding.recyclerViewTracks.layoutManager = LinearLayoutManager(requireActivity())
     }
 
     private fun initButtonPlaceholderRefresh() {
@@ -113,7 +124,7 @@ class SearchActivity : AppCompatActivity() {
     private fun initRecyclerViewSearchHistory() {
         searchHistoryTrackAdapter = TrackAdapter(onTrackClickListener)
         binding.recyclerViewSearchHistory.adapter = searchHistoryTrackAdapter
-        binding.recyclerViewSearchHistory.layoutManager = LinearLayoutManager(this)
+        binding.recyclerViewSearchHistory.layoutManager = LinearLayoutManager(requireActivity())
     }
 
     private fun initButtonClearHistory() {
@@ -129,7 +140,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun hideKeyboard(editText: EditText) {
-        val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        val inputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
         inputMethodManager?.hideSoftInputFromWindow(editText.windowToken, 0)
     }
 
@@ -196,7 +207,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun openTrackActivity(track: Track) {
-        Intent(this, AudioPlayerActivity::class.java).apply {
+        Intent(requireActivity(), AudioPlayerActivity::class.java).apply {
             putExtra(AudioPlayerActivity.EXTRA_TRACK, track)
             startActivity(this)
         }
@@ -265,5 +276,7 @@ class SearchActivity : AppCompatActivity() {
     companion object {
         private const val CLICK_DEBOUNCE_DELAY = 1000L
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
+
+        fun newInstance() = SearchFragment()
     }
 }

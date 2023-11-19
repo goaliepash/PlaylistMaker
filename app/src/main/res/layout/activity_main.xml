@@ -1,51 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    style="@style/Theme.PlaylistMaker.MainActivityLayout"
+<androidx.fragment.app.FragmentContainerView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragment_container_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingHorizontal="@dimen/padding_horizontal"
-    tools:context=".ui.activity.MainActivity">
-
-    <TextView
-        style="@style/TitleTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/offset_16"
-        android:text="@string/playlist_maker"
-        android:textColor="@color/yp_white" />
-
-    <Button
-        android:id="@+id/button_search"
-        style="@style/Widget.Material3.Button.UnelevatedButton.MainActivityButton"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/offset_40"
-        android:layout_weight="1"
-        android:text="@string/search"
-        app:icon="@drawable/ic_search" />
-
-    <Button
-        android:id="@+id/button_media_library"
-        style="@style/Widget.Material3.Button.UnelevatedButton.MainActivityButton"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/main_margin_top"
-        android:layout_weight="1"
-        android:text="@string/media_library"
-        app:icon="@drawable/ic_media_library" />
-
-    <Button
-        android:id="@+id/button_settings"
-        style="@style/Widget.Material3.Button.UnelevatedButton.MainActivityButton"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/main_margin_top"
-        android:layout_marginBottom="@dimen/offset_28"
-        android:layout_weight="1"
-        android:text="@string/settings"
-        app:icon="@drawable/ic_settings" />
-
-</LinearLayout>
+    android:layout_height="match_parent" />
