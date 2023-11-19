@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import ru.goaliepash.playlistmaker.R
 import ru.goaliepash.playlistmaker.databinding.FragmentMainBinding
 import ru.goaliepash.playlistmaker.ui.fragment.BindingFragment
@@ -26,36 +27,20 @@ class MainFragment : BindingFragment<FragmentMainBinding>() {
     }
 
     private fun initButtonSearch() {
-        val buttonSearchClickListener = View.OnClickListener {
-            parentFragmentManager
-                .beginTransaction()
-                .replace(R.id.fragment_container_view, SearchFragment.newInstance())
-                .addToBackStack(null)
-                .setReorderingAllowed(true)
-                .commit()
+        binding.buttonSearch.setOnClickListener {
+            findNavController().navigate(R.id.action_mainFragment_to_searchFragment)
         }
-        binding.buttonSearch.setOnClickListener(buttonSearchClickListener)
     }
 
     private fun initButtonMediaLibrary() {
         binding.buttonMediaLibrary.setOnClickListener {
-            parentFragmentManager
-                .beginTransaction()
-                .replace(R.id.fragment_container_view, MediaLibraryFragment.newInstance())
-                .addToBackStack(null)
-                .setReorderingAllowed(true)
-                .commit()
+            findNavController().navigate(R.id.action_mainFragment_to_mediaLibraryFragment)
         }
     }
 
     private fun initButtonSettings() {
         binding.buttonSettings.setOnClickListener {
-            parentFragmentManager
-                .beginTransaction()
-                .replace(R.id.fragment_container_view, SettingsFragment.newInstance())
-                .addToBackStack(null)
-                .setReorderingAllowed(true)
-                .commit()
+            findNavController().navigate(R.id.action_mainFragment_to_settingsFragment)
         }
     }
 }

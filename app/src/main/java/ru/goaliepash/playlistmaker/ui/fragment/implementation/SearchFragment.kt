@@ -16,6 +16,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.goaliepash.domain.model.Track
@@ -70,7 +71,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
 
     private fun initImageViewBack() {
         binding.imageViewBack.setOnClickListener {
-            parentFragmentManager.popBackStack()
+            findNavController().navigateUp()
         }
     }
 
@@ -276,7 +277,5 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     companion object {
         private const val CLICK_DEBOUNCE_DELAY = 1000L
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
-
-        fun newInstance() = SearchFragment()
     }
 }

@@ -57,6 +57,9 @@ dependencies {
     implementation 'io.reactivex.rxjava3:rxandroid:3.0.2'
     implementation 'io.insert-koin:koin-core:3.4.3'
     implementation 'io.insert-koin:koin-android:3.4.3'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.7.5'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.7.5'
+    implementation 'androidx.fragment:fragment-ktx:1.6.2'
 
     testImplementation 'junit:junit:4.13.2'
 }

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.tabs.TabLayoutMediator
 import ru.goaliepash.playlistmaker.R
 import ru.goaliepash.playlistmaker.databinding.FragmentMediaLibraryBinding
@@ -35,7 +36,7 @@ class MediaLibraryFragment : BindingFragment<FragmentMediaLibraryBinding>() {
 
     private fun initImageViewBack() {
         binding.imageViewBack.setOnClickListener {
-            parentFragmentManager.popBackStack()
+            findNavController().navigateUp()
         }
     }
 
@@ -48,10 +49,5 @@ class MediaLibraryFragment : BindingFragment<FragmentMediaLibraryBinding>() {
             }
         }
         tabLayoutMediator.attach()
-    }
-
-    companion object {
-
-        fun newInstance() = MediaLibraryFragment()
     }
 }
