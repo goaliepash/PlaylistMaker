@@ -32,11 +32,6 @@ import ru.goaliepash.playlistmaker.ui.listener.OnTrackClickListener
 class SearchFragment : BindingFragment<FragmentSearchBinding>() {
 
     private val mainThreadHandler = Handler(Looper.getMainLooper())
-    private val searchRunnable = Runnable {
-        if (binding.editTextSearch.text.toString().isNotEmpty()) {
-            viewModel.search(binding.editTextSearch.text.toString())
-        }
-    }
     private val onTrackClickListener = OnTrackClickListener { track -> onTrackClick(track) }
     private val viewModel by viewModel<SearchViewModel>()
 
@@ -44,6 +39,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
 
     private lateinit var trackAdapter: TrackAdapter
     private lateinit var searchHistoryTrackAdapter: TrackAdapter
+    private lateinit var searchTextWatcher: TextWatcher
 
     override fun createBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentSearchBinding {
         return FragmentSearchBinding.inflate(inflater, container, false)
@@ -75,7 +71,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
                 binding.linearLayoutSearchHistory.visibility = View.GONE
             }
         }
-        val searchTextWatcher = object : TextWatcher {
+        searchTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -89,12 +85,14 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
                 } else {
                     setDrawableEndVisibility(true, binding.editTextSearch)
                 }
-                searchDebounce()
+                if (binding.editTextSearch.text.toString().isNotEmpty()) {
+                    viewModel.searchDebounce(binding.editTextSearch.text.toString())
+                }
             }
 
             override fun afterTextChanged(p0: Editable?) {}
         }
-        binding.editTextSearch.addTextChangedListener(searchTextWatcher)
+        searchTextWatcher.let { binding.editTextSearch.addTextChangedListener(it) }
         binding.editTextSearch.onDrawableEndClick { onEditTextSearchClearClick() }
         setDrawableEndVisibility(false, binding.editTextSearch)
     }
@@ -206,11 +204,6 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
         }
     }
 
-    private fun searchDebounce() {
-        mainThreadHandler.removeCallbacks(searchRunnable)
-        mainThreadHandler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
-    }
-
     private fun showLoading() {
         binding.recyclerViewTracks.visibility = View.GONE
         binding.linearLayoutPlaceholderMessage.visibility = View.GONE
@@ -220,7 +213,9 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
 
     private fun onButtonPlaceHolderRefresh() {
         binding.linearLayoutPlaceholderMessage.visibility = View.GONE
-        searchDebounce()
+        if (binding.editTextSearch.text.toString().isNotEmpty()) {
+            viewModel.searchDebounce(binding.editTextSearch.text.toString())
+        }
     }
 
     private fun clickDebounce(): Boolean {
@@ -268,6 +263,5 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
 
     companion object {
         private const val CLICK_DEBOUNCE_DELAY = 1000L
-        private const val SEARCH_DEBOUNCE_DELAY = 2000L
     }
 }

@@ -1,5 +1,8 @@
 package ru.goaliepash.playlistmaker.presentation.view_model
 
+import android.os.Handler
+import android.os.Looper
+import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,6 +21,7 @@ class SearchViewModel(private val itunesInteractor: ItunesInteractor, private va
     private val tracksState = MutableLiveData<TracksState>()
     private val searchHistoryTracksState = MutableLiveData<SearchHistoryTracksState>()
     private val compositeDisposable = CompositeDisposable()
+    private val handler = Handler(Looper.getMainLooper())
 
     override fun onCleared() {
         super.onCleared()
@@ -28,7 +32,14 @@ class SearchViewModel(private val itunesInteractor: ItunesInteractor, private va
 
     fun getSearchHistoryTracksState(): LiveData<SearchHistoryTracksState> = searchHistoryTracksState
 
-    fun search(term: String) {
+    fun searchDebounce(term: String) {
+        handler.removeCallbacksAndMessages(searchRequestToken)
+        val searchRunnable = Runnable { search(term) }
+        val postTime = SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
+        handler.postAtTime(searchRunnable, searchRequestToken, postTime)
+    }
+
+    private fun search(term: String) {
         val observable: Observable<List<Track>> = Observable
             .fromCallable { itunesInteractor.getSearch(term) }
             .subscribeOn(Schedulers.io())
@@ -82,5 +93,8 @@ class SearchViewModel(private val itunesInteractor: ItunesInteractor, private va
 
     companion object {
         private const val MAX_SIZE_OF_SEARCH_HISTORY_TRACKS = 10
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+
+        private val searchRequestToken = Any()
     }
 }
