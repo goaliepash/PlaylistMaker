@@ -32,6 +32,23 @@
         android:paddingVertical="@dimen/edit_text_padding_vertical"
         android:singleLine="true" />
 
+    <LinearLayout
+        android:id="@+id/linear_layout_progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/progress_bar_background"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/offset_136"
+            android:indeterminateTint="@color/yp_blue" />
+
+    </LinearLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_tracks"
         android:layout_width="match_parent"
@@ -111,14 +128,5 @@
             android:visibility="visible" />
 
     </LinearLayout>
-
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="@dimen/offset_136"
-        android:indeterminateTint="@color/yp_blue"
-        android:visibility="gone" />
 
 </LinearLayout>

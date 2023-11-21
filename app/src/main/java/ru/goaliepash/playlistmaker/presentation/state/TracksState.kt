@@ -11,4 +11,6 @@ sealed interface TracksState {
     object Empty : TracksState
 
     object Error : TracksState
+
+    object Cancel : TracksState
 }

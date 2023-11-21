@@ -18,10 +18,14 @@ import ru.goaliepash.playlistmaker.presentation.state.TracksState
 
 class SearchViewModel(private val itunesInteractor: ItunesInteractor, private val searchHistoryInteractor: SearchHistoryInteractor) : ViewModel() {
 
+    var isScreenOnPaused = false
+
     private val tracksState = MutableLiveData<TracksState>()
     private val searchHistoryTracksState = MutableLiveData<SearchHistoryTracksState>()
     private val compositeDisposable = CompositeDisposable()
     private val handler = Handler(Looper.getMainLooper())
+
+    private var latestSearchText: String? = null
 
     override fun onCleared() {
         super.onCleared()
@@ -33,6 +37,10 @@ class SearchViewModel(private val itunesInteractor: ItunesInteractor, private va
     fun getSearchHistoryTracksState(): LiveData<SearchHistoryTracksState> = searchHistoryTracksState
 
     fun searchDebounce(term: String) {
+        if (latestSearchText == term) {
+            return
+        }
+        this.latestSearchText = term
         handler.removeCallbacksAndMessages(searchRequestToken)
         val searchRunnable = Runnable { search(term) }
         val postTime = SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
@@ -40,23 +48,29 @@ class SearchViewModel(private val itunesInteractor: ItunesInteractor, private va
     }
 
     private fun search(term: String) {
-        val observable: Observable<List<Track>> = Observable
-            .fromCallable { itunesInteractor.getSearch(term) }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe { renderTracksState(TracksState.Loading) }
-        val disposable = observable
-            .subscribe(
-                { result ->
-                    if (result.isNotEmpty()) {
-                        renderTracksState(TracksState.Content(result))
-                    } else {
-                        renderTracksState(TracksState.Empty)
-                    }
-                },
-                { _ -> renderTracksState(TracksState.Error) }
-            )
-        compositeDisposable.add(disposable)
+        if (term.isNotEmpty()) {
+            val observable: Observable<List<Track>> = Observable
+                .fromCallable { itunesInteractor.getSearch(term) }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { renderTracksState(TracksState.Loading) }
+            val disposable = observable
+                .subscribe(
+                    { result ->
+                        if (!isScreenOnPaused) {
+                            if (result.isNotEmpty()) {
+                                renderTracksState(TracksState.Content(result))
+                            } else {
+                                renderTracksState(TracksState.Empty)
+                            }
+                        } else {
+                            renderTracksState(TracksState.Cancel)
+                        }
+                    },
+                    { _ -> renderTracksState(TracksState.Error) }
+                )
+            compositeDisposable.add(disposable)
+        }
     }
 
     fun addSearchHistory(track: Track) {

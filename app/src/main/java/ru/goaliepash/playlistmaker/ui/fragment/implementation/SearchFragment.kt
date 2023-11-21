@@ -36,8 +36,8 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     private val viewModel by viewModel<SearchViewModel>()
 
     private var isClickAllowed = true
+    private var trackAdapter: TrackAdapter? = null
 
-    private lateinit var trackAdapter: TrackAdapter
     private lateinit var searchHistoryTrackAdapter: TrackAdapter
     private lateinit var searchTextWatcher: TextWatcher
 
@@ -54,6 +54,16 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initUI()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.isScreenOnPaused = false
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.isScreenOnPaused = true
     }
 
     private fun initUI() {
@@ -85,20 +95,24 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
                 } else {
                     setDrawableEndVisibility(true, binding.editTextSearch)
                 }
-                if (binding.editTextSearch.text.toString().isNotEmpty()) {
-                    viewModel.searchDebounce(binding.editTextSearch.text.toString())
-                }
+                viewModel.searchDebounce(binding.editTextSearch.text.toString())
             }
 
             override fun afterTextChanged(p0: Editable?) {}
         }
-        searchTextWatcher.let { binding.editTextSearch.addTextChangedListener(it) }
-        binding.editTextSearch.onDrawableEndClick { onEditTextSearchClearClick() }
+        searchTextWatcher.let {
+            binding.editTextSearch.addTextChangedListener(it)
+        }
+        binding.editTextSearch.onDrawableEndClick {
+            onEditTextSearchClearClick()
+        }
         setDrawableEndVisibility(false, binding.editTextSearch)
     }
 
     private fun initRecyclerViewTracks() {
-        trackAdapter = TrackAdapter(onTrackClickListener)
+        if (trackAdapter == null) {
+            trackAdapter = TrackAdapter(onTrackClickListener)
+        }
         binding.recyclerViewTracks.adapter = trackAdapter
         binding.recyclerViewTracks.layoutManager = LinearLayoutManager(requireActivity())
     }
@@ -154,10 +168,12 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
         binding.recyclerViewTracks.visibility = View.VISIBLE
         binding.linearLayoutPlaceholderMessage.visibility = View.GONE
         binding.linearLayoutSearchHistory.visibility = View.GONE
-        binding.progressBar.visibility = View.GONE
-        trackAdapter.tracks.clear()
-        trackAdapter.tracks.addAll(tracks)
-        trackAdapter.notifyDataSetChanged()
+        binding.linearLayoutProgressBar.visibility = View.GONE
+        trackAdapter?.let {
+            it.tracks.clear()
+            it.tracks.addAll(tracks)
+            it.notifyDataSetChanged()
+        }
     }
 
     private fun showNothingWasFoundPlaceholder() {
@@ -167,7 +183,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
         binding.imageViewPlaceholderMessage.setBackgroundResource(R.drawable.ic_search_error)
         binding.textViewPlaceholderMessage.text = getString(R.string.nothing_was_found)
         binding.buttonPlaceholderRefresh.visibility = View.GONE
-        binding.progressBar.visibility = View.GONE
+        binding.linearLayoutProgressBar.visibility = View.GONE
     }
 
     private fun showErrorMessagePlaceholder(@DrawableRes backgroundResource: Int, @StringRes text: Int) {
@@ -177,15 +193,17 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
         binding.imageViewPlaceholderMessage.setBackgroundResource(backgroundResource)
         binding.textViewPlaceholderMessage.text = getString(text)
         binding.buttonPlaceholderRefresh.visibility = View.VISIBLE
-        binding.progressBar.visibility = View.GONE
+        binding.linearLayoutProgressBar.visibility = View.GONE
     }
 
     private fun onEditTextSearchClearClick() {
         binding.editTextSearch.setText("")
         setDrawableEndVisibility(false, binding.editTextSearch)
         hideKeyboard(binding.editTextSearch)
-        trackAdapter.tracks.clear()
-        trackAdapter.notifyDataSetChanged()
+        trackAdapter?.let {
+            it.tracks.clear()
+            it.notifyDataSetChanged()
+        }
         binding.linearLayoutPlaceholderMessage.visibility = View.GONE
         viewModel.getSearchHistory()
     }
@@ -205,17 +223,16 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     }
 
     private fun showLoading() {
-        binding.recyclerViewTracks.visibility = View.GONE
-        binding.linearLayoutPlaceholderMessage.visibility = View.GONE
-        binding.linearLayoutSearchHistory.visibility = View.GONE
-        binding.progressBar.visibility = View.VISIBLE
+        binding.linearLayoutProgressBar.visibility = View.VISIBLE
+    }
+
+    private fun hideLoading() {
+        binding.linearLayoutProgressBar.visibility = View.GONE
     }
 
     private fun onButtonPlaceHolderRefresh() {
         binding.linearLayoutPlaceholderMessage.visibility = View.GONE
-        if (binding.editTextSearch.text.toString().isNotEmpty()) {
-            viewModel.searchDebounce(binding.editTextSearch.text.toString())
-        }
+        viewModel.searchDebounce(binding.editTextSearch.text.toString())
     }
 
     private fun clickDebounce(): Boolean {
@@ -233,6 +250,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
             is TracksState.Content -> showTracks(state.tracks)
             is TracksState.Empty -> showNothingWasFoundPlaceholder()
             is TracksState.Error -> showErrorMessagePlaceholder(R.drawable.ic_search_no_internet, R.string.no_internet_connection)
+            is TracksState.Cancel -> hideLoading()
         }
     }
 

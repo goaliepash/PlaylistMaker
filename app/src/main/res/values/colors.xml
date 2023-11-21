@@ -43,4 +43,5 @@
     <color name="playlist_maker_tab_layout_indicator_color">@color/yp_black</color>
     <color name="main_bottom_navigation_text_color_active">@color/yp_blue</color>
     <color name="main_bottom_navigation_text_color_inactive">@color/yp_black</color>
+    <color name="progress_bar_background">@color/yp_white</color>
 </resources>

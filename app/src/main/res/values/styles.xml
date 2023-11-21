@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.PlaylistMaker.MainActivityLayout" parent="Theme.PlaylistMaker">
-        <item name="android:background">@color/yp_blue</item>
-    </style>
-
     <style name="BackImageView">
         <item name="tint">@color/back_image_view_tint</item>
     </style>
