@@ -47,6 +47,18 @@ class SearchViewModel(private val itunesInteractor: ItunesInteractor, private va
         handler.postAtTime(searchRunnable, searchRequestToken, postTime)
     }
 
+    fun refreshSearch(term: String) {
+        search(term)
+    }
+
+    fun clearTrackState() {
+        tracksState.value = TracksState.Content(emptyList())
+    }
+
+    fun clearSearchHistoryTrackState() {
+        searchHistoryTracksState.value = SearchHistoryTracksState.Cleaning(emptyList())
+    }
+
     private fun search(term: String) {
         if (term.isNotEmpty()) {
             val observable: Observable<List<Track>> = Observable

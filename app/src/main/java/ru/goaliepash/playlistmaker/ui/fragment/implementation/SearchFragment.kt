@@ -45,15 +45,11 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
         return FragmentSearchBinding.inflate(inflater, container, false)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel.getTracksState().observe(this) { renderTracksState(it) }
-        viewModel.getSearchHistoryTracksState().observe(this) { renderSearchHistoryTracksState(it) }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initUI()
+        viewModel.getSearchHistoryTracksState().observe(viewLifecycleOwner) { renderSearchHistoryTracksState(it) }
+        viewModel.getTracksState().observe(viewLifecycleOwner) { renderTracksState(it) }
     }
 
     override fun onResume() {
@@ -205,6 +201,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
             it.notifyDataSetChanged()
         }
         binding.linearLayoutPlaceholderMessage.visibility = View.GONE
+        viewModel.clearTrackState()
         viewModel.getSearchHistory()
     }
 
@@ -232,7 +229,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
 
     private fun onButtonPlaceHolderRefresh() {
         binding.linearLayoutPlaceholderMessage.visibility = View.GONE
-        viewModel.searchDebounce(binding.editTextSearch.text.toString())
+        viewModel.refreshSearch(binding.editTextSearch.text.toString())
     }
 
     private fun clickDebounce(): Boolean {
@@ -250,7 +247,10 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
             is TracksState.Content -> showTracks(state.tracks)
             is TracksState.Empty -> showNothingWasFoundPlaceholder()
             is TracksState.Error -> showErrorMessagePlaceholder(R.drawable.ic_search_no_internet, R.string.no_internet_connection)
-            is TracksState.Cancel -> hideLoading()
+            is TracksState.Cancel -> {
+                viewModel.clearSearchHistoryTrackState()
+                hideLoading()
+            }
         }
     }
 

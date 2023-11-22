@@ -21,16 +21,12 @@ class SettingsFragment : BindingFragment<FragmentSettingsBinding>() {
         return FragmentSettingsBinding.inflate(inflater, container, false)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        settingsViewModel.isThemeDark().observe(this) {
-            binding.switchMaterialDarkTheme.isChecked = it
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initUI()
+        settingsViewModel.isThemeDark().observe(viewLifecycleOwner) {
+            binding.switchMaterialDarkTheme.isChecked = it
+        }
     }
 
     private fun initUI() {
