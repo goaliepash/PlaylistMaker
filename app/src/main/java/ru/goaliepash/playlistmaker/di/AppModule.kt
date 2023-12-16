@@ -2,6 +2,7 @@ package ru.goaliepash.playlistmaker.di
 
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
+import ru.goaliepash.playlistmaker.presentation.view_model.AudioPlayerViewModel
 import ru.goaliepash.playlistmaker.presentation.view_model.FavoriteTracksViewModel
 import ru.goaliepash.playlistmaker.presentation.view_model.PlaylistsViewModel
 import ru.goaliepash.playlistmaker.presentation.view_model.SearchViewModel
@@ -23,5 +24,9 @@ val appModule = module {
 
     viewModel {
         PlaylistsViewModel()
+    }
+
+    viewModel {
+        AudioPlayerViewModel()
     }
 }
