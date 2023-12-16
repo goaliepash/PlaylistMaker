@@ -5,9 +5,12 @@ import ru.goaliepash.data.dto.response.Response
 
 class ItunesClientImpl(private val itunesService: ItunesService) : ItunesClient {
 
-    override fun search(searchRequest: SearchRequest): Response {
-        val response = itunesService.search(searchRequest.term).execute()
-        val body = response.body() ?: Response()
-        return body.apply { resultCode = response.code() }
+    override suspend fun search(searchRequest: SearchRequest): Response {
+        val response = itunesService.search(searchRequest.term)
+        return if (response.resultCount == 0) {
+            response.apply { resultCode = -1 }
+        } else {
+            response.apply { resultCode = 200 }
+        }
     }
 }
