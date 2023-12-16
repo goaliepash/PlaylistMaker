@@ -1,16 +1,15 @@
 package ru.goaliepash.playlistmaker.ui.activity
 
-import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.goaliepash.domain.model.Track
 import ru.goaliepash.playlistmaker.R
 import ru.goaliepash.playlistmaker.databinding.ActivityAudioPlayerBinding
+import ru.goaliepash.playlistmaker.presentation.view_model.AudioPlayerViewModel
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -18,38 +17,27 @@ import java.util.Locale
 
 class AudioPlayerActivity : AppCompatActivity() {
 
-    private val mediaPlayer = MediaPlayer()
-    private val mainThreadHandler = Handler(Looper.getMainLooper())
-    private val updateTimeRunnable = object : Runnable {
-        override fun run() {
-            val currentPosition = mediaPlayer.currentPosition.toLong()
-            binding.textViewTime.text = formatTrackTime(currentPosition)
-            mainThreadHandler.postDelayed(this, UPDATE_TIME_DELAY)
-        }
-    }
+    private val viewModel by viewModel<AudioPlayerViewModel>()
 
     private lateinit var binding: ActivityAudioPlayerBinding
     private lateinit var track: Track
-
-    private var playerState = STATE_DEFAULT
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAudioPlayerBinding.inflate(layoutInflater).also { setContentView(it.root) }
         track = getTrackFromIntent()
-        preparePlayer()
+        viewModel.initMediaPlayer(track.previewUrl)
+        viewModel.getAudioPlayerState().observe(this) {
+            binding.imageButtonPlayPause.isEnabled = it.isPlayButtonEnabled
+            binding.imageButtonPlayPause.setImageResource(it.imageResource)
+            binding.textViewTime.text = it.progress
+        }
         initUI()
     }
 
     override fun onPause() {
         super.onPause()
-        pausePlayer()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mainThreadHandler.removeCallbacks(updateTimeRunnable)
-        mediaPlayer.release()
+        viewModel.onPause()
     }
 
     private fun getTrackFromIntent(): Track {
@@ -71,7 +59,6 @@ class AudioPlayerActivity : AppCompatActivity() {
         initTextViewGenreValue()
         initTextViewCountryValue()
         initImageButtonPlayPause()
-        initTextViewTime()
     }
 
     private fun initImageViewBack() {
@@ -121,47 +108,9 @@ class AudioPlayerActivity : AppCompatActivity() {
     }
 
     private fun initImageButtonPlayPause() {
-        binding.imageButtonPlayPause.setOnClickListener { playbackControl() }
-    }
-
-    private fun initTextViewTime() {
-        binding.textViewTime.text = formatTrackTime(TRACK_START_TIME)
-    }
-
-    private fun preparePlayer() {
-        mediaPlayer.setDataSource(track.previewUrl)
-        mediaPlayer.prepareAsync()
-        mediaPlayer.setOnPreparedListener {
-            binding.imageButtonPlayPause.isClickable = true
-            playerState = STATE_PREPARED
+        binding.imageButtonPlayPause.setOnClickListener {
+            viewModel.onImageButtonPlayPauseClicked()
         }
-        mediaPlayer.setOnCompletionListener {
-            mainThreadHandler.removeCallbacks(updateTimeRunnable)
-            binding.imageButtonPlayPause.setImageResource(R.drawable.ic_play)
-            binding.textViewTime.text = formatTrackTime(TRACK_START_TIME)
-            playerState = STATE_PREPARED
-        }
-    }
-
-    private fun playbackControl() {
-        when (playerState) {
-            STATE_PLAYING -> pausePlayer()
-            STATE_PREPARED, STATE_PAUSED -> startPlayer()
-        }
-    }
-
-    private fun startPlayer() {
-        mainThreadHandler.post(updateTimeRunnable)
-        mediaPlayer.start()
-        binding.imageButtonPlayPause.setImageResource(R.drawable.ic_pause)
-        playerState = STATE_PLAYING
-    }
-
-    private fun pausePlayer() {
-        mainThreadHandler.removeCallbacks(updateTimeRunnable)
-        mediaPlayer.pause()
-        binding.imageButtonPlayPause.setImageResource(R.drawable.ic_play)
-        playerState = STATE_PAUSED
     }
 
     private fun formatTrackTime(timeMillis: Long): String {
@@ -174,11 +123,5 @@ class AudioPlayerActivity : AppCompatActivity() {
         private const val ART_WORK_NEW_VALUE = "512x512bb.jpg"
         private const val TIME_FORMAT = "mm:ss"
         private const val RELEASED_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PREPARED = 1
-        private const val STATE_PLAYING = 2
-        private const val STATE_PAUSED = 4
-        private const val TRACK_START_TIME = 0L
-        private const val UPDATE_TIME_DELAY = 500L
     }
 }
