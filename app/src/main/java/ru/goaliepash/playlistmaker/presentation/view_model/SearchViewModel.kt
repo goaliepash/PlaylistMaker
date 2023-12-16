@@ -4,10 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.launch
 import ru.goaliepash.domain.interactor.ItunesInteractor
 import ru.goaliepash.domain.interactor.SearchHistoryInteractor
 import ru.goaliepash.domain.model.Track
@@ -21,17 +19,11 @@ class SearchViewModel(private val itunesInteractor: ItunesInteractor, private va
 
     private val tracksState = MutableLiveData<TracksState>()
     private val searchHistoryTracksState = MutableLiveData<SearchHistoryTracksState>()
-    private val compositeDisposable = CompositeDisposable()
     private val searchDebounce = debounce<String>(SEARCH_DEBOUNCE_DELAY, viewModelScope, true) {
         searchRequest(it)
     }
 
     private var latestSearchText: String? = null
-
-    override fun onCleared() {
-        super.onCleared()
-        compositeDisposable.clear()
-    }
 
     fun getTracksState(): LiveData<TracksState> = tracksState
 
@@ -82,27 +74,23 @@ class SearchViewModel(private val itunesInteractor: ItunesInteractor, private va
 
     private fun searchRequest(term: String) {
         if (term.isNotEmpty()) {
-            val observable: Observable<List<Track>> = Observable
-                .fromCallable { itunesInteractor.getSearch(term) }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { renderTracksState(TracksState.Loading) }
-            val disposable = observable
-                .subscribe(
-                    { result ->
+            renderTracksState(TracksState.Loading)
+            viewModelScope.launch {
+                itunesInteractor
+                    .getSearch(term)
+                    .catch { renderTracksState(TracksState.Error) }
+                    .collect {
                         if (!isScreenOnPaused) {
-                            if (result.isNotEmpty()) {
-                                renderTracksState(TracksState.Content(result))
+                            if (it.isNotEmpty()) {
+                                renderTracksState(TracksState.Content(it))
                             } else {
                                 renderTracksState(TracksState.Empty)
                             }
                         } else {
                             renderTracksState(TracksState.Cancel)
                         }
-                    },
-                    { _ -> renderTracksState(TracksState.Error) }
-                )
-            compositeDisposable.add(disposable)
+                    }
+            }
         }
     }
 
