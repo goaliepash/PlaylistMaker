@@ -1,20 +1,17 @@
 package ru.goaliepash.playlistmaker.presentation.view_model
 
-import android.os.Handler
-import android.os.Looper
-import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.schedulers.Schedulers
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.launch
 import ru.goaliepash.domain.interactor.ItunesInteractor
 import ru.goaliepash.domain.interactor.SearchHistoryInteractor
 import ru.goaliepash.domain.model.Track
 import ru.goaliepash.playlistmaker.presentation.state.SearchHistoryTracksState
 import ru.goaliepash.playlistmaker.presentation.state.TracksState
+import ru.goaliepash.playlistmaker.utils.debounce
 
 class SearchViewModel(private val itunesInteractor: ItunesInteractor, private val searchHistoryInteractor: SearchHistoryInteractor) : ViewModel() {
 
@@ -22,33 +19,25 @@ class SearchViewModel(private val itunesInteractor: ItunesInteractor, private va
 
     private val tracksState = MutableLiveData<TracksState>()
     private val searchHistoryTracksState = MutableLiveData<SearchHistoryTracksState>()
-    private val compositeDisposable = CompositeDisposable()
-    private val handler = Handler(Looper.getMainLooper())
+    private val searchDebounce = debounce<String>(SEARCH_DEBOUNCE_DELAY, viewModelScope, true) {
+        searchRequest(it)
+    }
 
     private var latestSearchText: String? = null
-
-    override fun onCleared() {
-        super.onCleared()
-        compositeDisposable.clear()
-    }
 
     fun getTracksState(): LiveData<TracksState> = tracksState
 
     fun getSearchHistoryTracksState(): LiveData<SearchHistoryTracksState> = searchHistoryTracksState
 
-    fun searchDebounce(term: String) {
-        if (latestSearchText == term) {
-            return
+    fun search(term: String) {
+        if (latestSearchText != term) {
+            latestSearchText = term
+            searchDebounce(term)
         }
-        this.latestSearchText = term
-        handler.removeCallbacksAndMessages(searchRequestToken)
-        val searchRunnable = Runnable { search(term) }
-        val postTime = SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
-        handler.postAtTime(searchRunnable, searchRequestToken, postTime)
     }
 
     fun refreshSearch(term: String) {
-        search(term)
+        searchRequest(term)
     }
 
     fun clearTrackState() {
@@ -57,32 +46,6 @@ class SearchViewModel(private val itunesInteractor: ItunesInteractor, private va
 
     fun clearSearchHistoryTrackState() {
         searchHistoryTracksState.value = SearchHistoryTracksState.Cleaning(emptyList())
-    }
-
-    private fun search(term: String) {
-        if (term.isNotEmpty()) {
-            val observable: Observable<List<Track>> = Observable
-                .fromCallable { itunesInteractor.getSearch(term) }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { renderTracksState(TracksState.Loading) }
-            val disposable = observable
-                .subscribe(
-                    { result ->
-                        if (!isScreenOnPaused) {
-                            if (result.isNotEmpty()) {
-                                renderTracksState(TracksState.Content(result))
-                            } else {
-                                renderTracksState(TracksState.Empty)
-                            }
-                        } else {
-                            renderTracksState(TracksState.Cancel)
-                        }
-                    },
-                    { _ -> renderTracksState(TracksState.Error) }
-                )
-            compositeDisposable.add(disposable)
-        }
     }
 
     fun addSearchHistory(track: Track) {
@@ -109,6 +72,28 @@ class SearchViewModel(private val itunesInteractor: ItunesInteractor, private va
         renderSearchHistoryTrackState(SearchHistoryTracksState.Cleaning(emptyList()))
     }
 
+    private fun searchRequest(term: String) {
+        if (term.isNotEmpty()) {
+            renderTracksState(TracksState.Loading)
+            viewModelScope.launch {
+                itunesInteractor
+                    .getSearch(term)
+                    .catch { renderTracksState(TracksState.Error) }
+                    .collect {
+                        if (!isScreenOnPaused) {
+                            if (it.isNotEmpty()) {
+                                renderTracksState(TracksState.Content(it))
+                            } else {
+                                renderTracksState(TracksState.Empty)
+                            }
+                        } else {
+                            renderTracksState(TracksState.Cancel)
+                        }
+                    }
+            }
+        }
+    }
+
     private fun renderTracksState(state: TracksState) {
         tracksState.postValue(state)
     }
@@ -120,7 +105,5 @@ class SearchViewModel(private val itunesInteractor: ItunesInteractor, private va
     companion object {
         private const val MAX_SIZE_OF_SEARCH_HISTORY_TRACKS = 10
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
-
-        private val searchRequestToken = Any()
     }
 }

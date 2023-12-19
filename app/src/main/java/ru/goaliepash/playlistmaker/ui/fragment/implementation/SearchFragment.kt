@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -16,6 +14,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.goaliepash.domain.model.Track
@@ -27,19 +26,17 @@ import ru.goaliepash.playlistmaker.presentation.view_model.SearchViewModel
 import ru.goaliepash.playlistmaker.ui.activity.AudioPlayerActivity
 import ru.goaliepash.playlistmaker.ui.adapter.TrackAdapter
 import ru.goaliepash.playlistmaker.ui.fragment.BindingFragment
-import ru.goaliepash.playlistmaker.ui.listener.OnTrackClickListener
+import ru.goaliepash.playlistmaker.utils.debounce
 
 class SearchFragment : BindingFragment<FragmentSearchBinding>() {
 
-    private val mainThreadHandler = Handler(Looper.getMainLooper())
-    private val onTrackClickListener = OnTrackClickListener { track -> onTrackClick(track) }
     private val viewModel by viewModel<SearchViewModel>()
 
-    private var isClickAllowed = true
     private var trackAdapter: TrackAdapter? = null
 
     private lateinit var searchHistoryTrackAdapter: TrackAdapter
     private lateinit var searchTextWatcher: TextWatcher
+    private lateinit var onTrackClickDebounce: (Track) -> Unit
 
     override fun createBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentSearchBinding {
         return FragmentSearchBinding.inflate(inflater, container, false)
@@ -47,9 +44,16 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        onTrackClickDebounce = debounce(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false) {
+            onTrackClick(it)
+        }
         initUI()
-        viewModel.getSearchHistoryTracksState().observe(viewLifecycleOwner) { renderSearchHistoryTracksState(it) }
-        viewModel.getTracksState().observe(viewLifecycleOwner) { renderTracksState(it) }
+        viewModel.getSearchHistoryTracksState().observe(viewLifecycleOwner) {
+            renderSearchHistoryTracksState(it)
+        }
+        viewModel.getTracksState().observe(viewLifecycleOwner) {
+            renderTracksState(it)
+        }
     }
 
     override fun onResume() {
@@ -91,7 +95,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
                 } else {
                     setDrawableEndVisibility(true, binding.editTextSearch)
                 }
-                viewModel.searchDebounce(binding.editTextSearch.text.toString())
+                viewModel.search(binding.editTextSearch.text.toString())
             }
 
             override fun afterTextChanged(p0: Editable?) {}
@@ -107,7 +111,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
 
     private fun initRecyclerViewTracks() {
         if (trackAdapter == null) {
-            trackAdapter = TrackAdapter(onTrackClickListener)
+            trackAdapter = TrackAdapter(onTrackClickDebounce)
         }
         binding.recyclerViewTracks.adapter = trackAdapter
         binding.recyclerViewTracks.layoutManager = LinearLayoutManager(requireActivity())
@@ -123,7 +127,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     }
 
     private fun initRecyclerViewSearchHistory() {
-        searchHistoryTrackAdapter = TrackAdapter(onTrackClickListener)
+        searchHistoryTrackAdapter = TrackAdapter(onTrackClickDebounce)
         binding.recyclerViewSearchHistory.adapter = searchHistoryTrackAdapter
         binding.recyclerViewSearchHistory.layoutManager = LinearLayoutManager(requireActivity())
     }
@@ -206,10 +210,8 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     }
 
     private fun onTrackClick(track: Track) {
-        if (clickDebounce()) {
-            viewModel.addSearchHistory(track)
-            openTrackActivity(track)
-        }
+        viewModel.addSearchHistory(track)
+        openTrackActivity(track)
     }
 
     private fun openTrackActivity(track: Track) {
@@ -230,15 +232,6 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     private fun onButtonPlaceHolderRefresh() {
         binding.linearLayoutPlaceholderMessage.visibility = View.GONE
         viewModel.refreshSearch(binding.editTextSearch.text.toString())
-    }
-
-    private fun clickDebounce(): Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            mainThreadHandler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
-        }
-        return current
     }
 
     private fun renderTracksState(state: TracksState) {

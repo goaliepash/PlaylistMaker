@@ -5,5 +5,5 @@ import ru.goaliepash.data.dto.response.Response
 
 interface ItunesClient {
 
-    fun search(searchRequest: SearchRequest): Response
+    suspend fun search(searchRequest: SearchRequest): Response
 }
