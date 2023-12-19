@@ -22,6 +22,7 @@ class AudioPlayerViewModel : ViewModel() {
     override fun onCleared() {
         super.onCleared()
         releasePlayer()
+        timerJob?.cancel()
     }
 
     fun getAudioPlayerState(): LiveData<AudioPlayerState> = audioPlayerState
@@ -76,7 +77,7 @@ class AudioPlayerViewModel : ViewModel() {
     private fun startTimer() {
         timerJob = viewModelScope.launch {
             while (mediaPlayer.isPlaying) {
-                delay(UPDATE_TIME_DELAY)
+                delay(UPDATE_TIME_DELAY_MILLIS)
                 audioPlayerState.postValue(AudioPlayerState.Playing(getCurrentPlayerPosition()))
             }
         }
@@ -89,6 +90,6 @@ class AudioPlayerViewModel : ViewModel() {
     companion object {
         private const val TIME_FORMAT = "mm:ss"
         private const val START_TIME = "00:00"
-        private const val UPDATE_TIME_DELAY = 300L
+        private const val UPDATE_TIME_DELAY_MILLIS = 300L
     }
 }

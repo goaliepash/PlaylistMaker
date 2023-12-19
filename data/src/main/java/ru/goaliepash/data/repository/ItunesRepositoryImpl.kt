@@ -6,6 +6,7 @@ import ru.goaliepash.data.dto.TrackDto
 import ru.goaliepash.data.dto.request.SearchRequest
 import ru.goaliepash.data.dto.response.SearchResponse
 import ru.goaliepash.data.itunes.ItunesClient
+import ru.goaliepash.data.utils.HttpStatusCode
 import ru.goaliepash.domain.api.ItunesRepository
 import ru.goaliepash.domain.model.Track
 
@@ -14,7 +15,7 @@ class ItunesRepositoryImpl(private val itunesClient: ItunesClient) : ItunesRepos
     override fun getSearch(term: String): Flow<List<Track>> = flow {
         val response = itunesClient.search(SearchRequest(term))
         when (response.resultCode) {
-            200 -> {
+            HttpStatusCode.OK -> {
                 val tracks = (response as SearchResponse).results.map { trackDto: TrackDto ->
                     Track(
                         trackName = trackDto.trackName,
