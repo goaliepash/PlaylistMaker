@@ -16,7 +16,8 @@
     <color name="add_to_track_list_fill_color_1">@color/yp_white</color>
     <color name="add_to_track_list_fill_color_2">@color/yp_white</color>
     <color name="heart_fill_color_1">@color/yp_white</color>
-    <color name="heart_fill_color_2">@color/yp_white</color>
+    <color name="heart_fill_color_2_active">@color/yp_red</color>
+    <color name="heart_fill_color_2_inactive">@color/yp_white</color>
     <color name="play_fill_color">@color/yp_white</color>
     <color name="track_artist_text_color">@color/yp_white</color>
     <color name="track_name_info_text_color">@color/yp_white</color>

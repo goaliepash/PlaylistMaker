@@ -18,6 +18,7 @@ class ItunesRepositoryImpl(private val itunesClient: ItunesClient) : ItunesRepos
             HttpStatusCode.OK -> {
                 val tracks = (response as SearchResponse).results.map { trackDto: TrackDto ->
                     Track(
+                        trackId = trackDto.trackId,
                         trackName = trackDto.trackName,
                         artistName = trackDto.artistName,
                         trackTimeMillis = trackDto.trackTimeMillis,
