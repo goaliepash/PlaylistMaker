@@ -10,6 +10,4 @@ interface FavoriteTracksInteractor {
     suspend fun addFavoriteTrack(favoriteTrack: Track)
 
     suspend fun deleteFavoriteTrack(favoriteTrack: Track)
-
-    fun isExists(trackId: String): Flow<Boolean>
 }

@@ -34,9 +34,9 @@ class AudioPlayerActivity : AppCompatActivity() {
             binding.imageButtonPlayPause.setImageResource(it.imageResource)
             binding.textViewTime.text = it.progress
         }
-        viewModel.checkIfTrackExistsInFavorites(track.trackId)
-        viewModel.getExistState().observe(this) {
+        viewModel.getExistsInFavorites().observe(this) {
             binding.imageButtonLike.setImageResource(if (it) R.drawable.ic_heart_active else R.drawable.ic_heart_inactive)
+            track.isFavorite = it
         }
         initUI()
     }
@@ -123,6 +123,7 @@ class AudioPlayerActivity : AppCompatActivity() {
     }
 
     private fun initImageButtonLike() {
+        binding.imageButtonLike.setImageResource(if (track.isFavorite) R.drawable.ic_heart_active else R.drawable.ic_heart_inactive)
         binding.imageButtonLike.setOnClickListener {
             viewModel.onImageButtonLikeClicked(track)
         }

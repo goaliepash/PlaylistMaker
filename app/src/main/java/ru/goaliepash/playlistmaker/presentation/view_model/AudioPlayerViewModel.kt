@@ -30,7 +30,7 @@ class AudioPlayerViewModel(private val favoriteTracksInteractor: FavoriteTracksI
 
     fun getAudioPlayerState(): LiveData<AudioPlayerState> = audioPlayerState
 
-    fun getExistState(): LiveData<Boolean> = isExistsInFavorites
+    fun getExistsInFavorites(): LiveData<Boolean> = isExistsInFavorites
 
     fun initMediaPlayer(url: String) {
         mediaPlayer.setDataSource(url)
@@ -63,23 +63,13 @@ class AudioPlayerViewModel(private val favoriteTracksInteractor: FavoriteTracksI
 
     fun onImageButtonLikeClicked(track: Track) {
         viewModelScope.launch {
-            if (isExistsInFavorites.value!!) {
+            if (track.isFavorite) {
                 favoriteTracksInteractor.deleteFavoriteTrack(track)
                 isExistsInFavorites.postValue(false)
             } else {
                 favoriteTracksInteractor.addFavoriteTrack(track)
                 isExistsInFavorites.postValue(true)
             }
-        }
-    }
-
-    fun checkIfTrackExistsInFavorites(trackId: String) {
-        viewModelScope.launch {
-            favoriteTracksInteractor
-                .isExists(trackId)
-                .collect {
-                    isExistsInFavorites.value = it
-                }
         }
     }
 

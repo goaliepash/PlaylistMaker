@@ -15,7 +15,8 @@ class FavoriteTracksDbConverter {
         releaseDate = favoriteTracksEntity.releaseDate,
         primaryGenreName = favoriteTracksEntity.primaryGenreName,
         country = favoriteTracksEntity.country,
-        previewUrl = favoriteTracksEntity.previewUrl
+        previewUrl = favoriteTracksEntity.previewUrl,
+        isFavorite = true
     )
 
     fun map(track: Track): FavoriteTracksEntity = FavoriteTracksEntity(

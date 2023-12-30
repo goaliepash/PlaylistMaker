@@ -24,8 +24,4 @@ class FavoriteTracksRepositoryImpl(
     override suspend fun deleteFavoriteTrack(favoriteTrack: Track) {
         appDatabase.favoriteTracksDao().deleteFavoriteTrack(favoriteTracksDbConverter.map(favoriteTrack))
     }
-
-    override fun isExists(trackId: String): Flow<Boolean> = flow {
-        emit(appDatabase.favoriteTracksDao().isExists(trackId))
-    }
 }

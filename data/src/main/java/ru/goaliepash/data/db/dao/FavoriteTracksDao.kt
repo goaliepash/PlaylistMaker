@@ -19,6 +19,6 @@ interface FavoriteTracksDao {
     @Delete
     suspend fun deleteFavoriteTrack(favoriteTracks: FavoriteTracksEntity)
 
-    @Query("SELECT EXISTS(SELECT * FROM favorite_tracks WHERE trackId = :trackId)")
-    suspend fun isExists(trackId: String): Boolean
+    @Query("SELECT trackId FROM favorite_tracks")
+    suspend fun getFavoriteTracksIds(): List<String>
 }

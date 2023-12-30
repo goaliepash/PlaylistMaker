@@ -63,7 +63,7 @@ val dataModule = module {
     }
 
     single<ItunesRepository> {
-        ItunesRepositoryImpl(itunesClient = get())
+        ItunesRepositoryImpl(itunesClient = get(), appDatabase = get())
     }
 
     single<SearchHistoryClient> {
