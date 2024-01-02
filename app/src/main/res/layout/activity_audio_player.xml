@@ -33,6 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/offset_16"
+        android:importantForAccessibility="no"
         android:src="@drawable/ic_arrow_back"
         app:layout_constraintStart_toEndOf="@id/guide_line_start"
         app:layout_constraintTop_toTopOf="parent" />
@@ -43,6 +44,7 @@
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/offset_24"
         android:layout_marginBottom="@dimen/offset_24"
+        android:importantForAccessibility="no"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toTopOf="@id/text_view_track_name"
         app:layout_constraintEnd_toStartOf="@id/guide_line_end"
@@ -73,11 +75,13 @@
         app:layout_constraintStart_toEndOf="@id/guide_line_start"
         tools:text="The Beatles" />
 
-    <ImageView
+    <ImageButton
         android:id="@+id/image_view_add_to_track_list"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/offset_8"
+        android:background="@null"
+        android:importantForAccessibility="no"
         android:src="@drawable/ic_add_to_track_list"
         app:layout_constraintBottom_toTopOf="@id/text_view_time"
         app:layout_constraintEnd_toStartOf="@id/image_button_play_pause"
@@ -92,21 +96,24 @@
         android:layout_marginBottom="@dimen/offset_4"
         android:background="@null"
         android:clickable="false"
+        android:importantForAccessibility="no"
         android:src="@drawable/ic_play"
         app:layout_constraintBottom_toTopOf="@id/text_view_time"
-        app:layout_constraintEnd_toStartOf="@id/image_view_like"
+        app:layout_constraintEnd_toStartOf="@id/image_button_like"
         app:layout_constraintStart_toEndOf="@id/image_view_add_to_track_list" />
 
-    <ImageView
-        android:id="@+id/image_view_like"
+    <ImageButton
+        android:id="@+id/image_button_like"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/offset_8"
-        android:src="@drawable/ic_heart"
+        android:background="@null"
+        android:importantForAccessibility="no"
         app:layout_constraintBottom_toTopOf="@id/text_view_time"
         app:layout_constraintEnd_toStartOf="@id/guide_line_end"
         app:layout_constraintStart_toEndOf="@id/image_button_play_pause"
-        app:layout_constraintTop_toTopOf="@id/image_button_play_pause" />
+        app:layout_constraintTop_toTopOf="@id/image_button_play_pause"
+        tools:src="@drawable/ic_heart_active" />
 
     <TextView
         android:id="@+id/text_view_time"

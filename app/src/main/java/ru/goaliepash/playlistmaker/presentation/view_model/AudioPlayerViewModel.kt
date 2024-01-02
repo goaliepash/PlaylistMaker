@@ -8,13 +8,16 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import ru.goaliepash.domain.interactor.FavoriteTracksInteractor
+import ru.goaliepash.domain.model.Track
 import ru.goaliepash.playlistmaker.presentation.state.AudioPlayerState
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class AudioPlayerViewModel : ViewModel() {
+class AudioPlayerViewModel(private val favoriteTracksInteractor: FavoriteTracksInteractor) : ViewModel() {
 
     private val audioPlayerState = MutableLiveData<AudioPlayerState>(AudioPlayerState.Default())
+    private val isExistsInFavorites = MutableLiveData<Boolean>()
 
     private var mediaPlayer: MediaPlayer = MediaPlayer()
     private var timerJob: Job? = null
@@ -26,6 +29,8 @@ class AudioPlayerViewModel : ViewModel() {
     }
 
     fun getAudioPlayerState(): LiveData<AudioPlayerState> = audioPlayerState
+
+    fun getExistsInFavorites(): LiveData<Boolean> = isExistsInFavorites
 
     fun initMediaPlayer(url: String) {
         mediaPlayer.setDataSource(url)
@@ -53,6 +58,18 @@ class AudioPlayerViewModel : ViewModel() {
             }
 
             else -> {}
+        }
+    }
+
+    fun onImageButtonLikeClicked(track: Track) {
+        viewModelScope.launch {
+            if (track.isFavorite) {
+                favoriteTracksInteractor.deleteFavoriteTrack(track)
+                isExistsInFavorites.postValue(false)
+            } else {
+                favoriteTracksInteractor.addFavoriteTrack(track)
+                isExistsInFavorites.postValue(true)
+            }
         }
     }
 

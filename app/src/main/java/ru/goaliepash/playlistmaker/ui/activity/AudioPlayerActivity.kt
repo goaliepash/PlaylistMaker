@@ -24,13 +24,19 @@ class AudioPlayerActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityAudioPlayerBinding.inflate(layoutInflater).also { setContentView(it.root) }
+        binding = ActivityAudioPlayerBinding.inflate(layoutInflater).also {
+            setContentView(it.root)
+        }
         track = getTrackFromIntent()
         viewModel.initMediaPlayer(track.previewUrl)
         viewModel.getAudioPlayerState().observe(this) {
             binding.imageButtonPlayPause.isEnabled = it.isPlayButtonEnabled
             binding.imageButtonPlayPause.setImageResource(it.imageResource)
             binding.textViewTime.text = it.progress
+        }
+        viewModel.getExistsInFavorites().observe(this) {
+            binding.imageButtonLike.setImageResource(if (it) R.drawable.ic_heart_active else R.drawable.ic_heart_inactive)
+            track.isFavorite = it
         }
         initUI()
     }
@@ -59,10 +65,13 @@ class AudioPlayerActivity : AppCompatActivity() {
         initTextViewGenreValue()
         initTextViewCountryValue()
         initImageButtonPlayPause()
+        initImageButtonLike()
     }
 
     private fun initImageViewBack() {
-        binding.imageViewBack.setOnClickListener { finish() }
+        binding.imageViewBack.setOnClickListener {
+            finish()
+        }
     }
 
     private fun initImageViewCover() {
@@ -110,6 +119,13 @@ class AudioPlayerActivity : AppCompatActivity() {
     private fun initImageButtonPlayPause() {
         binding.imageButtonPlayPause.setOnClickListener {
             viewModel.onImageButtonPlayPauseClicked()
+        }
+    }
+
+    private fun initImageButtonLike() {
+        binding.imageButtonLike.setImageResource(if (track.isFavorite) R.drawable.ic_heart_active else R.drawable.ic_heart_inactive)
+        binding.imageButtonLike.setOnClickListener {
+            viewModel.onImageButtonLikeClicked(track)
         }
     }
 

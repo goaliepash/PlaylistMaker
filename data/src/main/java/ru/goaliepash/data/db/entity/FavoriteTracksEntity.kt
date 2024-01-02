@@ -1,8 +1,11 @@
-package ru.goaliepash.domain.model
+package ru.goaliepash.data.db.entity
 
-import java.io.Serializable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-data class Track(
+@Entity(tableName = "favorite_tracks")
+data class FavoriteTracksEntity(
+    @PrimaryKey
     val trackId: String,
     val trackName: String,
     val artistName: String,
@@ -12,6 +15,5 @@ data class Track(
     val releaseDate: String,
     val primaryGenreName: String,
     val country: String,
-    val previewUrl: String,
-    var isFavorite: Boolean = false
-) : Serializable
+    val previewUrl: String
+)
