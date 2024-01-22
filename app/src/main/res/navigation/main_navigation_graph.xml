@@ -8,19 +8,31 @@
     <fragment
         android:id="@+id/searchFragment"
         android:name="ru.goaliepash.playlistmaker.ui.fragment.implementation.SearchFragment"
-        android:label="fragment_search"
+        android:label="FragmentSearch"
         tools:layout="@layout/fragment_search" />
 
     <fragment
         android:id="@+id/mediaLibraryFragment"
         android:name="ru.goaliepash.playlistmaker.ui.fragment.implementation.MediaLibraryFragment"
-        android:label="fragment_media_library"
-        tools:layout="@layout/fragment_media_library" />
+        android:label="FragmentMediaLibrary"
+        tools:layout="@layout/fragment_media_library">
+
+        <action
+            android:id="@+id/action_mediaLibraryFragment_to_newPlaylistFragment"
+            app:destination="@id/newPlaylistFragment" />
+
+    </fragment>
 
     <fragment
         android:id="@+id/settingsFragment"
         android:name="ru.goaliepash.playlistmaker.ui.fragment.implementation.SettingsFragment"
-        android:label="fragment_settings"
+        android:label="FragmentSettings"
         tools:layout="@layout/fragment_settings" />
+
+    <fragment
+        android:id="@+id/newPlaylistFragment"
+        android:name="ru.goaliepash.playlistmaker.ui.fragment.implementation.NewPlaylistFragment"
+        android:label="FragmentNewPlaylist"
+        tools:layout="@layout/fragment_new_playlist" />
 
 </navigation>

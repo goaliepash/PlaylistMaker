@@ -3,6 +3,7 @@
 
     <style name="Theme.PlaylistMaker" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:windowBackground">@color/yp_black</item>
+        <item name="colorPrimary">@color/yp_blue</item>
     </style>
 
 </resources>

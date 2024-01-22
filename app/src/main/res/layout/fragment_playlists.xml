@@ -17,28 +17,65 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/image_view_no_playlists"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/offset_44"
-        android:importantForAccessibility="no"
-        android:src="@drawable/ic_search_error"
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/offset_16"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/button_add_new_playlist" />
 
-    <TextView
-        android:id="@+id/text_view_no_playlists"
-        style="@style/PlaceholderMessageTextView"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:id="@+id/linear_layout_no_playlists"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/offset_24"
-        android:layout_marginTop="@dimen/offset_16"
+        android:layout_marginTop="@dimen/offset_44"
         android:gravity="center"
-        android:text="@string/you_didnt_make_any_playlists"
+        android:orientation="vertical"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/image_view_no_playlists" />
+        app:layout_constraintTop_toBottomOf="@id/button_add_new_playlist"
+        tools:ignore="UseCompoundDrawables">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_search_error" />
+
+        <TextView
+            style="@style/PlaceholderMessageTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/offset_24"
+            android:layout_marginTop="@dimen/offset_16"
+            android:gravity="center"
+            android:text="@string/you_didnt_make_any_playlists" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_layout_progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/progress_bar_background"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/offset_136"
+            android:indeterminateTint="@color/yp_blue" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

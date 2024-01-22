@@ -36,4 +36,13 @@
     <string name="you_didnt_make_any_playlists">Вы не создали ни одного плейлиста</string>
     <string name="favorite_tracks">Избранные треки</string>
     <string name="playlists">Плейлисты</string>
+    <string name="playlist_name_hint">Название*</string>
+    <string name="playlist_description_hint">Описание</string>
+    <string name="create">Создать</string>
+    <string name="playlist_alert_dialog_title">Завершить создание плейлиста?</string>
+    <string name="playlist_alert_dialog_message">Все несохраненные данные будут потеряны</string>
+    <string name="playlist_alert_dialog_negative">Отмена</string>
+    <string name="playlist_alert_dialog_positive">Завершить</string>
+    <string name="cover_uri">%1$s.jpg</string>
+    <string name="playlist_created_message">Плейлист %1$s создан</string>
 </resources>

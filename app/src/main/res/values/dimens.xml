@@ -8,6 +8,7 @@
     <dimen name="edit_text_padding_vertical">8dp</dimen>
     <dimen name="cover_side">45dp</dimen>
     <dimen name="margin_horizontal">16dp</dimen>
+    <dimen name="offset_1">1dp</dimen>
     <dimen name="offset_4">4dp</dimen>
     <dimen name="offset_8">8dp</dimen>
     <dimen name="offset_12">12dp</dimen>
@@ -15,6 +16,7 @@
     <dimen name="offset_20">20dp</dimen>
     <dimen name="offset_24">24dp</dimen>
     <dimen name="offset_28">28dp</dimen>
+    <dimen name="offset_32">32dp</dimen>
     <dimen name="offset_40">40dp</dimen>
     <dimen name="offset_44">44dp</dimen>
     <dimen name="offset_60">60dp</dimen>

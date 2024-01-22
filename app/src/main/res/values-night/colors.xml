@@ -37,4 +37,6 @@
     <color name="progress_bar_background">@color/yp_black</color>
     <color name="divider_background">@color/yp_white</color>
     <color name="tab_layout_background">@color/yp_black</color>
+    <color name="playlist_text_view_text_color">@color/yp_white</color>
+    <color name="input_text_color">@color/yp_white</color>
 </resources>
