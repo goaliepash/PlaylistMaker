@@ -24,7 +24,7 @@ val appModule = module {
     }
 
     viewModel {
-        PlaylistsViewModel()
+        PlaylistsViewModel(playlistsInteractor = get())
     }
 
     viewModel {
