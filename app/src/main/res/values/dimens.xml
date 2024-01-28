@@ -21,6 +21,7 @@
     <dimen name="offset_30">30dp</dimen>
     <dimen name="offset_32">32dp</dimen>
     <dimen name="offset_40">40dp</dimen>
+    <dimen name="offset_42">42dp</dimen>
     <dimen name="offset_44">44dp</dimen>
     <dimen name="offset_50">50dp</dimen>
     <dimen name="offset_60">60dp</dimen>

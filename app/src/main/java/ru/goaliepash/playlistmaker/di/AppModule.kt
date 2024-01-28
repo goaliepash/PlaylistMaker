@@ -1,5 +1,6 @@
 package ru.goaliepash.playlistmaker.di
 
+import android.media.MediaPlayer
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import ru.goaliepash.playlistmaker.presentation.view_model.AudioPlayerViewModel
@@ -10,6 +11,10 @@ import ru.goaliepash.playlistmaker.presentation.view_model.SearchViewModel
 import ru.goaliepash.playlistmaker.presentation.view_model.SettingsViewModel
 
 val appModule = module {
+
+    factory {
+        MediaPlayer()
+    }
 
     viewModel {
         SearchViewModel(itunesInteractor = get(), searchHistoryInteractor = get())
@@ -28,7 +33,11 @@ val appModule = module {
     }
 
     viewModel {
-        AudioPlayerViewModel(favoriteTracksInteractor = get(), playlistsInteractor = get())
+        AudioPlayerViewModel(
+            mediaPlayer = get(),
+            favoriteTracksInteractor = get(),
+            playlistsInteractor = get()
+        )
     }
 
     viewModel {

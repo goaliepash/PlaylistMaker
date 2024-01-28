@@ -44,4 +44,5 @@
     <color name="playlist_view_background_color">@color/yp_black</color>
     <color name="default_toast_backgroud">@color/yp_white</color>
     <color name="default_toast_text_color">@color/yp_black</color>
+    <color name="search_cursor_color">@color/yp_blue</color>
 </resources>

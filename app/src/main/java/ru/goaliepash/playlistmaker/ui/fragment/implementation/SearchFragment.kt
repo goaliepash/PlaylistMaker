@@ -31,8 +31,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
 
     private val viewModel by viewModel<SearchViewModel>()
 
-    private var trackAdapter: TrackAdapter? = null
-
+    private lateinit var trackAdapter: TrackAdapter
     private lateinit var searchHistoryTrackAdapter: TrackAdapter
     private lateinit var searchTextWatcher: TextWatcher
     private lateinit var onTrackClickDebounce: (Track) -> Unit
@@ -113,9 +112,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     }
 
     private fun initRecyclerViewTracks() {
-        if (trackAdapter == null) {
-            trackAdapter = TrackAdapter(onTrackClickDebounce)
-        }
+        trackAdapter = TrackAdapter(onTrackClickDebounce)
         binding.recyclerViewTracks.adapter = trackAdapter
         binding.recyclerViewTracks.layoutManager = LinearLayoutManager(requireActivity())
     }

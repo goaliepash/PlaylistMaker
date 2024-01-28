@@ -5,8 +5,18 @@ import com.google.gson.reflect.TypeToken
 import ru.goaliepash.data.db.entity.PlaylistsEntity
 import ru.goaliepash.domain.model.Playlist
 
-class PlaylistsDbConverter(private val gson: Gson) {
+/**
+ *
+ *
+ * @param gson
+ */
+class PlaylistsConverter(private val gson: Gson) {
 
+    /**
+     *
+     *
+     * @param playlist
+     */
     fun map(playlist: Playlist): PlaylistsEntity {
         val trackIds: String = map(playlist.trackIds)
         return PlaylistsEntity(
@@ -19,6 +29,11 @@ class PlaylistsDbConverter(private val gson: Gson) {
         )
     }
 
+    /**
+     *
+     *
+     * @param playlistsEntity
+     */
     fun map(playlistsEntity: PlaylistsEntity): Playlist {
         val type = object : TypeToken<List<String>>() {}.type
         val trackIds = gson.fromJson<List<String>>(playlistsEntity.trackIds, type)
@@ -32,6 +47,11 @@ class PlaylistsDbConverter(private val gson: Gson) {
         )
     }
 
+    /**
+     *
+     *
+     * @param trackIds
+     */
     fun map(trackIds: List<String>): String {
         return gson.toJson(trackIds)
     }

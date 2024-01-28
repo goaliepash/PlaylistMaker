@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class AudioPlayerViewModel(
+    private val mediaPlayer: MediaPlayer,
     private val favoriteTracksInteractor: FavoriteTracksInteractor,
     private val playlistsInteractor: PlaylistsInteractor
 ) : ViewModel() {
@@ -26,7 +27,6 @@ class AudioPlayerViewModel(
     private val playlists = MutableLiveData<List<Playlist>>()
     private val isTrackAddedState = MutableLiveData<Boolean>()
 
-    private var mediaPlayer: MediaPlayer = MediaPlayer()
     private var timerJob: Job? = null
 
     override fun onCleared() {
