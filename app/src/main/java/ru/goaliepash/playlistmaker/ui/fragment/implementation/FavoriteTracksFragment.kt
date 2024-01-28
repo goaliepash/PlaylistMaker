@@ -6,13 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.goaliepash.domain.model.Track
+import ru.goaliepash.playlistmaker.R
 import ru.goaliepash.playlistmaker.databinding.FragmentFavoriteTracksBinding
 import ru.goaliepash.playlistmaker.presentation.state.FavoriteTracksState
 import ru.goaliepash.playlistmaker.presentation.view_model.FavoriteTracksViewModel
-import ru.goaliepash.playlistmaker.ui.activity.AudioPlayerActivity
 import ru.goaliepash.playlistmaker.ui.adapter.TrackAdapter
 import ru.goaliepash.playlistmaker.ui.fragment.BindingFragment
 import ru.goaliepash.playlistmaker.utils.debounce
@@ -46,10 +47,10 @@ class FavoriteTracksFragment : BindingFragment<FragmentFavoriteTracksBinding>() 
     }
 
     private fun openTrackActivity(track: Track) {
-        Intent(requireActivity(), AudioPlayerActivity::class.java).apply {
-            putExtra(AudioPlayerActivity.EXTRA_TRACK, track)
-            startActivity(this)
-        }
+        findNavController().navigate(
+            R.id.action_mediaLibraryFragment_to_audioPlayerFragment,
+            AudioPlayerFragment.createArgs(track)
+        )
     }
 
     private fun initRecyclerView() {

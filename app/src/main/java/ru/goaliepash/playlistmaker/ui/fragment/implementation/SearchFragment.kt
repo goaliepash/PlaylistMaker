@@ -2,7 +2,6 @@ package ru.goaliepash.playlistmaker.ui.fragment.implementation
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -15,6 +14,7 @@ import android.widget.EditText
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.goaliepash.domain.model.Track
@@ -23,7 +23,6 @@ import ru.goaliepash.playlistmaker.databinding.FragmentSearchBinding
 import ru.goaliepash.playlistmaker.presentation.state.SearchHistoryTracksState
 import ru.goaliepash.playlistmaker.presentation.state.TracksState
 import ru.goaliepash.playlistmaker.presentation.view_model.SearchViewModel
-import ru.goaliepash.playlistmaker.ui.activity.AudioPlayerActivity
 import ru.goaliepash.playlistmaker.ui.adapter.TrackAdapter
 import ru.goaliepash.playlistmaker.ui.fragment.BindingFragment
 import ru.goaliepash.playlistmaker.utils.debounce
@@ -32,21 +31,24 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
 
     private val viewModel by viewModel<SearchViewModel>()
 
-    private var trackAdapter: TrackAdapter? = null
-
+    private lateinit var trackAdapter: TrackAdapter
     private lateinit var searchHistoryTrackAdapter: TrackAdapter
     private lateinit var searchTextWatcher: TextWatcher
     private lateinit var onTrackClickDebounce: (Track) -> Unit
 
-    override fun createBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentSearchBinding {
+    override fun createBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentSearchBinding {
         return FragmentSearchBinding.inflate(inflater, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        onTrackClickDebounce = debounce(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false) {
-            onTrackClick(it)
-        }
+        onTrackClickDebounce =
+            debounce(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false) {
+                onTrackClick(it)
+            }
         initUI()
         viewModel.getSearchHistoryTracksState().observe(viewLifecycleOwner) {
             renderSearchHistoryTracksState(it)
@@ -110,9 +112,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     }
 
     private fun initRecyclerViewTracks() {
-        if (trackAdapter == null) {
-            trackAdapter = TrackAdapter(onTrackClickDebounce)
-        }
+        trackAdapter = TrackAdapter(onTrackClickDebounce)
         binding.recyclerViewTracks.adapter = trackAdapter
         binding.recyclerViewTracks.layoutManager = LinearLayoutManager(requireActivity())
     }
@@ -138,14 +138,20 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
 
     private fun setDrawableEndVisibility(isVisible: Boolean, editText: EditText) {
         if (isVisible) {
-            editText.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_search, 0, R.drawable.ic_close, 0)
+            editText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                R.drawable.ic_search,
+                0,
+                R.drawable.ic_close,
+                0
+            )
         } else {
             editText.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_search, 0, 0, 0)
         }
     }
 
     private fun hideKeyboard(editText: EditText) {
-        val inputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        val inputMethodManager =
+            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
         inputMethodManager?.hideSoftInputFromWindow(editText.windowToken, 0)
     }
 
@@ -154,7 +160,8 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
         setOnTouchListener { view, motionEvent ->
             if (motionEvent.action == MotionEvent.ACTION_UP) {
                 view as EditText
-                val end = if (view.resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL) view.left else right
+                val end =
+                    if (view.resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL) view.left else right
                 if (motionEvent.rawX >= (end - view.compoundPaddingEnd)) {
                     action.invoke()
                     return@setOnTouchListener true
@@ -186,7 +193,10 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
         binding.linearLayoutProgressBar.visibility = View.GONE
     }
 
-    private fun showErrorMessagePlaceholder(@DrawableRes backgroundResource: Int, @StringRes text: Int) {
+    private fun showErrorMessagePlaceholder(
+        @DrawableRes backgroundResource: Int,
+        @StringRes text: Int
+    ) {
         binding.recyclerViewTracks.visibility = View.GONE
         binding.linearLayoutPlaceholderMessage.visibility = View.VISIBLE
         binding.linearLayoutSearchHistory.visibility = View.GONE
@@ -215,10 +225,10 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     }
 
     private fun openTrackActivity(track: Track) {
-        Intent(requireActivity(), AudioPlayerActivity::class.java).apply {
-            putExtra(AudioPlayerActivity.EXTRA_TRACK, track)
-            startActivity(this)
-        }
+        findNavController().navigate(
+            R.id.action_searchFragment_to_audioPlayerFragment,
+            AudioPlayerFragment.createArgs(track)
+        )
     }
 
     private fun showLoading() {
@@ -239,7 +249,11 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
             is TracksState.Loading -> showLoading()
             is TracksState.Content -> showTracks(state.tracks)
             is TracksState.Empty -> showNothingWasFoundPlaceholder()
-            is TracksState.Error -> showErrorMessagePlaceholder(R.drawable.ic_search_no_internet, R.string.no_internet_connection)
+            is TracksState.Error -> showErrorMessagePlaceholder(
+                R.drawable.ic_search_no_internet,
+                R.string.no_internet_connection
+            )
+
             is TracksState.Cancel -> {
                 viewModel.clearSearchHistoryTrackState()
                 hideLoading()
