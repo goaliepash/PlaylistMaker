@@ -10,40 +10,48 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import ru.goaliepash.domain.model.Playlist
 import ru.goaliepash.playlistmaker.R
+import ru.goaliepash.playlistmaker.ui.listener.OnPlaylistClickListener
 
-class PlaylistAdapter : RecyclerView.Adapter<PlaylistAdapter.PlaylistViewHolder>() {
+class PlaylistBottomSheetAdapter(private val onPlaylistClickListener: OnPlaylistClickListener) :
+    RecyclerView.Adapter<PlaylistBottomSheetAdapter.PlaylistBottomSheetViewHolder>() {
 
     val playlists = mutableListOf<Playlist>()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): PlaylistBottomSheetViewHolder {
         val view = LayoutInflater
             .from(parent.context)
-            .inflate(R.layout.playlist_view, parent, false)
-        return PlaylistViewHolder(view)
+            .inflate(R.layout.playlist_bottom_sheet_view, parent, false)
+        return PlaylistBottomSheetViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: PlaylistViewHolder, position: Int) {
-        holder.bind(playlists[position])
+    override fun onBindViewHolder(holder: PlaylistBottomSheetViewHolder, position: Int) {
+        holder.bind(playlist = playlists[position])
+        holder.itemView.setOnClickListener {
+            onPlaylistClickListener.onPlaylistClick(playlists[position])
+        }
     }
 
     override fun getItemCount(): Int = playlists.size
 
-    class PlaylistViewHolder(itemView: View) : ViewHolder(itemView) {
+    class PlaylistBottomSheetViewHolder(itemView: View) : ViewHolder(itemView) {
 
         private val imageViewCover: ImageView
-        private val textViewName: TextView
-        private val textViewNumber: TextView
+        private val textViewPlaylistName: TextView
+        private val textViewTracksNumber: TextView
 
         init {
             imageViewCover = itemView.findViewById(R.id.image_view_cover)
-            textViewName = itemView.findViewById(R.id.text_view_name)
-            textViewNumber = itemView.findViewById(R.id.text_view_number)
+            textViewPlaylistName = itemView.findViewById(R.id.text_view_playlist_name)
+            textViewTracksNumber = itemView.findViewById(R.id.text_view_tracks_number)
         }
 
         fun bind(playlist: Playlist) {
             bindImageViewCover(playlist.coverUri)
-            textViewName.text = playlist.name
-            textViewNumber.text = itemView
+            textViewPlaylistName.text = playlist.name
+            textViewTracksNumber.text = itemView
                 .context
                 .resources
                 .getQuantityString(

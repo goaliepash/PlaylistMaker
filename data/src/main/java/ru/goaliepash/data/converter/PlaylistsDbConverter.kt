@@ -8,7 +8,7 @@ import ru.goaliepash.domain.model.Playlist
 class PlaylistsDbConverter(private val gson: Gson) {
 
     fun map(playlist: Playlist): PlaylistsEntity {
-        val trackIds: String = gson.toJson(playlist.trackIds)
+        val trackIds: String = map(playlist.trackIds)
         return PlaylistsEntity(
             name = playlist.name,
             description = playlist.description,
@@ -30,5 +30,9 @@ class PlaylistsDbConverter(private val gson: Gson) {
             coverUri = playlistsEntity.coverUri,
             dateAdded = playlistsEntity.dateAdded.toLong()
         )
+    }
+
+    fun map(trackIds: List<String>): String {
+        return gson.toJson(trackIds)
     }
 }

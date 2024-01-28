@@ -9,15 +9,22 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.goaliepash.domain.interactor.FavoriteTracksInteractor
+import ru.goaliepash.domain.interactor.PlaylistsInteractor
+import ru.goaliepash.domain.model.Playlist
 import ru.goaliepash.domain.model.Track
 import ru.goaliepash.playlistmaker.presentation.state.AudioPlayerState
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class AudioPlayerViewModel(private val favoriteTracksInteractor: FavoriteTracksInteractor) : ViewModel() {
+class AudioPlayerViewModel(
+    private val favoriteTracksInteractor: FavoriteTracksInteractor,
+    private val playlistsInteractor: PlaylistsInteractor
+) : ViewModel() {
 
     private val audioPlayerState = MutableLiveData<AudioPlayerState>(AudioPlayerState.Default())
     private val isExistsInFavorites = MutableLiveData<Boolean>()
+    private val playlists = MutableLiveData<List<Playlist>>()
+    private val isTrackAddedState = MutableLiveData<Boolean>()
 
     private var mediaPlayer: MediaPlayer = MediaPlayer()
     private var timerJob: Job? = null
@@ -31,6 +38,10 @@ class AudioPlayerViewModel(private val favoriteTracksInteractor: FavoriteTracksI
     fun getAudioPlayerState(): LiveData<AudioPlayerState> = audioPlayerState
 
     fun getExistsInFavorites(): LiveData<Boolean> = isExistsInFavorites
+
+    fun getPlaylistsState(): LiveData<List<Playlist>> = playlists
+
+    fun getTrackAddedState(): LiveData<Boolean> = isTrackAddedState
 
     fun initMediaPlayer(url: String) {
         mediaPlayer.setDataSource(url)
@@ -73,6 +84,30 @@ class AudioPlayerViewModel(private val favoriteTracksInteractor: FavoriteTracksI
         }
     }
 
+    fun getPlaylists() {
+        viewModelScope.launch {
+            getPlaylistsFromDb()
+        }
+    }
+
+    fun updatePlaylist(track: Track, playlist: Playlist) {
+        viewModelScope.launch {
+            if (playlist.trackIds.contains(track.trackId)) {
+                isTrackAddedState.postValue(false)
+            } else {
+                playlistsInteractor.addToPlaylist(track)
+                updatePlaylist(
+                    playlist.trackIds,
+                    track.trackId,
+                    playlist.tracksCount,
+                    playlist.dateAdded
+                )
+                getPlaylistsFromDb()
+                isTrackAddedState.postValue(true)
+            }
+        }
+    }
+
     private fun startPlayer() {
         mediaPlayer.start()
         audioPlayerState.postValue(AudioPlayerState.Playing(getCurrentPlayerPosition()))
@@ -101,7 +136,33 @@ class AudioPlayerViewModel(private val favoriteTracksInteractor: FavoriteTracksI
     }
 
     private fun getCurrentPlayerPosition(): String {
-        return SimpleDateFormat(TIME_FORMAT, Locale.getDefault()).format(mediaPlayer.currentPosition) ?: START_TIME
+        return SimpleDateFormat(
+            TIME_FORMAT,
+            Locale.getDefault()
+        ).format(mediaPlayer.currentPosition) ?: START_TIME
+    }
+
+    private suspend fun getPlaylistsFromDb() {
+        playlistsInteractor
+            .getPlaylists()
+            .collect {
+                if (it.isNotEmpty()) {
+                    playlists.postValue(it)
+                }
+            }
+    }
+
+    private suspend fun updatePlaylist(
+        trackIds: List<String>,
+        trackId: String,
+        tracksCount: Int,
+        dateAdded: Long
+    ) {
+        val newTrackIds = mutableListOf<String>()
+        newTrackIds.addAll(trackIds)
+        newTrackIds.add(trackId)
+        val newTracksCount = tracksCount + 1
+        playlistsInteractor.updatePlaylist(newTrackIds, newTracksCount, dateAdded)
     }
 
     companion object {

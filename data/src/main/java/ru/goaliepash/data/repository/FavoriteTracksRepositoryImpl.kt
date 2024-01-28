@@ -2,14 +2,14 @@ package ru.goaliepash.data.repository
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import ru.goaliepash.data.converter.FavoriteTracksDbConverter
+import ru.goaliepash.data.converter.TracksDbConverter
 import ru.goaliepash.data.db.AppDatabase
 import ru.goaliepash.domain.api.FavoriteTracksRepository
 import ru.goaliepash.domain.model.Track
 
 class FavoriteTracksRepositoryImpl(
     private val appDatabase: AppDatabase,
-    private val favoriteTracksDbConverter: FavoriteTracksDbConverter
+    private val favoriteTracksDbConverter: TracksDbConverter
 ) : FavoriteTracksRepository {
 
     override fun getFavoriteTracks(): Flow<List<Track>> = flow {

@@ -14,4 +14,7 @@ interface PlaylistsDao {
 
     @Query("SELECT * FROM playlists ORDER BY dateAdded DESC")
     suspend fun getPlaylists(): List<PlaylistsEntity>
+
+    @Query("UPDATE playlists SET trackIds = :trackIds, tracksCount = :tracksCount WHERE dateAdded = :dateAdded")
+    suspend fun updatePlaylist(trackIds: String, tracksCount: String, dateAdded: String)
 }

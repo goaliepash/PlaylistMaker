@@ -8,8 +8,8 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import ru.goaliepash.data.converter.FavoriteTracksDbConverter
 import ru.goaliepash.data.converter.PlaylistsDbConverter
+import ru.goaliepash.data.converter.TracksDbConverter
 import ru.goaliepash.data.db.AppDatabase
 import ru.goaliepash.data.itunes.ItunesClient
 import ru.goaliepash.data.itunes.ItunesClientImpl
@@ -36,7 +36,7 @@ val dataModule = module {
     }
 
     factory {
-        FavoriteTracksDbConverter()
+        TracksDbConverter()
     }
 
     factory {
@@ -91,6 +91,10 @@ val dataModule = module {
     }
 
     single<PlaylistsRepository> {
-        PlaylistsRepositoryImpl(appDatabase = get(), playlistsDbConverter = get())
+        PlaylistsRepositoryImpl(
+            appDatabase = get(),
+            playlistsDbConverter = get(),
+            tracksDbConverter = get()
+        )
     }
 }

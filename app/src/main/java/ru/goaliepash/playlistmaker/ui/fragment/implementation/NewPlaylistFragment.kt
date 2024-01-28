@@ -118,7 +118,7 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
             val playlist = Playlist(
                 name = binding.textInputEditTextName.text.toString(),
                 description = binding.textInputEditTextDescription.text.toString(),
-                trackIds = listOf(),
+                trackIds = ArrayList(),
                 tracksCount = 0,
                 coverUri = coverUri,
                 dateAdded = System.currentTimeMillis()
