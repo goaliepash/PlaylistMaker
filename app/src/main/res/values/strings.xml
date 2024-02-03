@@ -56,4 +56,17 @@
         <item quantity="many">%1$d треков</item>
         <item quantity="other">%1$d треков</item>
     </plurals>
+    <plurals name="minutes_plurals">
+        <item quantity="zero">%1$d минут</item>
+        <item quantity="one">%1$d минута</item>
+        <item quantity="two">%1$d минуты</item>
+        <item quantity="few">%1$d минут</item>
+        <item quantity="many">%1$d минут</item>
+        <item quantity="other">%1$d минут</item>
+    </plurals>
+    <string name="playlist_properties">%1$s • %2$s</string>
+    <string name="delete_playlist">Удалить трек</string>
+    <string name="delete_playlist_message">Вы уверены, что хотите удалить трек из плейлиста?</string>
+    <string name="delete_track_alert_dialog_positive">Удалить</string>
+    <string name="delete_track_alert_dialog_negative">Отмена</string>
 </resources>

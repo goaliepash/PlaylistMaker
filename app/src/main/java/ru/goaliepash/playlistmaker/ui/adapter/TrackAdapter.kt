@@ -14,10 +14,14 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import ru.goaliepash.domain.model.Track
 import ru.goaliepash.playlistmaker.R
 import ru.goaliepash.playlistmaker.ui.listener.OnTrackClickListener
+import ru.goaliepash.playlistmaker.ui.listener.OnTrackLongClickListener
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class TrackAdapter(private val onTrackClickListener: OnTrackClickListener) : RecyclerView.Adapter<TrackAdapter.TrackViewHolder>() {
+class TrackAdapter(
+    private val onTrackClickListener: OnTrackClickListener,
+    private var onTrackLongClickListener: OnTrackLongClickListener? = null
+) : RecyclerView.Adapter<TrackAdapter.TrackViewHolder>() {
 
     val tracks = mutableListOf<Track>()
 
@@ -28,7 +32,12 @@ class TrackAdapter(private val onTrackClickListener: OnTrackClickListener) : Rec
 
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
         holder.bind(tracks[position])
-        holder.itemView.setOnClickListener { onTrackClickListener.onTrackClick(tracks[position]) }
+        holder.itemView.setOnClickListener {
+            onTrackClickListener.onTrackClick(tracks[position])
+        }
+        holder.itemView.setOnLongClickListener {
+            onTrackLongClickListener?.onTrackLongClick(tracks[position]) ?: true
+        }
     }
 
     override fun getItemCount(): Int = tracks.size
@@ -57,13 +66,20 @@ class TrackAdapter(private val onTrackClickListener: OnTrackClickListener) : Rec
         }
 
         private fun setTextViewArtistAndTime(artistName: String, trackTimeMillis: Long) {
-            val formattedTrackTime = SimpleDateFormat(TIME_FORMAT, Locale.getDefault()).format(trackTimeMillis)
-            val artistAndTime = itemView.context.getString(R.string.artist_and_time, artistName, formattedTrackTime)
+            val formattedTrackTime = SimpleDateFormat(TIME_FORMAT, Locale.getDefault())
+                .format(trackTimeMillis)
+            val artistAndTime = itemView.context.getString(
+                R.string.artist_and_time,
+                artistName,
+                formattedTrackTime
+            )
             textViewArtistAndTime.text = artistAndTime
         }
 
         private fun dpToPx(dp: Float, context: Context): Int {
-            return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.resources.displayMetrics).toInt()
+            return TypedValue
+                .applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.resources.displayMetrics)
+                .toInt()
         }
 
         companion object {
