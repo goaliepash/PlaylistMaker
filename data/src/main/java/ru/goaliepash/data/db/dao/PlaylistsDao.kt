@@ -1,6 +1,7 @@
 package ru.goaliepash.data.db.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -23,4 +24,7 @@ interface PlaylistsDao {
 
     @Query("UPDATE playlists SET trackIds = :trackIds, tracksCount = tracksCount - 1 WHERE id = :playlistId")
     suspend fun updateTracksInPlaylist(trackIds: String, playlistId: Int)
+
+    @Delete
+    suspend fun deletePlaylist(playlist: PlaylistsEntity)
 }

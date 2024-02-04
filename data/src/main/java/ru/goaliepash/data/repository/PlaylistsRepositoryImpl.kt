@@ -55,6 +55,18 @@ class PlaylistsRepositoryImpl(
             trackIds = playlistsConverter.map(trackIds),
             playlistId = playlistId
         )
+        deleteTrackById(trackId)
+        emit(playlistsConverter.map(appDatabase.playlistsDao().getPlaylist(playlistId)))
+    }
+
+    override suspend fun deletePlaylist(playlist: Playlist) {
+        appDatabase.playlistsDao().deletePlaylist(playlistsConverter.map(playlist))
+        playlist.trackIds.forEach {
+            deleteTrackById(it)
+        }
+    }
+
+    private suspend fun deleteTrackById(trackId: String) {
         val playlistsWithCurrentTrack = appDatabase
             .playlistsDao()
             .getPlaylists()
@@ -65,6 +77,5 @@ class PlaylistsRepositoryImpl(
         if (playlistsWithCurrentTrack == 0) {
             appDatabase.playlistTracksDao().deleteTrackById(trackId = trackId)
         }
-        emit(playlistsConverter.map(appDatabase.playlistsDao().getPlaylist(playlistId)))
     }
 }

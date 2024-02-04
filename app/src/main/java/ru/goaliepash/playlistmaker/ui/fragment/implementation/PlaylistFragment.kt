@@ -75,6 +75,7 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
         initRecyclerViewPlaylistTracks()
         initConstraintLayoutMore()
         initTextViewShare()
+        initTextViewDelete()
     }
 
     private fun setupBackButton() {
@@ -151,6 +152,12 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
         }
     }
 
+    private fun initTextViewDelete() {
+        binding.textViewDelete.setOnClickListener {
+            onTextViewDeleteClick()
+        }
+    }
+
     private fun onBackButtonClick() {
         requireActivity().supportFragmentManager.popBackStackImmediate()
     }
@@ -165,7 +172,7 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
     private fun onTrackLongClick(track: Track): Boolean {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.delete_playlist_track))
-            .setMessage(getString(R.string.delete_playlist_message))
+            .setMessage(getString(R.string.delete_playlist_track_message))
             .setNegativeButton(getString(R.string.delete_track_alert_dialog_negative)) { _, _ -> }
             .setPositiveButton(getString(R.string.delete_track_alert_dialog_positive)) { _, _ ->
                 viewModel.deleteTrackFromPlaylist(track.trackId, playlist.id)
@@ -174,22 +181,26 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
         return true
     }
 
-    private fun renderPlaylist(currentPlaylist: Playlist) {
-        playlist = currentPlaylist
-        if (playlist.coverUri.isEmpty()) {
-            binding.imageViewCover.setImageResource(R.drawable.ic_cover_track_info_place_holder)
+    private fun renderPlaylist(currentPlaylist: Playlist?) {
+        if (currentPlaylist == null) {
+            requireActivity().supportFragmentManager.popBackStackImmediate()
         } else {
-            binding.imageViewCover.setImageURI(playlist.coverUri.toUri())
+            playlist = currentPlaylist
+            if (playlist.coverUri.isEmpty()) {
+                binding.imageViewCover.setImageResource(R.drawable.ic_cover_track_info_place_holder)
+            } else {
+                binding.imageViewCover.setImageURI(playlist.coverUri.toUri())
+            }
+            binding.textViewName.text = playlist.name
+            if (playlist.description.isNotEmpty()) {
+                binding.textViewDescription.text = playlist.description
+            } else {
+                binding.textViewDescription.visibility = View.GONE
+            }
+            initImageViewPlaylistCover()
+            initTextViewPlaylistName()
+            initTextViewTracksNumber()
         }
-        binding.textViewName.text = playlist.name
-        if (playlist.description.isNotEmpty()) {
-            binding.textViewDescription.text = playlist.description
-        } else {
-            binding.textViewDescription.visibility = View.GONE
-        }
-        initImageViewPlaylistCover()
-        initTextViewPlaylistName()
-        initTextViewTracksNumber()
     }
 
     private fun renderPlaylistTracks(playlistTracks: List<Track>) {
@@ -269,6 +280,17 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
                 )
                 .show()
         }
+    }
+
+    private fun onTextViewDeleteClick() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.delete_playlist))
+            .setMessage(getString(R.string.delete_playlist_message))
+            .setNegativeButton(getString(R.string.no)) { _, _ -> }
+            .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                viewModel.deletePlaylist(playlist)
+            }
+            .show()
     }
 
     private fun formatTrackTime(timeMillis: Long): String {

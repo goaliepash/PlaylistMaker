@@ -13,10 +13,10 @@ import ru.goaliepash.domain.model.Track
 
 class PlaylistViewModel(private val playlistsInteractor: PlaylistsInteractor) : ViewModel() {
 
-    private val playlist = MutableLiveData<Playlist>()
+    private val playlist = MutableLiveData<Playlist?>()
     private val playlistTracks = MutableLiveData<List<Track>>()
 
-    fun getPlaylist(): LiveData<Playlist> = playlist
+    fun getPlaylist(): LiveData<Playlist?> = playlist
 
     fun getPlaylistTracks(): LiveData<List<Track>> = playlistTracks
 
@@ -59,6 +59,13 @@ class PlaylistViewModel(private val playlistsInteractor: PlaylistsInteractor) : 
                     playlistTracks.postValue(newPlaylistTracks)
                     playlist.postValue(it)
                 }
+        }
+    }
+
+    fun deletePlaylist(currentPlaylist: Playlist) {
+        viewModelScope.launch {
+            playlistsInteractor.deletePlaylist(currentPlaylist)
+            playlist.postValue(null)
         }
     }
 }
