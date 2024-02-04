@@ -44,17 +44,21 @@ class PlaylistViewModel(private val playlistsInteractor: PlaylistsInteractor) : 
 
     fun deleteTrackFromPlaylist(trackId: String, playlistId: Int) {
         viewModelScope.launch {
-            playlistsInteractor.deleteTrackFromPlaylist(trackId, playlistId)
-            val newPlaylistTracks = mutableListOf<Track>()
-            newPlaylistTracks.addAll(
-                playlistTracks
-                    .value
-                    ?.filter {
-                        it.trackId != trackId
-                    }
-                    .orEmpty()
-            )
-            playlistTracks.postValue(newPlaylistTracks)
+            playlistsInteractor
+                .deleteTrackFromPlaylist(trackId, playlistId)
+                .collect {
+                    val newPlaylistTracks = mutableListOf<Track>()
+                    newPlaylistTracks.addAll(
+                        playlistTracks
+                            .value
+                            ?.filter {
+                                it.trackId != trackId
+                            }
+                            .orEmpty()
+                    )
+                    playlistTracks.postValue(newPlaylistTracks)
+                    playlist.postValue(it)
+                }
         }
     }
 }

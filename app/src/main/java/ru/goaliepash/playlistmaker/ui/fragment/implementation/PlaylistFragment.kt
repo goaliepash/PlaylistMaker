@@ -1,15 +1,19 @@
 package ru.goaliepash.playlistmaker.ui.fragment.implementation
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.goaliepash.domain.model.Playlist
@@ -22,6 +26,8 @@ import ru.goaliepash.playlistmaker.ui.fragment.BindingFragment
 import ru.goaliepash.playlistmaker.utils.Constants.CLICK_DEBOUNCE_DELAY
 import ru.goaliepash.playlistmaker.utils.Constants.MILLIS_IN_MINUTE
 import ru.goaliepash.playlistmaker.utils.debounce
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
 
@@ -30,8 +36,11 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
     private lateinit var playlist: Playlist
     private lateinit var trackAdapter: TrackAdapter
     private lateinit var onTrackClickDebounce: (Track) -> Unit
+    private lateinit var bottomSheetBehaviorMore: BottomSheetBehavior<ConstraintLayout>
+
     override fun createBinding(
-        inflater: LayoutInflater, container: ViewGroup?
+        inflater: LayoutInflater,
+        container: ViewGroup?
     ): FragmentPlaylistBinding {
         return FragmentPlaylistBinding.inflate(inflater, container, false)
     }
@@ -42,7 +51,6 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
             debounce(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false) {
                 openTrackActivity(it)
             }
-
         initUI()
     }
 
@@ -62,7 +70,11 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
     private fun initUI() {
         setupBackButton()
         initImageViewBack()
+        initImageViewShare()
+        initImageViewMore()
         initRecyclerViewPlaylistTracks()
+        initConstraintLayoutMore()
+        initTextViewShare()
     }
 
     private fun setupBackButton() {
@@ -79,6 +91,19 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
         }
     }
 
+    private fun initImageViewShare() {
+        binding.imageViewShare.setOnClickListener {
+            onImageViewShareClick()
+        }
+    }
+
+    private fun initImageViewMore() {
+        binding.imageViewMore.setOnClickListener {
+            bottomSheetBehaviorMore.state = BottomSheetBehavior.STATE_COLLAPSED
+            binding.viewOverlay.visibility = View.VISIBLE
+        }
+    }
+
     private fun initRecyclerViewPlaylistTracks() {
         trackAdapter = TrackAdapter(
             onTrackClickListener = onTrackClickDebounce,
@@ -88,6 +113,42 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
         )
         binding.recyclerViewPlaylistTracks.adapter = trackAdapter
         binding.recyclerViewPlaylistTracks.layoutManager = LinearLayoutManager(requireActivity())
+    }
+
+    private fun initConstraintLayoutMore() {
+        bottomSheetBehaviorMore = BottomSheetBehavior.from(binding.constraintLayoutMore).apply {
+            state = BottomSheetBehavior.STATE_HIDDEN
+        }
+        bottomSheetBehaviorMore.addBottomSheetCallback(
+            object : BottomSheetBehavior.BottomSheetCallback() {
+
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    when (newState) {
+                        BottomSheetBehavior.STATE_HIDDEN -> {
+                            binding.viewOverlay.visibility = View.GONE
+                        }
+
+                        BottomSheetBehavior.STATE_COLLAPSED -> {
+                            binding.viewOverlay.visibility = View.VISIBLE
+                        }
+
+                        else -> {
+                            binding.viewOverlay.visibility = View.VISIBLE
+                        }
+                    }
+                }
+
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                    binding.viewOverlay.alpha = slideOffset
+                }
+            }
+        )
+    }
+
+    private fun initTextViewShare() {
+        binding.textViewShare.setOnClickListener {
+            onImageViewShareClick()
+        }
     }
 
     private fun onBackButtonClick() {
@@ -103,7 +164,7 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
 
     private fun onTrackLongClick(track: Track): Boolean {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle(getString(R.string.delete_playlist))
+            .setTitle(getString(R.string.delete_playlist_track))
             .setMessage(getString(R.string.delete_playlist_message))
             .setNegativeButton(getString(R.string.delete_track_alert_dialog_negative)) { _, _ -> }
             .setPositiveButton(getString(R.string.delete_track_alert_dialog_positive)) { _, _ ->
@@ -126,6 +187,9 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
         } else {
             binding.textViewDescription.visibility = View.GONE
         }
+        initImageViewPlaylistCover()
+        initTextViewPlaylistName()
+        initTextViewTracksNumber()
     }
 
     private fun renderPlaylistTracks(playlistTracks: List<Track>) {
@@ -133,6 +197,30 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
         trackAdapter.tracks.clear()
         trackAdapter.tracks.addAll(playlistTracks)
         trackAdapter.notifyDataSetChanged()
+    }
+
+    private fun initImageViewPlaylistCover() {
+        with(binding.imageViewPlaylistCover) {
+            if (playlist.coverUri.isEmpty()) {
+                setImageResource(R.drawable.ic_cover_place_holder)
+            } else {
+                setBackgroundResource(R.drawable.rounded_corners)
+                clipToOutline = true
+                setImageURI(playlist.coverUri.toUri())
+            }
+        }
+    }
+
+    private fun initTextViewPlaylistName() {
+        binding.textViewPlaylistName.text = playlist.name
+    }
+
+    private fun initTextViewTracksNumber() {
+        binding.textViewTracksNumber.text = resources.getQuantityString(
+            R.plurals.tracks_plurals,
+            playlist.tracksCount,
+            playlist.tracksCount
+        )
     }
 
     private fun initPlaylistProperties(playlistTracks: List<Track>) {
@@ -145,12 +233,55 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
         )
     }
 
+    private fun onImageViewShareClick() {
+        if (playlist.tracksCount != 0) {
+            val shareStringBuilder = StringBuilder()
+            shareStringBuilder.append(
+                resources.getQuantityString(
+                    R.plurals.tracks_plurals,
+                    playlist.tracksCount,
+                    playlist.tracksCount
+                )
+            )
+            trackAdapter.tracks.forEachIndexed { index, track ->
+                shareStringBuilder.append(
+                    getString(
+                        R.string.share_playlist_track,
+                        index + 1,
+                        track.artistName,
+                        track.trackName,
+                        formatTrackTime(track.trackTimeMillis)
+                    )
+                )
+            }
+            Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, shareStringBuilder.toString())
+                type = "text/plain"
+                startActivity(Intent.createChooser(this, null))
+            }
+        } else {
+            Toast
+                .makeText(
+                    requireContext(),
+                    getString(R.string.empty_playlist_message),
+                    Toast.LENGTH_SHORT
+                )
+                .show()
+        }
+    }
+
+    private fun formatTrackTime(timeMillis: Long): String {
+        return SimpleDateFormat(TIME_FORMAT, Locale.getDefault()).format(timeMillis)
+    }
+
     private fun Long.toMinutes(): Long {
         return this / MILLIS_IN_MINUTE
     }
 
     companion object {
         private const val ARGS_PLAYLIST_ID = "PLAYLIST_ID"
+        private const val TIME_FORMAT = "mm:ss"
 
         fun createArgs(playlistId: Int): Bundle = bundleOf(ARGS_PLAYLIST_ID to playlistId)
     }

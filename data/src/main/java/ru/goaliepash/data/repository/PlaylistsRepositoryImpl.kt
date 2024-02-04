@@ -47,7 +47,7 @@ class PlaylistsRepositoryImpl(
         emit(playlistTracks.map(playlistTracksConverter::map))
     }
 
-    override suspend fun deleteTrackFromPlaylist(trackId: String, playlistId: Int) {
+    override fun deleteTrackFromPlaylist(trackId: String, playlistId: Int): Flow<Playlist> = flow {
         val playlist = appDatabase.playlistsDao().getPlaylist(playlistId)
         val trackIds = LinkedList<String>()
         trackIds.addAll(playlistsConverter.map(playlist.trackIds).filter { it != trackId })
@@ -65,5 +65,6 @@ class PlaylistsRepositoryImpl(
         if (playlistsWithCurrentTrack == 0) {
             appDatabase.playlistTracksDao().deleteTrackById(trackId = trackId)
         }
+        emit(playlistsConverter.map(appDatabase.playlistsDao().getPlaylist(playlistId)))
     }
 }

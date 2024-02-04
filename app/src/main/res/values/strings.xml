@@ -65,8 +65,13 @@
         <item quantity="other">%1$d минут</item>
     </plurals>
     <string name="playlist_properties">%1$s • %2$s</string>
-    <string name="delete_playlist">Удалить трек</string>
+    <string name="delete_playlist_track">Удалить трек</string>
     <string name="delete_playlist_message">Вы уверены, что хотите удалить трек из плейлиста?</string>
     <string name="delete_track_alert_dialog_positive">Удалить</string>
     <string name="delete_track_alert_dialog_negative">Отмена</string>
+    <string name="share_playlist_track">\n%1$d. %2$s – %3$s (%4$s)</string>
+    <string name="share_playlist">Поделиться</string>
+    <string name="update_playlist_info">Редактировать информацию</string>
+    <string name="delete_playlist">Удалить плейлист</string>
+    <string name="empty_playlist_message">В этом плейлисте нет списка треков, которым можно поделиться</string>
 </resources>
