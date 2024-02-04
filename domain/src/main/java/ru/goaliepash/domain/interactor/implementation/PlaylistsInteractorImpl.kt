@@ -41,4 +41,13 @@ class PlaylistsInteractorImpl(
     override suspend fun deletePlaylist(playlist: Playlist) {
         playlistsRepository.deletePlaylist(playlist)
     }
+
+    override suspend fun updatePlaylistInfo(
+        id: Int,
+        name: String,
+        description: String,
+        coverUri: String
+    ) {
+        playlistsRepository.updatePlaylistInfo(id, name, description, coverUri)
+    }
 }

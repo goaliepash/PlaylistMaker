@@ -75,6 +75,7 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
         initRecyclerViewPlaylistTracks()
         initConstraintLayoutMore()
         initTextViewShare()
+        initTextViewUpdate()
         initTextViewDelete()
     }
 
@@ -149,6 +150,12 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
     private fun initTextViewShare() {
         binding.textViewShare.setOnClickListener {
             onImageViewShareClick()
+        }
+    }
+
+    private fun initTextViewUpdate() {
+        binding.textViewUpdate.setOnClickListener {
+            onTextViewUpdateClick()
         }
     }
 
@@ -280,6 +287,18 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
                 )
                 .show()
         }
+    }
+
+    private fun onTextViewUpdateClick() {
+        findNavController().navigate(
+            R.id.action_playlistFragment_to_newPlaylistFragment,
+            NewPlaylistFragment.createArgs(
+                id = playlist.id,
+                coverUri = playlist.coverUri,
+                name = playlist.name,
+                description = playlist.description
+            )
+        )
     }
 
     private fun onTextViewDeleteClick() {

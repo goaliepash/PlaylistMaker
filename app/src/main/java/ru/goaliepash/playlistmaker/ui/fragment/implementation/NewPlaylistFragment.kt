@@ -15,6 +15,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -31,7 +32,9 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
 
     private val viewModel by viewModel<NewPlaylistViewModel>()
 
+    private var currentId = 0
     private var currentUri: Uri? = null
+    private var updateMode = false
 
     override fun createBinding(
         inflater: LayoutInflater, container: ViewGroup?
@@ -41,6 +44,9 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if (arguments != null) {
+            setupUpdateMode()
+        }
         initUI()
     }
 
@@ -61,6 +67,25 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
                 requireActivity().supportFragmentManager.popBackStackImmediate()
             }
         }
+        viewModel.isPlaylistUpdated().observe(this) {
+            if (it) {
+                requireActivity().supportFragmentManager.popBackStackImmediate()
+            }
+        }
+    }
+
+    private fun setupUpdateMode() {
+        updateMode = true
+        binding.textViewTitle.text = getString(R.string.update)
+        currentId = requireArguments().getInt(ARGS_ID)
+        val coverUri = requireArguments().getString(ARGS_COVER_URI).orEmpty()
+        if (coverUri.isNotEmpty()) {
+            setupCover(coverUri.toUri())
+        }
+        binding.textInputEditTextName.setText(requireArguments().getString(ARGS_NAME))
+        binding.textInputEditTextDescription.setText(requireArguments().getString(ARGS_DESCRIPTION))
+        binding.buttonCreate.setText(R.string.save)
+        enableButtonCreate()
     }
 
     private fun initUI() {
@@ -89,16 +114,20 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
         val pickMedia =
             registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
                 if (uri != null) {
-                    binding.imageViewAddCover.setBackgroundResource(R.drawable.rounded_corners)
-                    binding.imageViewAddCover.clipToOutline = true
-                    binding.imageViewAddCover.scaleType = ImageView.ScaleType.CENTER_CROP
-                    binding.imageViewAddCover.setImageURI(uri)
-                    currentUri = uri
+                    setupCover(uri)
                 }
             }
         binding.imageViewAddCover.setOnClickListener {
             pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
+    }
+
+    private fun setupCover(uri: Uri) {
+        binding.imageViewAddCover.setBackgroundResource(R.drawable.rounded_corners)
+        binding.imageViewAddCover.clipToOutline = true
+        binding.imageViewAddCover.scaleType = ImageView.ScaleType.CENTER_CROP
+        binding.imageViewAddCover.setImageURI(uri)
+        currentUri = uri
     }
 
     private fun initTextInputEditTextName() {
@@ -112,23 +141,31 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
     }
 
     private fun initButtonCreate() {
-        disableButtonCreate()
         binding.buttonCreate.setOnClickListener {
-            val coverUri = if (currentUri != null) saveImageToPrivateStorage() else ""
-            val playlist = Playlist(
-                name = binding.textInputEditTextName.text.toString(),
-                description = binding.textInputEditTextDescription.text.toString(),
-                trackIds = ArrayList(),
-                tracksCount = 0,
-                coverUri = coverUri,
-                dateAdded = System.currentTimeMillis()
-            )
-            viewModel.onButtonCreateClicked(playlist)
+            if (binding.buttonCreate.text == getString(R.string.save)) {
+                viewModel.onButtonSaveClicked(
+                    id = currentId,
+                    name = binding.textInputEditTextName.text.toString(),
+                    description = binding.textInputEditTextDescription.text.toString(),
+                    coverUri = currentUri.toString()
+                )
+            } else {
+                val coverUri = if (currentUri != null) saveImageToPrivateStorage() else ""
+                val playlist = Playlist(
+                    name = binding.textInputEditTextName.text.toString(),
+                    description = binding.textInputEditTextDescription.text.toString(),
+                    trackIds = ArrayList(),
+                    tracksCount = 0,
+                    coverUri = coverUri,
+                    dateAdded = System.currentTimeMillis()
+                )
+                viewModel.onButtonCreateClicked(playlist)
+            }
         }
     }
 
     private fun onBackButtonClick() {
-        if (userHasActions()) {
+        if (userHasActions() && !updateMode) {
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle(getString(R.string.playlist_alert_dialog_title))
                 .setMessage(getString(R.string.playlist_alert_dialog_message))
@@ -178,5 +215,20 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
         binding.buttonCreate.isEnabled = false
         binding.buttonCreate.backgroundTintList =
             ContextCompat.getColorStateList(requireContext(), R.color.yp_text_gray)
+    }
+
+    companion object {
+        private const val ARGS_ID = "ID"
+        private const val ARGS_COVER_URI = "COVER_URI"
+        private const val ARGS_NAME = "NAME"
+        private const val ARGS_DESCRIPTION = "DESCRIPTION"
+
+        fun createArgs(id: Int, coverUri: String, name: String, description: String): Bundle =
+            bundleOf(
+                ARGS_ID to id,
+                ARGS_COVER_URI to coverUri,
+                ARGS_NAME to name,
+                ARGS_DESCRIPTION to description
+            )
     }
 }

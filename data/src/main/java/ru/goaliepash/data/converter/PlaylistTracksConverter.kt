@@ -15,8 +15,7 @@ class PlaylistTracksConverter {
         releaseDate = playlistTrackEntity.releaseDate,
         primaryGenreName = playlistTrackEntity.primaryGenreName,
         country = playlistTrackEntity.country,
-        previewUrl = playlistTrackEntity.previewUrl,
-        isFavorite = true
+        previewUrl = playlistTrackEntity.previewUrl
     )
 
     fun map(track: Track): PlaylistTrackEntity = PlaylistTrackEntity(

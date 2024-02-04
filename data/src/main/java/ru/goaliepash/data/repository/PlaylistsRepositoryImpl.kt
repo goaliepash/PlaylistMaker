@@ -78,4 +78,13 @@ class PlaylistsRepositoryImpl(
             appDatabase.playlistTracksDao().deleteTrackById(trackId = trackId)
         }
     }
+
+    override suspend fun updatePlaylistInfo(
+        id: Int,
+        name: String,
+        description: String,
+        coverUri: String
+    ) {
+        appDatabase.playlistsDao().updatePlaylistInfo(id, name, description, coverUri)
+    }
 }

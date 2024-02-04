@@ -21,4 +21,6 @@ interface PlaylistsRepository {
     fun deleteTrackFromPlaylist(trackId: String, playlistId: Int): Flow<Playlist>
 
     suspend fun deletePlaylist(playlist: Playlist)
+
+    suspend fun updatePlaylistInfo(id: Int, name: String, description: String, coverUri: String)
 }
