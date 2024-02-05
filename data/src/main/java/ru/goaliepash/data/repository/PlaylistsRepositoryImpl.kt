@@ -43,8 +43,14 @@ class PlaylistsRepositoryImpl(
     }
 
     override fun getPlaylistTracks(trackIds: List<String>): Flow<List<Track>> = flow {
-        val playlistTracks = appDatabase.playlistTracksDao().getPlaylistTracks(trackIds)
-        emit(playlistTracks.map(playlistTracksConverter::map))
+        val playlistTracks = mutableListOf<Track>()
+        trackIds.forEach {
+            playlistTracks.add(
+                0,
+                playlistTracksConverter.map(appDatabase.playlistTracksDao().getPlaylistTrack(it))
+            )
+        }
+        emit(playlistTracks)
     }
 
     override fun deleteTrackFromPlaylist(trackId: String, playlistId: Int): Flow<Playlist> = flow {

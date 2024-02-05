@@ -55,9 +55,11 @@ class TrackAdapter(
         }
 
         fun bind(model: Track) {
+            val artworkUrl100 = model.artworkUrl100
+            val artworkUrl60 = artworkUrl100.replaceAfterLast('/', ART_WORK_NEW_VALUE)
             Glide
                 .with(itemView)
-                .load(model.artworkUrl100)
+                .load(artworkUrl60)
                 .placeholder(R.drawable.ic_cover_place_holder)
                 .transform(RoundedCorners(dpToPx(2.0f, itemView.context)))
                 .into(imageViewCover)
@@ -84,6 +86,7 @@ class TrackAdapter(
 
         companion object {
             private const val TIME_FORMAT = "mm:ss"
+            private const val ART_WORK_NEW_VALUE = "60x60bb.jpg"
         }
     }
 }

@@ -93,10 +93,10 @@ class AudioPlayerViewModel(
             } else {
                 playlistsInteractor.addToPlaylist(track)
                 updatePlaylist(
-                    playlist.id,
-                    playlist.trackIds,
-                    track.trackId,
-                    playlist.tracksCount
+                    playlistId = playlist.id,
+                    trackIds = playlist.trackIds,
+                    trackId = track.trackId,
+                    tracksCount = playlist.tracksCount
                 )
                 getPlaylistsFromDb()
                 isTrackAddedState.postValue(true)

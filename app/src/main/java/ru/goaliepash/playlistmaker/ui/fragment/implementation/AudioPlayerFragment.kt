@@ -58,6 +58,7 @@ class AudioPlayerFragment : BindingFragment<FragmentAudioPlayerBinding>() {
             track.isFavorite = it
         }
         viewModel.getTrackAddedState().observe(this) {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
             showToast(it)
         }
         onPlaylistClickDebounce = debounce(CLICK_DEBOUNCE_DELAY, lifecycleScope, false) {

@@ -302,7 +302,7 @@
         android:layout_height="match_parent"
         android:background="@drawable/bottom_sheet_background"
         app:behavior_hideable="true"
-        app:behavior_peekHeight="240dp"
+        app:behavior_peekHeight="505dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <View

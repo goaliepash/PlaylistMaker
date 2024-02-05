@@ -142,7 +142,7 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
 
     private fun initButtonCreate() {
         binding.buttonCreate.setOnClickListener {
-            if (binding.buttonCreate.text == getString(R.string.save)) {
+            if (updateMode) {
                 viewModel.onButtonSaveClicked(
                     id = currentId,
                     name = binding.textInputEditTextName.text.toString(),

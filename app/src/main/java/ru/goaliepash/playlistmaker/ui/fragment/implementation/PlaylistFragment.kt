@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -194,8 +195,10 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistBinding>() {
         } else {
             playlist = currentPlaylist
             if (playlist.coverUri.isEmpty()) {
+                binding.imageViewCover.scaleType = ImageView.ScaleType.CENTER
                 binding.imageViewCover.setImageResource(R.drawable.ic_cover_track_info_place_holder)
             } else {
+                binding.imageViewCover.scaleType = ImageView.ScaleType.CENTER_CROP
                 binding.imageViewCover.setImageURI(playlist.coverUri.toUri())
             }
             binding.textViewName.text = playlist.name
