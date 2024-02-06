@@ -1,6 +1,5 @@
 package ru.goaliepash.playlistmaker.ui.fragment.implementation
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +15,7 @@ import ru.goaliepash.playlistmaker.presentation.state.FavoriteTracksState
 import ru.goaliepash.playlistmaker.presentation.view_model.FavoriteTracksViewModel
 import ru.goaliepash.playlistmaker.ui.adapter.TrackAdapter
 import ru.goaliepash.playlistmaker.ui.fragment.BindingFragment
+import ru.goaliepash.playlistmaker.utils.Constants.CLICK_DEBOUNCE_DELAY
 import ru.goaliepash.playlistmaker.utils.debounce
 
 class FavoriteTracksFragment : BindingFragment<FragmentFavoriteTracksBinding>() {
@@ -26,15 +26,19 @@ class FavoriteTracksFragment : BindingFragment<FragmentFavoriteTracksBinding>() 
 
     private lateinit var onTrackClickDebounce: (Track) -> Unit
 
-    override fun createBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentFavoriteTracksBinding {
+    override fun createBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentFavoriteTracksBinding {
         return FragmentFavoriteTracksBinding.inflate(inflater, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        onTrackClickDebounce = debounce(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false) {
-            openTrackActivity(it)
-        }
+        onTrackClickDebounce =
+            debounce(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false) {
+                openTrackActivity(it)
+            }
         initRecyclerView()
     }
 
@@ -109,9 +113,6 @@ class FavoriteTracksFragment : BindingFragment<FragmentFavoriteTracksBinding>() 
     }
 
     companion object {
-
-        private const val CLICK_DEBOUNCE_DELAY = 1000L
-
         fun newInstance() = FavoriteTracksFragment()
     }
 }

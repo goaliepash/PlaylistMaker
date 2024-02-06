@@ -23,6 +23,7 @@ import ru.goaliepash.playlistmaker.databinding.FragmentAudioPlayerBinding
 import ru.goaliepash.playlistmaker.presentation.view_model.AudioPlayerViewModel
 import ru.goaliepash.playlistmaker.ui.adapter.PlaylistBottomSheetAdapter
 import ru.goaliepash.playlistmaker.ui.fragment.BindingFragment
+import ru.goaliepash.playlistmaker.utils.Constants.CLICK_DEBOUNCE_DELAY
 import ru.goaliepash.playlistmaker.utils.debounce
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -57,6 +58,7 @@ class AudioPlayerFragment : BindingFragment<FragmentAudioPlayerBinding>() {
             track.isFavorite = it
         }
         viewModel.getTrackAddedState().observe(this) {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
             showToast(it)
         }
         onPlaylistClickDebounce = debounce(CLICK_DEBOUNCE_DELAY, lifecycleScope, false) {
@@ -258,7 +260,6 @@ class AudioPlayerFragment : BindingFragment<FragmentAudioPlayerBinding>() {
     }
 
     companion object {
-        private const val CLICK_DEBOUNCE_DELAY = 1000L
         private const val ART_WORK_NEW_VALUE = "512x512bb.jpg"
         private const val TIME_FORMAT = "mm:ss"
         private const val RELEASED_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'"

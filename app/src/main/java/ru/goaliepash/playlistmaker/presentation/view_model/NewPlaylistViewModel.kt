@@ -11,8 +11,23 @@ import ru.goaliepash.domain.model.Playlist
 class NewPlaylistViewModel(private val playlistInteractor: PlaylistsInteractor) : ViewModel() {
 
     private val isPlaylistCreated = MutableLiveData(false)
+    private val isPlaylistUpdated = MutableLiveData(false)
 
     fun isPlaylistCreated(): LiveData<Boolean> = isPlaylistCreated
+
+    fun isPlaylistUpdated(): LiveData<Boolean> = isPlaylistUpdated
+
+    fun onButtonSaveClicked(id: Int, name: String, description: String, coverUri: String) {
+        viewModelScope.launch {
+            playlistInteractor.updatePlaylistInfo(
+                id = id,
+                name = name,
+                description = description,
+                coverUri = coverUri
+            )
+            isPlaylistUpdated.postValue(true)
+        }
+    }
 
     fun onButtonCreateClicked(playlist: Playlist) {
         viewModelScope.launch {

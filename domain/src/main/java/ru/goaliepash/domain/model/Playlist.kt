@@ -1,6 +1,7 @@
 package ru.goaliepash.domain.model
 
 data class Playlist(
+    val id: Int = 0,
     val name: String,
     val description: String,
     val trackIds: List<String>,

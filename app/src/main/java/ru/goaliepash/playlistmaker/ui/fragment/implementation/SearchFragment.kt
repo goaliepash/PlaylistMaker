@@ -25,6 +25,7 @@ import ru.goaliepash.playlistmaker.presentation.state.TracksState
 import ru.goaliepash.playlistmaker.presentation.view_model.SearchViewModel
 import ru.goaliepash.playlistmaker.ui.adapter.TrackAdapter
 import ru.goaliepash.playlistmaker.ui.fragment.BindingFragment
+import ru.goaliepash.playlistmaker.utils.Constants.CLICK_DEBOUNCE_DELAY
 import ru.goaliepash.playlistmaker.utils.debounce
 
 class SearchFragment : BindingFragment<FragmentSearchBinding>() {
@@ -284,9 +285,5 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
                 searchHistoryTrackAdapter.notifyDataSetChanged()
             }
         }
-    }
-
-    companion object {
-        private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 }

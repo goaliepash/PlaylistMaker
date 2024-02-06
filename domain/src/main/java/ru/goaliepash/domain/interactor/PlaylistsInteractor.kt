@@ -12,5 +12,15 @@ interface PlaylistsInteractor {
 
     suspend fun addToPlaylist(track: Track)
 
-    suspend fun updatePlaylist(trackIds: List<String>, tracksCount: Int, dateAdded: Long)
+    suspend fun updatePlaylist(playlistId: Int, trackIds: List<String>, tracksCount: Int)
+
+    fun getPlaylist(id: Int): Flow<Playlist>
+
+    fun getPlaylistTracks(trackIds: List<String>): Flow<List<Track>>
+
+    fun deleteTrackFromPlaylist(trackId: String, playlistId: Int): Flow<Playlist>
+
+    suspend fun deletePlaylist(playlist: Playlist)
+
+    suspend fun updatePlaylistInfo(id: Int, name: String, description: String, coverUri: String)
 }

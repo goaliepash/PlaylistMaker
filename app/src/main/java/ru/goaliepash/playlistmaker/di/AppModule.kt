@@ -6,6 +6,7 @@ import org.koin.dsl.module
 import ru.goaliepash.playlistmaker.presentation.view_model.AudioPlayerViewModel
 import ru.goaliepash.playlistmaker.presentation.view_model.FavoriteTracksViewModel
 import ru.goaliepash.playlistmaker.presentation.view_model.NewPlaylistViewModel
+import ru.goaliepash.playlistmaker.presentation.view_model.PlaylistViewModel
 import ru.goaliepash.playlistmaker.presentation.view_model.PlaylistsViewModel
 import ru.goaliepash.playlistmaker.presentation.view_model.SearchViewModel
 import ru.goaliepash.playlistmaker.presentation.view_model.SettingsViewModel
@@ -42,5 +43,9 @@ val appModule = module {
 
     viewModel {
         NewPlaylistViewModel(playlistInteractor = get())
+    }
+
+    viewModel {
+        PlaylistViewModel(playlistsInteractor = get())
     }
 }

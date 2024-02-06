@@ -4,21 +4,27 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.goaliepash.domain.model.Playlist
 import ru.goaliepash.playlistmaker.R
 import ru.goaliepash.playlistmaker.databinding.FragmentPlaylistsBinding
 import ru.goaliepash.playlistmaker.presentation.state.PlaylistsState
 import ru.goaliepash.playlistmaker.presentation.view_model.PlaylistsViewModel
 import ru.goaliepash.playlistmaker.ui.adapter.PlaylistAdapter
 import ru.goaliepash.playlistmaker.ui.fragment.BindingFragment
+import ru.goaliepash.playlistmaker.utils.Constants.CLICK_DEBOUNCE_DELAY
+import ru.goaliepash.playlistmaker.utils.debounce
 
 class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
 
     private val viewModel by viewModel<PlaylistsViewModel>()
 
     private var playlistAdapter: PlaylistAdapter? = null
+
+    private lateinit var onPlaylistClickDebounce: (Playlist) -> Unit
 
     override fun createBinding(
         inflater: LayoutInflater,
@@ -29,6 +35,10 @@ class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        onPlaylistClickDebounce =
+            debounce(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false) {
+                onPlaylistClick(it)
+            }
         initUI()
     }
 
@@ -52,7 +62,7 @@ class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
     }
 
     private fun initRecyclerView() {
-        playlistAdapter = PlaylistAdapter()
+        playlistAdapter = PlaylistAdapter(onPlaylistClickDebounce)
         binding.recyclerView.adapter = playlistAdapter
         binding.recyclerView.layoutManager = GridLayoutManager(requireActivity(), 2)
     }
@@ -106,8 +116,14 @@ class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
         binding.linearLayoutNoPlaylists.visibility = View.GONE
     }
 
-    companion object {
+    private fun onPlaylistClick(playlist: Playlist) {
+        findNavController().navigate(
+            R.id.action_mediaLibraryFragment_to_playlistFragment,
+            PlaylistFragment.createArgs(playlist.id)
+        )
+    }
 
+    companion object {
         fun newInstance() = PlaylistsFragment()
     }
 }

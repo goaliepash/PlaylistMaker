@@ -10,8 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import ru.goaliepash.domain.model.Playlist
 import ru.goaliepash.playlistmaker.R
+import ru.goaliepash.playlistmaker.ui.listener.OnPlaylistClickListener
 
-class PlaylistAdapter : RecyclerView.Adapter<PlaylistAdapter.PlaylistViewHolder>() {
+class PlaylistAdapter(private val onPlaylistClickListener: OnPlaylistClickListener) : RecyclerView.Adapter<PlaylistAdapter.PlaylistViewHolder>() {
 
     val playlists = mutableListOf<Playlist>()
 
@@ -24,6 +25,9 @@ class PlaylistAdapter : RecyclerView.Adapter<PlaylistAdapter.PlaylistViewHolder>
 
     override fun onBindViewHolder(holder: PlaylistViewHolder, position: Int) {
         holder.bind(playlists[position])
+        holder.itemView.setOnClickListener {
+            onPlaylistClickListener.onPlaylistClick(playlists[position])
+        }
     }
 
     override fun getItemCount(): Int = playlists.size

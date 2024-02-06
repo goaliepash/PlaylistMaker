@@ -92,6 +92,8 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/offset_16"
         android:layout_marginBottom="@dimen/offset_32"
+        android:backgroundTint="@color/yp_text_gray"
+        android:enabled="false"
         android:text="@string/create"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

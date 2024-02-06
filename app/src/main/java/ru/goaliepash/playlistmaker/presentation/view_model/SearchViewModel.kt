@@ -11,6 +11,7 @@ import ru.goaliepash.domain.interactor.SearchHistoryInteractor
 import ru.goaliepash.domain.model.Track
 import ru.goaliepash.playlistmaker.presentation.state.SearchHistoryTracksState
 import ru.goaliepash.playlistmaker.presentation.state.TracksState
+import ru.goaliepash.playlistmaker.utils.Constants.SEARCH_DEBOUNCE_DELAY
 import ru.goaliepash.playlistmaker.utils.debounce
 
 class SearchViewModel(private val itunesInteractor: ItunesInteractor, private val searchHistoryInteractor: SearchHistoryInteractor) : ViewModel() {
@@ -104,6 +105,5 @@ class SearchViewModel(private val itunesInteractor: ItunesInteractor, private va
 
     companion object {
         private const val MAX_SIZE_OF_SEARCH_HISTORY_TRACKS = 10
-        private const val SEARCH_DEBOUNCE_DELAY = 2000L
     }
 }

@@ -31,6 +31,10 @@
             android:id="@+id/action_mediaLibraryFragment_to_audioPlayerFragment"
             app:destination="@id/audioPlayerFragment" />
 
+        <action
+            android:id="@+id/action_mediaLibraryFragment_to_playlistFragment"
+            app:destination="@id/playlistFragment" />
+
     </fragment>
 
     <fragment
@@ -53,6 +57,22 @@
 
         <action
             android:id="@+id/action_audioPlayerFragment_to_newPlaylistFragment"
+            app:destination="@id/newPlaylistFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/playlistFragment"
+        android:name="ru.goaliepash.playlistmaker.ui.fragment.implementation.PlaylistFragment"
+        android:label="FragmentPlaylist"
+        tools:layout="@layout/fragment_playlist">
+
+        <action
+            android:id="@+id/action_playlistFragment_to_audioPlayerFragment"
+            app:destination="@id/audioPlayerFragment" />
+
+        <action
+            android:id="@+id/action_playlistFragment_to_newPlaylistFragment"
             app:destination="@id/newPlaylistFragment" />
 
     </fragment>

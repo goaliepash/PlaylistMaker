@@ -54,10 +54,6 @@ class AudioPlayerViewModel(
         }
     }
 
-    fun onPause() {
-        pausePlayer()
-    }
-
     fun onImageButtonPlayPauseClicked() {
         when (audioPlayerState.value) {
             is AudioPlayerState.Playing -> {
@@ -97,10 +93,10 @@ class AudioPlayerViewModel(
             } else {
                 playlistsInteractor.addToPlaylist(track)
                 updatePlaylist(
-                    playlist.trackIds,
-                    track.trackId,
-                    playlist.tracksCount,
-                    playlist.dateAdded
+                    playlistId = playlist.id,
+                    trackIds = playlist.trackIds,
+                    trackId = track.trackId,
+                    tracksCount = playlist.tracksCount
                 )
                 getPlaylistsFromDb()
                 isTrackAddedState.postValue(true)
@@ -153,16 +149,16 @@ class AudioPlayerViewModel(
     }
 
     private suspend fun updatePlaylist(
+        playlistId: Int,
         trackIds: List<String>,
         trackId: String,
-        tracksCount: Int,
-        dateAdded: Long
+        tracksCount: Int
     ) {
         val newTrackIds = mutableListOf<String>()
         newTrackIds.addAll(trackIds)
         newTrackIds.add(trackId)
         val newTracksCount = tracksCount + 1
-        playlistsInteractor.updatePlaylist(newTrackIds, newTracksCount, dateAdded)
+        playlistsInteractor.updatePlaylist(playlistId, newTrackIds, newTracksCount)
     }
 
     companion object {
